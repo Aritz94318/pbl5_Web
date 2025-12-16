@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mammography Review Portal</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
+</head>
+<body>
+<div class="app-container">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <h1>Mammography Review Portal</h1>
+            <p>Medical Imaging Department</p>
+        </div>
+        <div class="header-right">
+            <span class="header-badge">1 Urgent Case Pending</span>
+        </div>
+    </header>
+
+    <!-- SELECT DATE -->
+    <section class="card card-dates">
+        <div class="card-title">Select Date</div>
+        <div class="date-selector">
+            <!-- Estos pueden ser botones reales o enlaces, aquí los dejo como botones -->
+            <button class="date-pill" type="button">
+                <span class="label">Nov 22</span>
+                <span class="date">11/22/2025</span>
+            </button>
+            <button class="date-pill" type="button">
+                <span class="label">Nov 23</span>
+                <span class="date">11/23/2025</span>
+            </button>
+            <button class="date-pill" type="button">
+                <span class="label">Yesterday</span>
+                <span class="date">11/24/2025</span>
+            </button>
+            <button class="date-pill active" type="button">
+                <span class="label">Today</span>
+                <span class="date">11/25/2025</span>
+            </button>
+            <button class="date-pill" type="button">
+                <span class="label">Tomorrow</span>
+                <span class="date">11/26/2025</span>
+            </button>
+            <button class="date-pill" type="button">
+                <span class="label">Nov 28</span>
+                <span class="date">11/28/2025</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- SCREENINGS SUMMARY + LIST -->
+    <section class="card">
+        <div class="screening-header-top">
+            <div>
+                <div class="text-main">Screenings for Tuesday, November 25, 2025</div>
+                <div class="text-meta">
+                    4 total screenings • <span>2 urgent</span> • 2 routine
+                </div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot urgent"></span> Urgent
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot completed"></span> Completed
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTA DE PACIENTES -->
+        <div class="patient-list">
+
+            <!-- Cada paciente es un enlace/botón que lleva al detalle -->
+            <a class="patient-card urgent-border" href="patient-details.html">
+                <div class="patient-main">
+                    <div class="patient-icon">◎</div>
+                    <div class="patient-info">
+                        <div class="patient-name-row">
+                            <span class="patient-name">Sarah Johnson</span>
+                            <span class="badge-pill badge-urgent">URGENT</span>
+                            <span class="badge-pill badge-check">✔</span>
+                        </div>
+                        <div class="patient-subinfo">
+                            <span>PT-2024-1001</span>
+                            <span class="dot-separator">52 years old</span>
+                            <span class="dot-separator">09:30</span>
+                            <span class="dot-separator">3 previous screenings</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-right">
+                    <span class="status-chip positive">Positive</span>
+                </div>
+            </a>
+
+            <a class="patient-card urgent-border" href="patient-details.html">
+                <div class="patient-main">
+                    <div class="patient-icon">◎</div>
+                    <div class="patient-info">
+                        <div class="patient-name-row">
+                            <span class="patient-name">Maria García</span>
+                            <span class="badge-pill badge-urgent">URGENT</span>
+                            <span class="badge-pill badge-check">✔</span>
+                        </div>
+                        <div class="patient-subinfo">
+                            <span>PT-2024-1002</span>
+                            <span class="dot-separator">45 years old</span>
+                            <span class="dot-separator">10:15</span>
+                            <span class="dot-separator">2 previous screenings</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-right">
+                    <span class="status-chip">Pending Review</span>
+                </div>
+            </a>
+
+            <a class="patient-card" href="patient-details.html">
+                <div class="patient-main">
+                    <div class="patient-icon">◎</div>
+                    <div class="patient-info">
+                        <div class="patient-name-row">
+                            <span class="patient-name">Emily Chen</span>
+                        </div>
+                        <div class="patient-subinfo">
+                            <span>PT-2024-1003</span>
+                            <span class="dot-separator">38 years old</span>
+                            <span class="dot-separator">11:00</span>
+                            <span class="dot-separator">1 previous screening</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-right">
+                    <span class="status-chip">Pending Review</span>
+                </div>
+            </a>
+
+            <a class="patient-card" href="patient-details.html">
+                <div class="patient-main">
+                    <div class="patient-icon">◎</div>
+                    <div class="patient-info">
+                        <div class="patient-name-row">
+                            <span class="patient-name">Jennifer Smith</span>
+                        </div>
+                        <div class="patient-subinfo">
+                            <span>PT-2024-1004</span>
+                            <span class="dot-separator">61 years old</span>
+                            <span class="dot-separator">14:30</span>
+                            <span class="dot-separator">5 previous screenings</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-right">
+                    <span class="status-chip negative">Negative</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

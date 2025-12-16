@@ -1,0 +1,33 @@
+package edu.mondragon.we2.pinkAlert.service;
+
+import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public Optional<User> findByIdentifier(String identifier) {
+        String id = identifier == null ? "" : identifier.trim();
+        return userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(id, id);
+    }
+
+    public boolean matches(User user, String rawPassword) {
+        return encoder.matches(rawPassword, user.getPasswordHash());
+    }
+
+    public User createUser(User user, String rawPassword) {
+        user.setPasswordHash(encoder.encode(rawPassword));
+        return userRepository.save(user);
+    }
+}
