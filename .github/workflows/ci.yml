@@ -30,8 +30,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=aroacalvo_pbl5-web \
-            -Dsonar.organization=pbl5 \
+            -Dsonar.projectKey=Aritz94318_pbl5_Web \
+            -Dsonar.organization=aritz94318 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.qualitygate.wait=true \
