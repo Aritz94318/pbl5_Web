@@ -1,6 +1,10 @@
 HELP.md
 !.mvn/wrapper/maven-wrapper.jar
 
+target
+!**/target/
+/target/
+
 ### STS ###
 .apt_generated
 .classpath
