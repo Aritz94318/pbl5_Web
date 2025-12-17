@@ -83,15 +83,7 @@
 
 	<build>
 		<plugins>
-				<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>4.0.0.4121</version>
-				<configuration>
-					<sources>src/main/java</sources>
-					<exclusions>**/target/**,**/build/**</exclusions>
-				</configuration>
-			</plugin>
+				
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
