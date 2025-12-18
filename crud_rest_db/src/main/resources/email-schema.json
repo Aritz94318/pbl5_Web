@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Email",
+    "description": "Schema for an email",
+    "type": "object",
+    "properties": {
+        "email": {
+            "type": "string"
+        },
+        "topic": {
+            "type": "string"
+        },
+        "message": {
+            "type": "string"
+        },
+        "date": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "email",
+        "topic",
+        "message",
+        "date"
+    ]
+}
