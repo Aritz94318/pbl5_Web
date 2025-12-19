@@ -17,6 +17,9 @@ public class User {
     @Column(name = "Username", nullable = false, unique = true, length = 50)
     private String username;
 
+    @Column(name = "FullName", nullable = false, length = 50)
+    private String fullName;
+
     @Column(name = "PasswordHash", nullable = false, length = 100)
     private String passwordHash;
 
@@ -32,11 +35,13 @@ public class User {
     @JoinColumn(name = "PatientID")
     private Patient patient;
 
-    public User() {
+    public void linkPatient(Patient p) {
+        this.patient = p;
+        if (p != null)
+            p.setUser(this);
     }
 
-    // Getters & setters
-
+    // getters & setters
     public Integer getId() {
         return id;
     }
@@ -59,6 +64,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPasswordHash() {

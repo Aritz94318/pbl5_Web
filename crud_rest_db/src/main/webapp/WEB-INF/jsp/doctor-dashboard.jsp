@@ -97,7 +97,7 @@
                                         <div class="patient-name-row">
 
                                             <span class="patient-name">
-                                                ${d.patient.name}
+                                                ${d.patient.user.fullName}
                                             </span>
 
                                             <!-- <c:if test="${d.urgent}">
