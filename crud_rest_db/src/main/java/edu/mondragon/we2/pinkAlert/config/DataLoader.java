@@ -43,33 +43,36 @@ public class DataLoader implements CommandLineRunner {
         // ========================
         if (userRepository.count() == 0) {
 
-            Doctor d1 = doctorRepository.findById(1)
-                    .orElseGet(() -> doctorRepository.save(
-                            new Doctor("Javier")));
-
-            Patient p1 = patientRepository.findById(1)
-                    .orElseGet(() -> patientRepository.save(
-                            new Patient("Mikel", LocalDate.of(1999, 2, 1))));
+            // --- Doctor ---
+            Doctor doctor = doctorRepository.save(new Doctor());
 
             User doctorUser = new User();
             doctorUser.setEmail("doctor1@pinkalert.com");
             doctorUser.setUsername("doctor1");
+            doctorUser.setFullName("Dr. Javier Martínez");
             doctorUser.setRole(Role.DOCTOR);
-            doctorUser.setDoctor(d1);
+            doctorUser.setDoctor(doctor);
             doctorUser.setPatient(null);
             userService.createUser(doctorUser, "123");
+
+            // --- Patient ---
+            Patient patient = patientRepository.save(
+                    new Patient(LocalDate.of(1999, 2, 1)));
 
             User patientUser = new User();
             patientUser.setEmail("patient1@pinkalert.com");
             patientUser.setUsername("patient1");
+            patientUser.setFullName("Mikel Etxeberria");
             patientUser.setRole(Role.PATIENT);
-            patientUser.setPatient(p1);
+            patientUser.setPatient(patient);
             patientUser.setDoctor(null);
             userService.createUser(patientUser, "123");
 
+            // --- Admin ---
             User adminUser = new User();
             adminUser.setEmail("admin@pinkalert.com");
             adminUser.setUsername("admin");
+            adminUser.setFullName("System Administrator");
             adminUser.setRole(Role.ADMIN);
             adminUser.setDoctor(null);
             adminUser.setPatient(null);
@@ -81,22 +84,34 @@ public class DataLoader implements CommandLineRunner {
         // ========================
         if (diagnosisRepository.count() == 0) {
 
-            Doctor d1 = doctorRepository.findById(1)
-                    .orElseGet(() -> doctorRepository.save(
-                            new Doctor("Javier")));
+            Doctor doctor = doctorRepository.findAll().get(0);
 
-            Patient p3 = patientRepository.findById(3)
-                    .orElseGet(() -> patientRepository.save(
-                            new Patient("Ekaitz", LocalDate.of(2004, 10, 28))));
+            // Create a patient
+            Patient patient = patientRepository.save(
+                    new Patient(LocalDate.of(2004, 10, 28)));
 
+            // Create the linked User row for that patient
+            User patientUser2 = new User();
+            patientUser2.setEmail("patient2@pinkalert.com");
+            patientUser2.setUsername("patient2");
+            patientUser2.setFullName("Ekaitz Aramburu");
+            patientUser2.setRole(Role.PATIENT);
+            patientUser2.setDoctor(null);
+
+            // ✅ LINK BOTH SIDES HERE
+            patientUser2.linkPatient(patient);
+
+            userService.createUser(patientUser2, "123");
+
+            // Diagnosis now points to a fully linked patient
             Diagnosis diag = new Diagnosis();
             diag.setImagePath("1.jpg");
             diag.setDate(LocalDate.of(2025, 12, 15));
             diag.setDescription("Grade 3 breast cancer.");
             diag.setUrgent(true);
             diag.setReviewed(true);
-            diag.setDoctor(d1);
-            diag.setPatient(p3);
+            diag.setDoctor(doctor);
+            diag.setPatient(patient);
 
             diagnosisRepository.save(diag);
         }

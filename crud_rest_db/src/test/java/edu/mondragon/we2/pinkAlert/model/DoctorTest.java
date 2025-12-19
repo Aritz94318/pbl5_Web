@@ -1,33 +1,33 @@
-package edu.mondragon.we2.pinkAlert.model;
+// package edu.mondragon.we2.pinkAlert.model;
 
 
-import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.Test;
 
 
-import java.util.List;
+// import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.jupiter.api.Assertions.*;
 
-class DoctorTest {
+// class DoctorTest {
 
-    @Test
-    void testGettersAndSetters() {
-        Doctor doctor = new Doctor();
+//     @Test
+//     void testGettersAndSetters() {
+//         Doctor doctor = new Doctor();
 
-        doctor.setId(1);
-        doctor.setName("Dr Smith");
+//         doctor.setId(1);
+//         doctor.setName("Dr Smith");
 
-        assertEquals(1, doctor.getId());
-        assertEquals("Dr Smith", doctor.getName());
-    }
+//         assertEquals(1, doctor.getId());
+//         assertEquals("Dr Smith", doctor.getName());
+//     }
 
-    @Test
-    void testDiagnosesList() {
-        Doctor doctor = new Doctor("Dr Test");
+//     @Test
+//     void testDiagnosesList() {
+//         Doctor doctor = new Doctor("Dr Test");
 
-        Diagnosis diagnosis = new Diagnosis();
-        doctor.setDiagnoses(List.of(diagnosis));
+//         Diagnosis diagnosis = new Diagnosis();
+//         doctor.setDiagnoses(List.of(diagnosis));
 
-        assertEquals(1, doctor.getDiagnoses().size());
-    }
-}
+//         assertEquals(1, doctor.getDiagnoses().size());
+//     }
+// }

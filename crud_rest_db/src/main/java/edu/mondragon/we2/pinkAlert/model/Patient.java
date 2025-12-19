@@ -17,21 +17,27 @@ public class Patient {
     @Column(name = "PatientID")
     private Integer id;
 
-    @Column(name = "Name", nullable = false, length = 50)
-    private String name;
-
     @Column(name = "BirthDate", nullable = false)
     private LocalDate birthDate;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Diagnosis> diagnoses;
+    @OneToOne(mappedBy = "patient", fetch = FetchType.LAZY)
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Patient() {
     }
 
-    public Patient(String name, LocalDate birthDate) {
-        this.name = name;
+    public Patient(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -43,14 +49,6 @@ public class Patient {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public LocalDate getBirthDate() {

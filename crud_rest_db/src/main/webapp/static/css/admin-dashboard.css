@@ -1,6 +1,22 @@
 /* ===============================
    ADMIN DASHBOARD STYLES
    =============================== */
+.bi {
+    line-height: 1;
+}
+
+.btn-ghost .bi,
+.btn-admin .bi {
+    font-size: 1.5em;
+}
+
+.kpi-icon .bi {
+    font-size: 2rem;
+}
+
+.admin-shield .bi {
+    font-size: 1.5rem;
+}
 
 .header-admin {
     background: linear-gradient(90deg, hotpink, hotpink);
@@ -255,13 +271,13 @@
 }
 
 .btn-primary {
-    background: #1d4ed8;
+    background: hotpink;
     color: #fff;
-    border: 1px solid rgba(29, 78, 216, .25);
+    border: 0;
 }
 
 .btn-primary:hover {
-    background: #1742b8;
+    background: rgba(255, 105, 180, 0.678);
 }
 
 /* CHARTS */
@@ -269,4 +285,48 @@
 .chart-wrap {
     position: relative;
     height: 330px;
+}
+
+/* USER MANAGEMENT*/
+
+.users-table {
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+.btn-admin-users {
+    border: 1px solid rgba(15, 23, 42, .12);
+    background: #ff69b400;
+    color: #0f172a;
+    padding: 0.15rem 0.7rem;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.btn-admin-users:hover {
+    background: #f8fafc;
+}
+
+input {
+    border: 1px solid lightgray;
+    border-radius: 0.7rem;
+    color: darkgray;
+    margin-top: 0.3rem;
+    outline: none;
+    box-shadow: none;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 0.7rem;
+    color: darkgray;
+    margin-top: 0.3rem;
+    outline: none;
+    box-shadow: none;
 }

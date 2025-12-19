@@ -19,24 +19,6 @@
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
             <!-- Optional: make icons align nicely inside your buttons/cards -->
-            <style>
-                .bi {
-                    line-height: 1;
-                }
-
-                .btn-ghost .bi,
-                .btn-admin .bi {
-                    font-size: 1.5em;
-                }
-
-                .kpi-icon .bi {
-                    font-size: 2rem;
-                }
-
-                .admin-shield .bi {
-                    font-size: 1.5rem;
-                }
-            </style>
         </head>
 
         <body>
@@ -251,9 +233,9 @@
                                 Manage Patients
                             </a>
                         </div>
-                        <div style="margin-top:10px;color:#64748b;font-size:13px;">
+                        <!-- <div style="margin-top:10px;color:#64748b;font-size:13px;">
                             (These links assume you’ll create the routes/controllers later.)
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- CHARTS -->

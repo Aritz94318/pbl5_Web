@@ -15,18 +15,11 @@ public class Doctor {
     @Column(name = "DoctorID")
     private Integer id;
 
-    @Column(name = "Name", nullable = false, length = 50)
-    private String name;
-
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // avoid infinite JSON recursion
     private List<Diagnosis> diagnoses;
 
     public Doctor() {
-    }
-
-    public Doctor(String name) {
-        this.name = name;
     }
 
     // Getters & setters
@@ -37,14 +30,6 @@ public class Doctor {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Diagnosis> getDiagnoses() {

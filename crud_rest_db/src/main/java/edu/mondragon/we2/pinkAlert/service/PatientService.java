@@ -31,7 +31,7 @@ public class PatientService {
 
     public Patient update(Integer id, Patient updated) {
         Patient existing = findById(id);
-        existing.setName(updated.getName());
+        //existing.setName(updated.getName());
         existing.setBirthDate(updated.getBirthDate());
         return patientRepository.save(existing);
     }
