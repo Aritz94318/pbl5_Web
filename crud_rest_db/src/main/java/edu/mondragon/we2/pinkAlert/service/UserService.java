@@ -54,4 +54,9 @@ public class UserService {
     public void delete(Integer id) {
         userRepository.deleteById(id);
     }
+
+    public void setPassword(User user, String rawPassword) {
+        user.setPasswordHash(encoder.encode(rawPassword));
+    }
+
 }

@@ -1,9 +1,13 @@
+// ===============================
+// Patient.java (FULL FILE)
+// ===============================
 package edu.mondragon.we2.pinkAlert.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -23,16 +27,9 @@ public class Patient {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Diagnosis> diagnoses;
+
     @OneToOne(mappedBy = "patient", fetch = FetchType.LAZY)
     private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Patient() {
     }
@@ -40,8 +37,6 @@ public class Patient {
     public Patient(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
-
-    // Getters & setters
 
     public Integer getId() {
         return id;
@@ -67,10 +62,17 @@ public class Patient {
         this.diagnoses = diagnoses;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getAge() {
         if (birthDate == null)
             return 0;
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
-
 }

@@ -1,12 +1,16 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.UserService;
+import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,17 +27,20 @@ public class AdminController {
 
         private final PatientRepository patientRepository;
         private final DiagnosisRepository diagnosisRepository;
+        private final DoctorRepository doctorRepository;
         private final UserRepository userRepository;
         private final UserService userService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
-                        UserService userService) {
+                        UserService userService,
+                        DoctorRepository doctorRepository) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
                 this.userService = userService;
+                this.doctorRepository = doctorRepository;
         }
 
         @GetMapping("/dashboard")
@@ -111,6 +118,10 @@ public class AdminController {
                 return "admin-dashboard";
         }
 
+        // ---------------------------
+        // USERS CRUD
+        // ---------------------------
+
         // View Users
         @GetMapping("/users")
         public String users(Model model) {
@@ -130,13 +141,28 @@ public class AdminController {
         @PostMapping("/users")
         public String createUser(@ModelAttribute("user") User user,
                         @RequestParam(name = "rawPassword", required = false) String rawPassword) {
-                // If you have a password field in the form named rawPassword, hash it safely:
-                if (rawPassword != null && !rawPassword.isBlank()) {
-                        userService.createUser(user, rawPassword);
-                } else {
-                        // fallback: requires user.passwordHash already set
-                        userService.save(user);
+
+                if (rawPassword == null || rawPassword.isBlank()) {
+                        // PasswordHash is NOT NULL -> give default if form left empty
+                        rawPassword = "123";
                 }
+
+                // Satisfy DB triggers: role must match FK fields
+                if (user.getRole() == Role.DOCTOR) {
+                        Doctor doc = doctorRepository.save(new Doctor());
+                        user.setDoctor(doc);
+                        user.setPatient(null);
+                } else if (user.getRole() == Role.PATIENT) {
+                        // Needs birthDate (not in form) -> default for now
+                        Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
+                        user.linkPatient(p); // sets BOTH sides
+                        user.setDoctor(null);
+                } else { // ADMIN
+                        user.unlinkDoctor();
+                        user.unlinkPatient();
+                }
+
+                userService.createUser(user, rawPassword);
                 return "redirect:/admin/users";
         }
 
@@ -148,26 +174,98 @@ public class AdminController {
                 return "admin/user-form";
         }
 
-        // Update User (submit)
+        @Transactional
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
-                        @ModelAttribute("user") User user,
+                        @ModelAttribute("user") User posted,
                         @RequestParam(name = "rawPassword", required = false) String rawPassword) {
-                user.setId(id);
 
+                User existing = userService.get(id);
+
+                // basic fields
+                existing.setUsername(posted.getUsername());
+                existing.setEmail(posted.getEmail());
+                existing.setFullName(posted.getFullName());
+
+                Role oldRole = existing.getRole();
+                Role newRole = posted.getRole();
+
+                // password (optional)
                 if (rawPassword != null && !rawPassword.isBlank()) {
-                        userService.createUser(user, rawPassword); // hashes then saves
-                } else {
-                        userService.save(user);
+                        userService.setPassword(existing, rawPassword);
                 }
 
+                if (oldRole != newRole) {
+
+                        // -----------------------------
+                        // STEP 1: make row VALID (neutral)
+                        // -----------------------------
+                        existing.setRole(Role.ADMIN); // ADMIN allows both null per trigger
+                        existing.setDoctor(null);
+                        existing.unlinkPatient(); // clears PatientID
+                        userRepository.saveAndFlush(existing); // ✅ trigger sees a valid state
+
+                        // -----------------------------
+                        // STEP 2: apply new role + links
+                        // -----------------------------
+                        if (newRole == Role.ADMIN) {
+                                existing.setRole(Role.ADMIN);
+                                existing.setDoctor(null);
+                                existing.unlinkPatient();
+                        } else if (newRole == Role.DOCTOR) {
+                                existing.setRole(Role.DOCTOR);
+                                existing.unlinkPatient(); // must not have PatientID
+                                if (existing.getDoctor() == null) {
+                                        Doctor doc = doctorRepository.save(new Doctor());
+                                        existing.setDoctor(doc); // must have DoctorID
+                                }
+                        } else if (newRole == Role.PATIENT) {
+                                existing.setRole(Role.PATIENT);
+                                existing.setDoctor(null); // must not have DoctorID
+                                if (existing.getPatient() == null) {
+                                        Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
+                                        existing.linkPatient(p); // must have PatientID
+                                }
+                        }
+
+                        userRepository.saveAndFlush(existing); // ✅ trigger sees correct final state
+                        return "redirect:/admin/users";
+                }
+
+                // no role change -> normal save
+                userRepository.save(existing);
                 return "redirect:/admin/users";
         }
 
-        // Delete User
+        @Transactional
         @PostMapping("/users/{id}/delete")
         public String deleteUser(@PathVariable Integer id) {
-                userService.delete(id);
+                User u = userService.get(id);
+
+                // keep references if you want to delete linked rows afterwards
+                Doctor doctorToDelete = u.getDoctor();
+                Patient patientToDelete = u.getPatient();
+
+                // STEP 1: make the Users row valid for the trigger
+                u.setRole(Role.ADMIN); // ADMIN requires both null -> valid neutral state
+                u.setDoctor(null);
+                u.unlinkPatient();
+
+                userRepository.saveAndFlush(u); // ✅ trigger sees valid state
+
+                // STEP 2: delete the user
+                userRepository.delete(u);
+                userRepository.flush();
+
+                // OPTIONAL: delete orphaned doctor/patient rows
+                // (do this only if you really want to remove them)
+                if (doctorToDelete != null) {
+                        doctorRepository.delete(doctorToDelete);
+                }
+                if (patientToDelete != null) {
+                        patientRepository.delete(patientToDelete);
+                }
+
                 return "redirect:/admin/users";
         }
 

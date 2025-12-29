@@ -106,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
             // Diagnosis now points to a fully linked patient
             Diagnosis diag = new Diagnosis();
             diag.setImagePath("1.jpg");
-            diag.setDate(LocalDate.of(2025, 12, 15));
+            diag.setDate(LocalDate.of(2025, 12, 29));
             diag.setDescription("Grade 3 breast cancer.");
             diag.setUrgent(true);
             diag.setReviewed(true);
