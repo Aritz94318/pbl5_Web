@@ -119,12 +119,7 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>4.4.0.3356</version> <!-- la última versión estable -->
-			</plugin>
-
+			
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
