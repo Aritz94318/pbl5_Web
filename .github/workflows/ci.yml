@@ -38,3 +38,30 @@ jobs:
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }}
+            
+      - name: Authenticate to Google Cloud
+        if: success()
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        if: success()
+        run: gcloud auth configure-docker
+
+      - name: Build & Push Docker image
+        if: success()
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db ./crud_rest_db
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db
+
+      - name: Deploy to Cloud Run
+        if: success()
+        run: |
+          gcloud run deploy crud-rest-db \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db \
+            --region ${{ secrets.GCP_REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --add-cloudsql-instances ${{ secrets.INSTANCE_CONNECTION_NAME }} \
+            --set-env-vars SPRING_PROFILES_ACTIVE=cloud,DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }}
