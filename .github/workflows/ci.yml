@@ -48,8 +48,8 @@ jobs:
 
       - name: Build & Push Docker image
         run: |
-          docker build -t europe-docker.pkg.dev/PROJECT_ID/pinkalert/crud-rest-db .
-          docker push europe-docker.pkg.dev/PROJECT_ID/pinkalert/crud-rest-db
+          docker build -t europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db .
+          docker push europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db
 
 
       - name: Deploy to Cloud Run
