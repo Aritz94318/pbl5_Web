@@ -61,6 +61,7 @@ jobs:
          gcloud auth list
          gcloud projects describe ${{ secrets.GCP_PROJECT_ID }}
 
+
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy crud-rest-db \
