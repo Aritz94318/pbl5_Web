@@ -24,7 +24,6 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-
       - name: Build and SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
