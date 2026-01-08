@@ -42,6 +42,7 @@ jobs:
         run: ls -lh ./crud_rest_db/target
 
 
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
