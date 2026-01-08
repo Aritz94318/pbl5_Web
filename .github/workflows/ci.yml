@@ -62,7 +62,7 @@ jobs:
          gcloud projects describe ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to Cloud Run
-         run: |
+        run: |
           gcloud run deploy crud-rest-db \
            --image europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db \
            --region ${{ secrets.GCP_REGION }} \
