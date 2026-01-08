@@ -59,5 +59,3 @@ jobs:
          --region ${{ secrets.GCP_REGION }} \
          --platform managed \
          --allow-unauthenticated \
-          --add-cloudsql-instances ${{ secrets.INSTANCE_CONNECTION_NAME }} \
-         --set-env-vars SPRING_PROFILES_ACTIVE=cloud,DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }}
