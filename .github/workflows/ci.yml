@@ -44,19 +44,20 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configure Docker
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker europe-docker.pkg.dev
 
       - name: Build & Push Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db ./crud_rest_db
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db
+          docker build -t europe-docker.pkg.dev/PROJECT_ID/pinkalert/crud-rest-db .
+          docker push europe-docker.pkg.dev/PROJECT_ID/pinkalert/crud-rest-db
+
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy crud-rest-db \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/crud-rest-db \
-            --region ${{ secrets.GCP_REGION }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --add-cloudsql-instances ${{ secrets.INSTANCE_CONNECTION_NAME }} \
-            --set-env-vars SPRING_PROFILES_ACTIVE=cloud,DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }}
+         gcloud run deploy crud-rest-db \
+          --image europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db \
+         --region ${{ secrets.GCP_REGION }} \
+         --platform managed \
+         --allow-unauthenticated \
+          --add-cloudsql-instances ${{ secrets.INSTANCE_CONNECTION_NAME }} \
+         --set-env-vars SPRING_PROFILES_ACTIVE=cloud,DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }}
