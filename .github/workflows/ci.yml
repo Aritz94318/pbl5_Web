@@ -25,6 +25,20 @@ jobs:
           cache: 'maven'
 
 
+      - name: Build and SonarCloud Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -f ./crud_rest_db/pom.xml clean verify sonar:sonar \
+            -Dsonar.projectKey=Aritz94318_pbl5_Web \
+            -Dsonar.organization=aritz94318 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }} || true
+            
       - name: List target directory
         run: ls -lh ./crud_rest_db/target
 
