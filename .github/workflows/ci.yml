@@ -53,9 +53,11 @@ jobs:
 
       - name: Build & Push Docker image
         run: docker build -t europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db ./crud_rest_db && docker push europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db
-
-
-
+      - name: Check GCP configuration
+        run: |
+         gcloud config list
+         gcloud auth list
+         gcloud projects describe ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to Cloud Run
         run: |
