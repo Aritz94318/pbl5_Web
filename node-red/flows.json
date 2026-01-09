@@ -1,0 +1,266 @@
+[
+    {
+        "id": "4df3273b04370a1b",
+        "type": "tab",
+        "label": "Flow 8",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "021575aab027395a",
+        "type": "e-mail",
+        "z": "4df3273b04370a1b",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "fdg",
+        "x": 1190,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "5def096fc2aaf896",
+        "type": "change",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "to",
+                "pt": "msg",
+                "to": "payload.email",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload.topic",
+                "tot": "msg",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.message",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 340,
+        "wires": [
+            [
+                "021575aab027395a",
+                "c15d04f76c28d4c7"
+            ]
+        ]
+    },
+    {
+        "id": "2e4e1cd6749c0985",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 340,
+        "wires": [
+            [
+                "5def096fc2aaf896",
+                "a3c9289d13195282",
+                "0a1c2cc6f1a7566d"
+            ]
+        ]
+    },
+    {
+        "id": "92920775a9a923fd",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/email",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 310,
+        "y": 340,
+        "wires": [
+            [
+                "2e4e1cd6749c0985",
+                "6edf4fbe0da70689"
+            ]
+        ]
+    },
+    {
+        "id": "6edf4fbe0da70689",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 27",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a3c9289d13195282",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 29",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "324b300942b1d3f4",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
+        "payloadType": "json",
+        "x": 410,
+        "y": 680,
+        "wires": [
+            [
+                "510af55024bf0382"
+            ]
+        ]
+    },
+    {
+        "id": "8583f688915e556d",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/email",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 830,
+        "y": 680,
+        "wires": [
+            [
+                "7cbd01fb859148c7"
+            ]
+        ]
+    },
+    {
+        "id": "7cbd01fb859148c7",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "510af55024bf0382",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 17",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 680,
+        "wires": [
+            [
+                "8583f688915e556d"
+            ]
+        ]
+    },
+    {
+        "id": "c15d04f76c28d4c7",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 30",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "0a1c2cc6f1a7566d",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 860,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "a689d0e590ef8677",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-email": "5.0.1"
+        }
+    }
+]
