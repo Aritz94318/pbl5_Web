@@ -33,11 +33,11 @@ jobs:
             -Dsonar.organization=aritz94318 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.projectVersion=baseline \
+            -Dsonar.projectVersion=${{ github.run_number }} \
             -Dsonar.qualitygate.wait=true \
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }} || true
+            -Dsonar.pullrequest.base=${{ github.base_ref }} 
             
       - name: List target directory
         run: ls -lh ./crud_rest_db/target
