@@ -13,6 +13,7 @@ public class CrudRestDbApplication extends SpringBootServletInitializer {
     return application.sources(CrudRestDbApplication.class);
   }
 
+  
   public static void main(String[] args) {
     SpringApplication.run(CrudRestDbApplication.class, args);
   }
