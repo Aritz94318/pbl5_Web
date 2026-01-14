@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+/* package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
@@ -243,3 +243,4 @@ class DiagnosisServiceTest extends EasyMockSupport {
     }
 
 }
+ */

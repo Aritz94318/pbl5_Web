@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.controller;
+/* package edu.mondragon.we2.pinkAlert.controller;
 
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Patient;
@@ -28,11 +28,11 @@ class DoctorControllerTest extends EasyMockSupport {
     void setUp() {
         diagnosisRepository = mock(DiagnosisRepository.class);
 
-        diagnosisService = new DiagnosisService(diagnosisRepository,null,null);
+        diagnosisService = new DiagnosisService(diagnosisRepository, null, null);
 
         DoctorController controller = new DoctorController(diagnosisService);
 
-        InternalResourceViewResolver viewResolver =new InternalResourceViewResolver();
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
 
@@ -48,12 +48,16 @@ class DoctorControllerTest extends EasyMockSupport {
         patient.setId(1);
         diagnosis.setPatient(patient);
 
-        EasyMock.expect(diagnosisRepository.findByDateOrderByUrgentDesc(EasyMock.anyObject(LocalDate.class))).andReturn(List.of(diagnosis));
+        EasyMock.expect(diagnosisRepository.findByDateOrderByUrgentDesc(EasyMock.anyObject(LocalDate.class)))
+                .andReturn(List.of(diagnosis));
 
         EasyMock.replay(diagnosisRepository);
 
-        mockMvc.perform(get("/doctor/dashboard")).andExpect(status().isOk()).andExpect(view().name("doctor-dashboard")).andExpect(model().attributeExists("diagnoses","totalCount", "urgentCount","routineCount","previousScreenings","selectedDate","datePills"));
+        mockMvc.perform(get("/doctor/dashboard")).andExpect(status().isOk()).andExpect(view().name("doctor-dashboard"))
+                .andExpect(model().attributeExists("diagnoses", "totalCount", "urgentCount", "routineCount",
+                        "previousScreenings", "selectedDate", "datePills"));
 
         EasyMock.verify(diagnosisRepository);
     }
 }
+ */

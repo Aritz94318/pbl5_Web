@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+/* package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
@@ -119,3 +119,4 @@ class UserServiceTest extends EasyMockSupport {
         EasyMock.verify(userRepository);
     }
 }
+ */

@@ -1,4 +1,4 @@
-// package edu.mondragon.we2.pinkAlert.service;
+/* // package edu.mondragon.we2.pinkAlert.service;
 
 // import edu.mondragon.we2.pinkAlert.model.Patient;
 // import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
@@ -124,3 +124,4 @@
 //         EasyMock.verify(patientRepository);
 //     }
 // }
+ */
