@@ -7,7 +7,16 @@
         <head>
             <meta charset="UTF-8">
             <title>Mammography Review Portal</title>
+            <!-- Base global styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
+
+            <!-- Admin dashboard styles -->
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
+
+            <!-- Bootstrap Icons (icons only) -->
+            <link rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
         </head>
 
         <body>
@@ -16,20 +25,17 @@
                 <!-- HEADER -->
                 <header class="header">
                     <div class="header-left">
+                        <div class="admin-shield">
+                            <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
+                        </div>
                         <h1>Mammography Review Portal</h1>
                         <p>Breast Cancer Department</p>
                     </div>
                     <div class="header-right">
-                        <span class="header-badge">
-                            <c:choose>
-                                <c:when test="${urgentCount == 1}">
-                                    1 Urgent Case Pending
-                                </c:when>
-                                <c:otherwise>
-                                    ${urgentCount} Urgent Cases Pending
-                                </c:otherwise>
-                            </c:choose>
-                        </span>
+                        <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                            Logout
+                        </a>
                     </div>
                 </header>
 
@@ -82,9 +88,15 @@
                         <c:forEach var="d" items="${diagnoses}">
 
                             <c:set var="cardClasses" value="patient-card" />
-                            <c:if test="${d.urgent}">
-                                <c:set var="cardClasses" value="${cardClasses} urgent-border" />
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${d.urgent}">
+                                    <c:set var="cardClasses" value="${cardClasses} urgent-border" />
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="cardClasses" value="${cardClasses} ok-border" />
+                                </c:otherwise>
+                            </c:choose>
+
 
                             <a class="${cardClasses}"
                                 href="${pageContext.request.contextPath}/doctor/diagnosis/${d.id}">
@@ -138,8 +150,21 @@
                                 </div>
 
                                 <div class="patient-right">
-                                    <span class="status-chip">Pending Review</span>
+                                    <c:choose>
+                                        <c:when test="${not d.reviewed}">
+                                            <span class="status-chip">Pending Review</span>
+                                        </c:when>
+
+                                        <c:when test="${d.urgent}">
+                                            <span class="status-chip status-danger">Malignant</span>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <span class="status-chip status-success">Benignant</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
+
                             </a>
 
                         </c:forEach>

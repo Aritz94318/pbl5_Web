@@ -12,6 +12,15 @@ import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.transaction.Transactional;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -288,4 +297,106 @@ public class AdminController {
         private static double round1(double v) {
                 return Math.round(v * 10.0) / 10.0;
         }
+
+        // ---------------------------
+        // MACHINE SIMULATOR - NEW DIAGNOSIS
+        // ---------------------------
+
+        @GetMapping("/diagnoses/new")
+        public String newDiagnosisForm(Model model) {
+                model.addAttribute("today", LocalDate.now().toString());
+                return "admin/diagnosis-form"; // /WEB-INF/jsp/admin/diagnosis-form.jsp
+        }
+
+        /**
+         * Autocomplete endpoint
+         * Returns: [{id: 3, label: "Ekaitz Aramburu"}, ...]
+         *
+         * Uses: patient.user.fullName if available, else "Patient PT-x"
+         */
+        @GetMapping(value = "/patients/suggest", produces = MediaType.APPLICATION_JSON_VALUE)
+        @ResponseBody
+        public List<Map<String, Object>> suggestPatients(@RequestParam(name = "q", required = false) String q) {
+                String query = (q == null) ? "" : q.trim().toLowerCase();
+                if (query.isBlank())
+                        return List.of();
+
+                // simplest: load all and filter in memory (OK for demo)
+                // later: create a real repository query for performance
+                List<Patient> all = patientRepository.findAll();
+
+                return all.stream()
+                                .map(p -> {
+                                        String name = null;
+                                        if (p.getUser() != null)
+                                                name = p.getUser().getFullName();
+                                        if (name == null || name.isBlank())
+                                                name = "Patient PT-" + p.getId();
+
+                                        Map<String, Object> item = new HashMap<>();
+                                        item.put("id", p.getId());
+                                        item.put("label", name);
+                                        return item;
+                                })
+                                .filter(item -> ((String) item.get("label")).toLowerCase().startsWith(query))
+                                .limit(10)
+                                .collect(Collectors.toList());
+        }
+
+        @PostMapping("/diagnoses")
+        @Transactional
+        public String createDiagnosis(
+                        @RequestParam("patientId") Integer patientId,
+                        @RequestParam("image") MultipartFile image,
+                        @RequestParam("date") String dateStr,
+                        @RequestParam("description") String description,
+                        @RequestParam(name = "urgent", defaultValue = "false") boolean urgent,
+                        Model model) throws IOException {
+
+                if (patientId == null) {
+                        model.addAttribute("error", "You must select a patient.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
+
+                Patient patient = patientRepository.findById(patientId)
+                                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
+
+                if (image == null || image.isEmpty()) {
+                        model.addAttribute("error", "Please upload an image.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
+
+                // Save file to /static/uploads (or any folder you want)
+                // Recommended: store outside resources folder in real apps.
+                String uploadsDir = "uploads";
+                Path uploadPath = Paths.get("src/main/resources/static/" + uploadsDir);
+                Files.createDirectories(uploadPath);
+
+                String original = image.getOriginalFilename();
+                String safeName = (original == null ? "mammography" : original).replaceAll("[^a-zA-Z0-9._-]", "_");
+                String filename = System.currentTimeMillis() + "_" + safeName;
+
+                Path filePath = uploadPath.resolve(filename);
+                Files.write(filePath, image.getBytes());
+
+                Diagnosis diag = new Diagnosis();
+                diag.setPatient(patient);
+                diag.setDoctor(null); // machine simulator: no doctor assigned
+                diag.setReviewed(false); // new diagnosis starts pending
+                diag.setUrgent(urgent);
+                diag.setDescription(description);
+
+                LocalDate date = LocalDate.parse(dateStr);
+                diag.setDate(date);
+
+                // store relative path (so you can render it later)
+                diag.setImagePath(uploadsDir + "/" + filename);
+
+                diagnosisRepository.save(diag);
+
+                return "redirect:/admin/dashboard";
+        }
+
 }

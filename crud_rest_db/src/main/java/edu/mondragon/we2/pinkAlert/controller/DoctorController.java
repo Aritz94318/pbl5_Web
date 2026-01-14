@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
@@ -94,7 +95,22 @@ public class DoctorController {
 
         model.addAttribute("datePills", datePills);
 
-        return "doctor-dashboard";
+        return "doctor/doctor-dashboard";
+    }
+
+    @GetMapping("/diagnosis/{id}")
+    public String diagnosisDetails(@PathVariable("id") Integer id, Model model) {
+        Diagnosis diagnosis = diagnosisService.findById(id);
+
+        // Load patient's diagnosis history (optional but useful)
+        List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
+        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
+
+        model.addAttribute("diagnosis", diagnosis);
+        model.addAttribute("patient", diagnosis.getPatient());
+        model.addAttribute("historyDiagnoses", historyDiagnoses);
+
+        return "doctor/doctor-diagnosis"; // -> /WEB-INF/jsp/doctor-diagnosis.jsp
     }
 
     // Helper DTO for date buttons

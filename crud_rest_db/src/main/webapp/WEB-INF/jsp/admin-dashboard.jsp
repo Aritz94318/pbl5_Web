@@ -224,18 +224,15 @@
                                 <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
                                 Add User
                             </a>
-                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/doctors">
+                            <a class="btn-admin" href="${pageContext.request.contextPath}/">
                                 <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
-                                Manage Doctors
+                                Simulation
                             </a>
-                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/patients">
-                                <i class="bi bi-person-vcard-fill" aria-hidden="true"></i>
-                                Manage Patients
+                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/diagnoses/new">
+                                <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                                Machine Simulation
                             </a>
                         </div>
-                        <!-- <div style="margin-top:10px;color:#64748b;font-size:13px;">
-                            (These links assume you’ll create the routes/controllers later.)
-                        </div> -->
                     </div>
 
                     <!-- CHARTS -->
