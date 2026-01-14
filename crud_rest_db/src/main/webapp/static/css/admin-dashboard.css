@@ -1,6 +1,27 @@
 /* ===============================
    ADMIN DASHBOARD STYLES
    =============================== */
+
+.btn-back-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-back-icon i {
+    font-size: 1.6rem;
+    transition: transform .15s ease, opacity .15s ease;
+    opacity: .9;
+}
+
+.btn-back-icon:hover i {
+    transform: translateX(-2px);
+    opacity: 1;
+}
+
 .bi {
     line-height: 1;
 }
@@ -8,6 +29,12 @@
 .btn-ghost .bi,
 .btn-admin .bi {
     font-size: 1.5em;
+}
+
+.btn-admin:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
 }
 
 .kpi-icon .bi {

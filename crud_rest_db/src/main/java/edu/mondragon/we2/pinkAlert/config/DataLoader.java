@@ -104,16 +104,51 @@ public class DataLoader implements CommandLineRunner {
             userService.createUser(patientUser2, "123");
 
             // Diagnosis now points to a fully linked patient
+
+            // No revisado no urgente
             Diagnosis diag = new Diagnosis();
             diag.setImagePath("1.jpg");
-            diag.setDate(LocalDate.of(2025, 12, 29));
+            diag.setDate(LocalDate.of(2026, 01, 13));
             diag.setDescription("Grade 3 breast cancer.");
-            diag.setUrgent(true);
-            diag.setReviewed(true);
+            diag.setUrgent(false);
+            diag.setReviewed(false);
             diag.setDoctor(doctor);
             diag.setPatient(patient);
 
+            // Revisado no urgente
+            Diagnosis diag2 = new Diagnosis();
+            diag2.setImagePath("1.jpg");
+            diag2.setDate(LocalDate.of(2026, 01, 13));
+            diag2.setDescription("Grade 3 breast cancer.");
+            diag2.setUrgent(false);
+            diag2.setReviewed(true);
+            diag2.setDoctor(doctor);
+            diag2.setPatient(patient);
+
+            // Revisado urgente
+            Diagnosis diag3 = new Diagnosis();
+            diag3.setImagePath("1.jpg");
+            diag3.setDate(LocalDate.of(2026, 01, 13));
+            diag3.setDescription("Grade 3 breast cancer.");
+            diag3.setUrgent(true);
+            diag3.setReviewed(true);
+            diag3.setDoctor(doctor);
+            diag3.setPatient(patient);
+
+            // No revisado urgente
+            Diagnosis diag4 = new Diagnosis();
+            diag4.setImagePath("1.jpg");
+            diag4.setDate(LocalDate.of(2026, 01, 13));
+            diag4.setDescription("Grade 3 breast cancer.");
+            diag4.setUrgent(true);
+            diag4.setReviewed(false);
+            diag4.setDoctor(doctor);
+            diag4.setPatient(patient);
+
             diagnosisRepository.save(diag);
+            diagnosisRepository.save(diag2);
+            diagnosisRepository.save(diag3);
+            diagnosisRepository.save(diag4);
         }
     }
 }

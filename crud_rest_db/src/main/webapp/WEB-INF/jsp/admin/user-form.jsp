@@ -16,6 +16,11 @@
             <!-- TOP BAR -->
             <div class="header-admin">
                 <div class="header-left-admin">
+                    <!-- BACK TO DASHBOARD -->
+                    <a class="btn-back-icon" href="${pageContext.request.contextPath}/admin/dashboard"
+                        title="Back to Dashboard">
+                        <i class="bi bi-arrow-left-circle-fill"></i>
+                    </a>
                     <div class="admin-shield">
                         <i class="bi bi-shield-lock" aria-hidden="true"></i>
                     </div>

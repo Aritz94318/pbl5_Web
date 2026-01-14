@@ -228,6 +228,10 @@
                                 <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
                                 Simulation
                             </a>
+                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/diagnoses/new">
+                                <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                                Machine Simulation
+                            </a>
                         </div>
                     </div>
 

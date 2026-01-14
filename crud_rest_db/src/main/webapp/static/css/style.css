@@ -1,3 +1,64 @@
+.patient-card.ok-border {
+    border-left: 4px solid #218e53b0
+}
+
+.status-chip {
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #cfd7ff;
+    background: #e9f0ff;
+    color: #7f8bad;
+}
+
+.status-chip.positive {
+    background: #ffe9f0;
+    border-color: #ffb6d4;
+    color: #ff4b4b;
+}
+
+.status-chip.negative {
+    background: #e6f9ef;
+    border-color: #b8f0cf;
+    color: #218e53;
+}
+
+/* .status-chip {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+} */
+
+.status-chip.status-danger {
+    background: #ff4b4b1a;
+    border: 1px solid #ff4b4b;
+    color: #ff4b4b;
+}
+
+.status-chip.status-success {
+    background: #20a52217;
+    border: 1px solid #20a522;
+    color: #20a522;
+}
+
+.urgent-icon {
+    color: #d32f2f;
+    margin-left: 6px;
+}
+
+.completed-icon {
+    color: #2e7d32;
+    margin-left: 6px;
+}
+
+.btn-ghost:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateX(2px);
+    opacity: 1;
+}
+
 /* Background gradient */
 .bg-gradient {
     margin: 0;
@@ -111,6 +172,8 @@
 }
 
 .login-btn:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-1px);
     background: lightpink;
 }
 
@@ -457,27 +520,7 @@ body {
     gap: 10px;
 }
 
-.status-chip {
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid #cfd7ff;
-    background: #e9f0ff;
-    color: #7f8bad;
-}
 
-.status-chip.positive {
-    background: #ffe9f0;
-    border-color: #ffb6d4;
-    color: #ff4b4b;
-}
-
-.status-chip.negative {
-    background: #e6f9ef;
-    border-color: #b8f0cf;
-    color: #218e53;
-}
 
 /* ====== LAYOUT DETALLE ====== */
 

@@ -2,6 +2,7 @@ package edu.mondragon.we2.pinkAlert.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Diagnosis")
@@ -27,6 +28,9 @@ public class Diagnosis {
     @Column(name = "Reviewed", nullable = false)
     private boolean reviewed;
 
+    @Column(name = "Probability", nullable = false, precision = 10, scale = 8)
+    private BigDecimal probability = BigDecimal.ZERO;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DoctorID", nullable = false)
     private Doctor doctor;
@@ -46,6 +50,8 @@ public class Diagnosis {
         this.urgent = urgent;
         this.doctor = doctor;
         this.patient = patient;
+        this.probability = BigDecimal.ZERO;
+        this.reviewed = false;
     }
 
     // Getters & setters
@@ -89,6 +95,22 @@ public class Diagnosis {
         this.urgent = urgent;
     }
 
+    public boolean isReviewed() {
+        return reviewed;
+    }
+
+    public void setReviewed(boolean reviewed) {
+        this.reviewed = reviewed;
+    }
+
+    public BigDecimal getProbability() {
+        return probability;
+    }
+
+    public void setProbability(BigDecimal probability) {
+        this.probability = (probability != null) ? probability : BigDecimal.ZERO;
+    }
+
     public Doctor getDoctor() {
         return doctor;
     }
@@ -105,27 +127,10 @@ public class Diagnosis {
         this.patient = patient;
     }
 
-    public boolean isReviewed() {
-        return reviewed;
-    }
-
-    public void setReviewed(boolean reviewed) {
-        this.reviewed = reviewed;
-    }
-
     @Transient
     public String getStatus() {
-        // Simple example; you can refine it
-        if (description != null) {
-            String lower = description.toLowerCase();
-            if (lower.contains("false positive") || lower.contains("negative")) {
-                return "Negative";
-            }
-            if (lower.contains("cancer") || lower.contains("grade")) {
-                return "Positive";
-            }
-        }
-        return "Pending";
+        if (!reviewed)
+            return "Pending Review";
+        return urgent ? "Malignant" : "Benignant";
     }
-
 }
