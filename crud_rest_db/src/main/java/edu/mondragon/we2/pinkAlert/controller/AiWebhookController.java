@@ -21,8 +21,7 @@ public class AiWebhookController {
     @PutMapping("/{id}/ai-result")
     public ResponseEntity<Diagnosis> applyAiResult(
             @PathVariable Integer id,
-            @RequestBody AiResultRequest request
-    ) {
+            @RequestBody AiResultRequest request) {
         Diagnosis updated = aiResultService.applyAiResult(id, request);
         return ResponseEntity.ok(updated);
     }
