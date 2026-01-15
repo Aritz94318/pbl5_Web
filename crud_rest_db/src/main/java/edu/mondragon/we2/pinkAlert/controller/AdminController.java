@@ -318,7 +318,7 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-        @Transactional
+   
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
