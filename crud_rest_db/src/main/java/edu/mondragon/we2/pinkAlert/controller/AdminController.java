@@ -12,9 +12,14 @@ import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.transaction.Transactional;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -285,7 +290,63 @@ public class AdminController {
                 return "admin/role-list";
         }
 
+        // Provisional
+        @GetMapping("/simulation")
+        public String simulationPage(Model model) {
+                model.addAttribute("numPatients", 2);
+                model.addAttribute("numDoctors", 1);
+                model.addAttribute("numMachines", 2);
+                return "admin/simulation";
+        }
+
+        @PostMapping("/simulation/modify")
+        public ResponseEntity<Void>  modify(@RequestParam int numPatients,
+                        @RequestParam int numDoctors,
+                        @RequestParam int numMachines) {
+
+                RestTemplate rt = new RestTemplate();
+                String url = "http://localhost:8081/Simulation/modify"; // tu servidor de simulación
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+                // JSON que mandas
+                String json = """
+                                {
+                                        "numPatients": %d,
+                                        "numDoctors": %d,
+                                        "numMachines": %d
+                                }
+                                """.formatted(numPatients, numDoctors, numMachines);
+
+                HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+                rt.exchange(url, HttpMethod.PUT, request, String.class);
+
+                return ResponseEntity.ok().build();
+
+        }
+        
+        @PostMapping("/simulation/start")
+        public ResponseEntity<Void>  start() {
+
+                RestTemplate rt = new RestTemplate();
+                String url = "http://localhost:8081/Simulation/start"; // tu servidor de simulación
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+
+                HttpEntity<String> request = new HttpEntity<>("start", headers);
+
+                rt.exchange(url, HttpMethod.POST, request, String.class);
+
+                return ResponseEntity.ok().build();
+
+        }
+
         private static double round1(double v) {
                 return Math.round(v * 10.0) / 10.0;
         }
+
 }
