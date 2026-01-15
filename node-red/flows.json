@@ -605,8 +605,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2210,
-        "y": 680,
+        "x": 2200,
+        "y": 660,
         "wires": [
             [
                 "e0ddbb03bd6f7925"
@@ -673,30 +673,6 @@
         "wires": []
     },
     {
-        "id": "48baba4afce8b3a2",
-        "type": "http request",
-        "z": "4df3273b04370a1b",
-        "name": "",
-        "method": "POST",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/api/ai/result",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 950,
-        "y": 560,
-        "wires": [
-            [
-                "f6dfdc711facfdf3"
-            ]
-        ]
-    },
-    {
         "id": "f12fc64f88afbb6f",
         "type": "function",
         "z": "4df3273b04370a1b",
@@ -712,26 +688,9 @@
         "y": 560,
         "wires": [
             [
-                "48baba4afce8b3a2"
+                "493c658fe1794010"
             ]
         ]
-    },
-    {
-        "id": "f6dfdc711facfdf3",
-        "type": "debug",
-        "z": "4df3273b04370a1b",
-        "name": "Result (201: Full List)",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1160,
-        "y": 560,
-        "wires": []
     },
     {
         "id": "96030dc56f393d65",
@@ -860,7 +819,7 @@
         "type": "function",
         "z": "4df3273b04370a1b",
         "name": "function 5",
-        "func": "msg.payload = {\n    prediction: msg.payload.prediction,\n    prob_malignant: msg.payload.prob_malignant,\n    diagnosis_id: msg.payload.diagnosis_id\n};\n\nreturn msg;\n",
+        "func": "msg.path=  msg.payload.diagnosis_id;\nmsg.payload = {\n    prediction: msg.payload.prediction,\n    prob_malignant: msg.payload.prob_malignant,\n};\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -876,7 +835,48 @@
         ]
     },
     {
-        "id": "c2c7ad0a8273c3f4",
+        "id": "493c658fe1794010",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/diagnoses/{{path}}/ai-result",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 950,
+        "y": 580,
+        "wires": [
+            [
+                "f3efb5d97534e697"
+            ]
+        ]
+    },
+    {
+        "id": "f3efb5d97534e697",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "d9e6bd3bb0d8d7dd",
         "type": "global-config",
         "env": [],
         "modules": {
