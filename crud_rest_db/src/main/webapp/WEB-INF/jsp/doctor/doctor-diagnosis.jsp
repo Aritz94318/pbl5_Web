@@ -18,9 +18,37 @@
         <body>
             <div class="app-container">
 
-                <!-- HEADER -->
+                <div class="header-admin">
+                    <div class="header-left-admin">
+                        <!-- BACK TO DASHBOARD -->
+                        <a class="btn-back-icon"
+                            href="${pageContext.request.contextPath}/doctor/dashboard?date=${diagnosis.date}"
+                            title="Back to Dashboard">
+                            <i class="bi bi-arrow-left-circle-fill"></i>
+                        </a>
+                        <div class="admin-shield">
+                            <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h1>Mammography Review Portal</h1>
+                            <p>Diagnosis details</p>
+                        </div>
+                    </div>
+
+                    <div class="header-right">
+                        <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <!-- </div>
                 <header class="header">
                     <div class="header-left">
+                        <a class="btn-back-icon" href="${pageContext.request.contextPath}/doctor/dashboard?date=${diagnosis.date}"
+                            title="Back to Dashboard" style="margin-right:12px; color:#fff; text-decoration:none;">
+                            <i class="bi bi-arrow-left-circle-fill" style="font-size:1.6rem;"></i>
+                        </a>
                         <div class="admin-shield">
                             <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
                         </div>
@@ -39,7 +67,7 @@
                             Logout
                         </a>
                     </div>
-                </header>
+                </header> -->
 
                 <!-- PATIENT + DIAGNOSIS CARD -->
                 <section class="card">

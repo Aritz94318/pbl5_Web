@@ -22,22 +22,25 @@
         <body>
             <div class="app-container">
 
-                <!-- HEADER -->
-                <header class="header">
-                    <div class="header-left">
+                <div class="header-admin">
+                    <div class="header-left-admin">
+                        
                         <div class="admin-shield">
                             <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
                         </div>
-                        <h1>Mammography Review Portal</h1>
-                        <p>Breast Cancer Department</p>
+                        <div>
+                            <h1>Mammography Review Portal</h1>
+                            <p>Diagnosis details</p>
+                        </div>
                     </div>
+
                     <div class="header-right">
                         <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
                             <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
                             Logout
                         </a>
                     </div>
-                </header>
+                </div>
 
                 <!-- SELECT DATE -->
                 <section class="card card-dates">
