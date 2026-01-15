@@ -32,7 +32,7 @@ public class Diagnosis {
     private BigDecimal probability = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DoctorID", nullable = false)
+    @JoinColumn(name = "DoctorID", nullable = true)
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.LAZY)

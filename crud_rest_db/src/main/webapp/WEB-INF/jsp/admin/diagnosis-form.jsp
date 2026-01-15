@@ -78,13 +78,6 @@
                     font-size: .9rem;
                 }
 
-                .top-actions {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 12px;
-                }
-
                 .hint {
                     font-size: .92rem;
                     color: #666;
@@ -122,7 +115,7 @@
                     </div>
                     <div>
                         <h1>Mammography Machine Simulator</h1>
-                        <p>Create a Diagnosis by uploading a mammography image</p>
+                        <p>Create a Diagnosis by uploading a DICOM mammography</p>
                     </div>
                 </div>
 
@@ -135,11 +128,6 @@
 
             <div class="admin-wrap">
                 <div class="admin-card">
-
-                    <div class="top-actions">
-                        <h2 style="margin:0;"><i class="bi bi-file-earmark-plus"></i> New Diagnosis</h2>
-                        <span class="hint">Type a patient name to search, then upload an image.</span>
-                    </div>
 
                     <c:if test="${not empty error}">
                         <div class="error-box" style="margin-top:12px;">
@@ -155,15 +143,20 @@
                         </div>
                     </c:if>
 
-                    <form class="form-grid" style="margin-top:14px;" method="post"
+                    <form id="newDiagnosisForm" class="form-grid" style="margin-top:14px;" method="post"
                         action="${pageContext.request.contextPath}/admin/diagnoses" enctype="multipart/form-data">
 
+                        <!-- PATIENT SUGGEST -->
                         <div class="field suggest-wrap">
                             <label>Patient</label>
                             <input id="patientQuery" type="text" placeholder="Start typing a patient name..."
                                 autocomplete="off" required>
 
                             <input type="hidden" name="patientId" id="patientId" required>
+
+                            <!-- Optional: email will be used in the AI JSON -->
+                            <label style="margin-top:10px;">Email for notifications</label>
+                            <input id="email" name="email" type="email" placeholder="patient@example.com" required>
 
                             <div id="suggestList" class="suggest-list"></div>
 
@@ -172,31 +165,27 @@
                             </div>
                         </div>
 
-                        <div class="field">
-                            <label>Mammography Image</label>
-                            <input type="file" name="image" accept="image/*" required>
-                            <div class="hint" style="margin-top:6px;">
-                                Accepted: PNG/JPG/etc. (If you later want DICOM, we can add it.)
-                            </div>
+                        <!-- DICOM FILE -->
+                        <label>DICOM URL (Google Drive direct download)</label>
+                        <input type="url" name="dicomUrl"
+                            placeholder="https://drive.google.com/uc?export=download&id=..." required>
+                        <div class="hint" style="margin-top:6px;">
+                            Must be a public Google Drive download link (uc?export=download&id=...).
                         </div>
+
+                        <!-- <div class="field">
+                            <label>DICOM Mammography (.dcm)</label>
+                            <input id="dicomFile" type="file" name="image"
+                                accept=".dcm,application/dicom,application/octet-stream" required>
+                            <div class="hint" style="margin-top:6px;">
+                                Only .dcm files are allowed.
+                            </div>
+                        </div> -->
 
                         <div class="field">
                             <label>Date</label>
                             <input type="date" name="date" value="${today}" required>
                         </div>
-
-                        <!-- <div class="field">
-                            <label>Description</label>
-                            <textarea name="description" placeholder="Short description..." required></textarea>
-                        </div> -->
-
-                        <!-- <div class="field">
-                            <label>Urgent?</label>
-                            <select name="urgent">
-                                <option value="false" selected>No</option>
-                                <option value="true">Yes</option>
-                            </select>
-                        </div> -->
 
                         <div class="admin-tools" style="margin-top:4px;">
                             <button class="btn-admin btn-primary" type="submit">
@@ -213,12 +202,13 @@
 
             <script>
                 (function () {
-                    // Context path printed safely:
                     var ctx = "<c:out value='${pageContext.request.contextPath}'/>";
 
                     var input = document.getElementById("patientQuery");
                     var hiddenId = document.getElementById("patientId");
+                    var emailInput = document.getElementById("email");
                     var list = document.getElementById("suggestList");
+                    var fileInput = document.getElementById("dicomFile");
 
                     var lastQuery = "";
                     var debounceTimer = null;
@@ -249,7 +239,9 @@
                         var html = "";
                         for (var i = 0; i < items.length; i++) {
                             var p = items[i];
-                            html += '<div class="suggest-item" data-id="' + p.id + '">';
+                            // If your suggest endpoint can include email in the future: p.email
+                            var email = p.email ? String(p.email) : "";
+                            html += '<div class="suggest-item" data-id="' + p.id + '" data-email="' + escapeHtml(email) + '">';
                             html += '  <div>' + escapeHtml(p.label) + '</div>';
                             html += '  <div class="muted">PT-' + p.id + '</div>';
                             html += '</div>';
@@ -296,9 +288,14 @@
 
                         var id = item.getAttribute("data-id");
                         var labelText = (item.querySelector("div") ? item.querySelector("div").textContent : "");
+                        var email = item.getAttribute("data-email"); // may be empty
 
                         hiddenId.value = id;
                         input.value = labelText;
+
+                        // If suggest returns email, autopopulate it; otherwise user fills it.
+                        if (email) emailInput.value = email;
+
                         hideList();
                     });
 
@@ -306,7 +303,19 @@
                         if (!e.target.closest(".suggest-wrap")) hideList();
                     });
 
-                    var form = document.querySelector("form");
+                    // Client-side DICOM extension validation
+                    fileInput.addEventListener("change", function () {
+                        var f = fileInput.files && fileInput.files[0];
+                        if (!f) return;
+                        var name = (f.name || "").toLowerCase();
+                        if (!name.endsWith(".dcm")) {
+                            alert("Please upload a DICOM file (.dcm).");
+                            fileInput.value = "";
+                        }
+                    });
+
+                    // Prevent submit if patient not selected from dropdown
+                    var form = document.getElementById("newDiagnosisForm");
                     form.addEventListener("submit", function (e) {
                         if (!hiddenId.value) {
                             e.preventDefault();
