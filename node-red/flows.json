@@ -454,7 +454,7 @@
         "topic": "",
         "payload": "{\"diagnosis_id\":\"1\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1V27rtt1TmP6sFTRjdX4lijQr2b5_B3_Y\",\"topic\":\"Your diagnosis is done\"}",
         "payloadType": "json",
-        "x": 1010,
+        "x": 930,
         "y": 660,
         "wires": [
             [
@@ -680,7 +680,7 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "https://crud-rest-db-591094411846.europe-west1.run.app//diagnosis_result",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/api/ai/result",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -876,7 +876,7 @@
         ]
     },
     {
-        "id": "02ae3021356d994b",
+        "id": "c2c7ad0a8273c3f4",
         "type": "global-config",
         "env": [],
         "modules": {

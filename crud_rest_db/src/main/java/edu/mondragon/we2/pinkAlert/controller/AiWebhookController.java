@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/diagnoses")
 public class AiWebhookController {
 
     private final AiResultService aiResultService;
@@ -18,15 +18,12 @@ public class AiWebhookController {
         this.aiResultService = aiResultService;
     }
 
-    @PostMapping(value = "/result", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> receiveAiResult(@RequestBody AiResultRequest req) {
-        Diagnosis updated = aiResultService.applyAiResult(req);
-
-        // Return a small ack
-        return ResponseEntity.ok(Map.of(
-                "status", "ok",
-                "diagnosis_id", updated.getId(),
-                "urgent", updated.isUrgent(),
-                "probability", updated.getProbability().toPlainString()));
+    @PutMapping("/{id}/ai-result")
+    public ResponseEntity<Diagnosis> applyAiResult(
+            @PathVariable Integer id,
+            @RequestBody AiResultRequest request
+    ) {
+        Diagnosis updated = aiResultService.applyAiResult(id, request);
+        return ResponseEntity.ok(updated);
     }
 }
