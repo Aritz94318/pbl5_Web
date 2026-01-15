@@ -1,5 +1,6 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
+import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
 import edu.mondragon.we2.pinkAlert.model.Patient;
@@ -9,21 +10,22 @@ import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+import edu.mondragon.we2.pinkAlert.service.AiClientService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import java.io.InputStream;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,17 +41,20 @@ public class AdminController {
         private final DoctorRepository doctorRepository;
         private final UserRepository userRepository;
         private final UserService userService;
+        private final AiClientService aiClientService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
                         UserService userService,
-                        DoctorRepository doctorRepository) {
+                        DoctorRepository doctorRepository,
+                        AiClientService aiClientService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
+                this.aiClientService = aiClientService;
         }
 
         @GetMapping("/dashboard")
@@ -128,17 +133,15 @@ public class AdminController {
         }
 
         // ---------------------------
-        // USERS CRUD
+        // USERS CRUD (UNCHANGED)
         // ---------------------------
 
-        // View Users
         @GetMapping("/users")
         public String users(Model model) {
                 model.addAttribute("users", userService.findAll());
                 return "admin/users";
         }
 
-        // Add User (form)
         @GetMapping("/users/new")
         public String newUser(Model model) {
                 model.addAttribute("user", new User());
@@ -146,27 +149,23 @@ public class AdminController {
                 return "admin/user-form";
         }
 
-        // Create User (submit)
         @PostMapping("/users")
         public String createUser(@ModelAttribute("user") User user,
                         @RequestParam(name = "rawPassword", required = false) String rawPassword) {
 
                 if (rawPassword == null || rawPassword.isBlank()) {
-                        // PasswordHash is NOT NULL -> give default if form left empty
                         rawPassword = "123";
                 }
 
-                // Satisfy DB triggers: role must match FK fields
                 if (user.getRole() == Role.DOCTOR) {
                         Doctor doc = doctorRepository.save(new Doctor());
                         user.setDoctor(doc);
                         user.setPatient(null);
                 } else if (user.getRole() == Role.PATIENT) {
-                        // Needs birthDate (not in form) -> default for now
                         Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
-                        user.linkPatient(p); // sets BOTH sides
+                        user.linkPatient(p);
                         user.setDoctor(null);
-                } else { // ADMIN
+                } else {
                         user.unlinkDoctor();
                         user.unlinkPatient();
                 }
@@ -175,7 +174,6 @@ public class AdminController {
                 return "redirect:/admin/users";
         }
 
-        // Edit User (form)
         @GetMapping("/users/{id}/edit")
         public String editUser(@PathVariable Integer id, Model model) {
                 model.addAttribute("user", userService.get(id));
@@ -191,7 +189,6 @@ public class AdminController {
 
                 User existing = userService.get(id);
 
-                // basic fields
                 existing.setUsername(posted.getUsername());
                 existing.setEmail(posted.getEmail());
                 existing.setFullName(posted.getFullName());
@@ -199,49 +196,41 @@ public class AdminController {
                 Role oldRole = existing.getRole();
                 Role newRole = posted.getRole();
 
-                // password (optional)
                 if (rawPassword != null && !rawPassword.isBlank()) {
                         userService.setPassword(existing, rawPassword);
                 }
 
                 if (oldRole != newRole) {
 
-                        // -----------------------------
-                        // STEP 1: make row VALID (neutral)
-                        // -----------------------------
-                        existing.setRole(Role.ADMIN); // ADMIN allows both null per trigger
+                        existing.setRole(Role.ADMIN);
                         existing.setDoctor(null);
-                        existing.unlinkPatient(); // clears PatientID
-                        userRepository.saveAndFlush(existing); // ✅ trigger sees a valid state
+                        existing.unlinkPatient();
+                        userRepository.saveAndFlush(existing);
 
-                        // -----------------------------
-                        // STEP 2: apply new role + links
-                        // -----------------------------
                         if (newRole == Role.ADMIN) {
                                 existing.setRole(Role.ADMIN);
                                 existing.setDoctor(null);
                                 existing.unlinkPatient();
                         } else if (newRole == Role.DOCTOR) {
                                 existing.setRole(Role.DOCTOR);
-                                existing.unlinkPatient(); // must not have PatientID
+                                existing.unlinkPatient();
                                 if (existing.getDoctor() == null) {
                                         Doctor doc = doctorRepository.save(new Doctor());
-                                        existing.setDoctor(doc); // must have DoctorID
+                                        existing.setDoctor(doc);
                                 }
                         } else if (newRole == Role.PATIENT) {
                                 existing.setRole(Role.PATIENT);
-                                existing.setDoctor(null); // must not have DoctorID
+                                existing.setDoctor(null);
                                 if (existing.getPatient() == null) {
                                         Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
-                                        existing.linkPatient(p); // must have PatientID
+                                        existing.linkPatient(p);
                                 }
                         }
 
-                        userRepository.saveAndFlush(existing); // ✅ trigger sees correct final state
+                        userRepository.saveAndFlush(existing);
                         return "redirect:/admin/users";
                 }
 
-                // no role change -> normal save
                 userRepository.save(existing);
                 return "redirect:/admin/users";
         }
@@ -251,23 +240,18 @@ public class AdminController {
         public String deleteUser(@PathVariable Integer id) {
                 User u = userService.get(id);
 
-                // keep references if you want to delete linked rows afterwards
                 Doctor doctorToDelete = u.getDoctor();
                 Patient patientToDelete = u.getPatient();
 
-                // STEP 1: make the Users row valid for the trigger
-                u.setRole(Role.ADMIN); // ADMIN requires both null -> valid neutral state
+                u.setRole(Role.ADMIN);
                 u.setDoctor(null);
                 u.unlinkPatient();
 
-                userRepository.saveAndFlush(u); // ✅ trigger sees valid state
+                userRepository.saveAndFlush(u);
 
-                // STEP 2: delete the user
                 userRepository.delete(u);
                 userRepository.flush();
 
-                // OPTIONAL: delete orphaned doctor/patient rows
-                // (do this only if you really want to remove them)
                 if (doctorToDelete != null) {
                         doctorRepository.delete(doctorToDelete);
                 }
@@ -278,7 +262,6 @@ public class AdminController {
                 return "redirect:/admin/users";
         }
 
-        // Manage Doctors
         @GetMapping("/doctors")
         public String doctors(Model model) {
                 model.addAttribute("users", userService.findByRole(Role.DOCTOR));
@@ -286,7 +269,6 @@ public class AdminController {
                 return "admin/role-list";
         }
 
-        // Manage Patients
         @GetMapping("/patients")
         public String patients(Model model) {
                 model.addAttribute("users", userService.findByRole(Role.PATIENT));
@@ -305,15 +287,9 @@ public class AdminController {
         @GetMapping("/diagnoses/new")
         public String newDiagnosisForm(Model model) {
                 model.addAttribute("today", LocalDate.now().toString());
-                return "admin/diagnosis-form"; // /WEB-INF/jsp/admin/diagnosis-form.jsp
+                return "admin/diagnosis-form";
         }
 
-        /**
-         * Autocomplete endpoint
-         * Returns: [{id: 3, label: "Ekaitz Aramburu"}, ...]
-         *
-         * Uses: patient.user.fullName if available, else "Patient PT-x"
-         */
         @GetMapping(value = "/patients/suggest", produces = MediaType.APPLICATION_JSON_VALUE)
         @ResponseBody
         public List<Map<String, Object>> suggestPatients(@RequestParam(name = "q", required = false) String q) {
@@ -321,8 +297,6 @@ public class AdminController {
                 if (query.isBlank())
                         return List.of();
 
-                // simplest: load all and filter in memory (OK for demo)
-                // later: create a real repository query for performance
                 List<Patient> all = patientRepository.findAll();
 
                 return all.stream()
@@ -347,11 +321,11 @@ public class AdminController {
         @Transactional
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
-                        @RequestParam("image") MultipartFile image,
+                        @RequestParam("dicomUrl") String dicomUrl,
                         @RequestParam("date") String dateStr,
-                        @RequestParam("description") String description,
-                        @RequestParam(name = "urgent", defaultValue = "false") boolean urgent,
-                        Model model) throws IOException {
+                        @RequestParam(name = "description", required = false) String description,
+                        @RequestParam(name = "email", required = false) String email,
+                        Model model) {
 
                 if (patientId == null) {
                         model.addAttribute("error", "You must select a patient.");
@@ -362,41 +336,93 @@ public class AdminController {
                 Patient patient = patientRepository.findById(patientId)
                                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
 
-                if (image == null || image.isEmpty()) {
-                        model.addAttribute("error", "Please upload an image.");
+                if (dicomUrl == null || dicomUrl.isBlank()) {
+                        model.addAttribute("error", "Please provide a DICOM URL.");
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
 
-                // Save file to /static/uploads (or any folder you want)
-                // Recommended: store outside resources folder in real apps.
-                String uploadsDir = "uploads";
-                Path uploadPath = Paths.get("src/main/resources/static/" + uploadsDir);
-                Files.createDirectories(uploadPath);
+                // Optional: enforce Drive direct-download format
+                if (!dicomUrl.contains("drive.google.com") || !dicomUrl.contains("uc?export=download&id=")) {
+                        model.addAttribute("error",
+                                        "Please use a public Google Drive direct-download URL: uc?export=download&id=FILE_ID");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
 
-                String original = image.getOriginalFilename();
-                String safeName = (original == null ? "mammography" : original).replaceAll("[^a-zA-Z0-9._-]", "_");
-                String filename = System.currentTimeMillis() + "_" + safeName;
+                // Email fallback: if not provided, try to use patient user email
+                if (email == null || email.isBlank()) {
+                        if (patient.getUser() != null && patient.getUser().getEmail() != null) {
+                                email = patient.getUser().getEmail();
+                        }
+                }
+                if (email == null || email.isBlank()) {
+                        model.addAttribute("error",
+                                        "Email is required (add it in the form or link patient user email).");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
 
-                Path filePath = uploadPath.resolve(filename);
-                Files.write(filePath, image.getBytes());
-
-                Diagnosis diag = new Diagnosis();
-                diag.setPatient(patient);
-                diag.setDoctor(null); // machine simulator: no doctor assigned
-                diag.setReviewed(false); // new diagnosis starts pending
-                diag.setUrgent(urgent);
-                diag.setDescription(description);
+                if (description == null || description.trim().isEmpty()) {
+                        description = "Pending AI analysis"; // or "" if you prefer, but keep NOT NULL
+                }
 
                 LocalDate date = LocalDate.parse(dateStr);
+
+                // Create Diagnosis
+                Diagnosis diag = new Diagnosis();
+                diag.setPatient(patient);
+                diag.setDoctor(null);
+                diag.setReviewed(false);
+                diag.setUrgent(false); // AI will update this later via webhook
+                diag.setDescription(description);
                 diag.setDate(date);
 
-                // store relative path (so you can render it later)
-                diag.setImagePath(uploadsDir + "/" + filename);
+                // Store the DICOM URL in ImagePath (or make a dedicated column)
+                diag.setImagePath(dicomUrl);
 
-                diagnosisRepository.save(diag);
+                diagnosisRepository.saveAndFlush(diag);
+
+                // Call AI
+                AiPredictUrlRequest payload = new AiPredictUrlRequest(
+                                String.valueOf(diag.getId()),
+                                email,
+                                dicomUrl);
+                aiClientService.sendPredictUrl(payload);
 
                 return "redirect:/admin/dashboard";
         }
 
+        private static String getBaseUrl(HttpServletRequest request) {
+                // Example: https://yourdomain.com (no trailing slash)
+                String scheme = request.getScheme();
+                String host = request.getServerName();
+                int port = request.getServerPort();
+
+                boolean isDefaultPort = (scheme.equals("http") && port == 80)
+                                || (scheme.equals("https") && port == 443);
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(scheme).append("://").append(host);
+                if (!isDefaultPort)
+                        sb.append(":").append(port);
+
+                // include contextPath if you deploy under a subpath
+                sb.append(request.getContextPath());
+
+                return sb.toString();
+        }
+
+        private static boolean looksLikeDicom(MultipartFile file) {
+                try (InputStream is = file.getInputStream()) {
+                        byte[] header = is.readNBytes(132);
+                        if (header.length < 132)
+                                return false;
+
+                        // Standard DICOM: "DICM" at offset 128
+                        return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' && header[131] == 'M';
+                } catch (Exception e) {
+                        return false;
+                }
+        }
 }
