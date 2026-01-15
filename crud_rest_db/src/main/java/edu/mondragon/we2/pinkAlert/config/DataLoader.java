@@ -38,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
+        // ========================
         // USERS
         // ========================
         if (userRepository.count() == 0) {
@@ -78,7 +79,7 @@ public class DataLoader implements CommandLineRunner {
             userService.createUser(adminUser, "admin123");
         }
  
-
+        
         // ========================
         // DIAGNOSES
         // ========================
