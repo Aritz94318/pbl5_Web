@@ -11,6 +11,7 @@ import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -42,19 +43,21 @@ public class AdminController {
         private final UserRepository userRepository;
         private final UserService userService;
         private final AiClientService aiClientService;
+        private final DiagnosisService diagnosisService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService) {
+                        AiClientService aiClientService, DiagnosisService diagnosisService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
+                this.diagnosisService = diagnosisService;
         }
 
         @GetMapping("/dashboard")
@@ -318,7 +321,7 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-   
+
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
@@ -381,7 +384,7 @@ public class AdminController {
                 // Store the DICOM URL in ImagePath (or make a dedicated column)
                 diag.setImagePath(dicomUrl);
 
-                diagnosisRepository.saveAndFlush(diag);
+                diagnosisService.save(diag);
 
                 // Call AI
                 AiPredictUrlRequest payload = new AiPredictUrlRequest(

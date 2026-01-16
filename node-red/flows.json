@@ -20,8 +20,8 @@
         "tls": true,
         "name": "",
         "dname": "fdg",
-        "x": 1130,
-        "y": 340,
+        "x": 1310,
+        "y": 320,
         "wires": []
     },
     {
@@ -158,8 +158,8 @@
         "topic": "",
         "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
         "payloadType": "json",
-        "x": 630,
-        "y": 780,
+        "x": 1810,
+        "y": 300,
         "wires": [
             [
                 "510af55024bf0382"
@@ -182,8 +182,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1050,
-        "y": 780,
+        "x": 2260,
+        "y": 300,
         "wires": [
             [
                 "7cbd01fb859148c7"
@@ -203,8 +203,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1380,
-        "y": 780,
+        "x": 2590,
+        "y": 300,
         "wires": []
     },
     {
@@ -219,8 +219,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 830,
-        "y": 780,
+        "x": 2040,
+        "y": 300,
         "wires": [
             [
                 "8583f688915e556d"
@@ -276,8 +276,8 @@
         "topic": "",
         "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
         "payloadType": "json",
-        "x": 750,
-        "y": 920,
+        "x": 1960,
+        "y": 440,
         "wires": [
             [
                 "45ef66080536485b"
@@ -300,8 +300,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1170,
-        "y": 920,
+        "x": 2380,
+        "y": 440,
         "wires": [
             [
                 "751d9113fa7bac78"
@@ -321,8 +321,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1500,
-        "y": 920,
+        "x": 2710,
+        "y": 440,
         "wires": []
     },
     {
@@ -337,8 +337,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 950,
-        "y": 920,
+        "x": 2160,
+        "y": 440,
         "wires": [
             [
                 "82dddb0e15382e8f"
@@ -375,8 +375,8 @@
         "tls": true,
         "name": "",
         "dname": "fdg",
-        "x": 1330.8125,
-        "y": 373.8125,
+        "x": 1470,
+        "y": 340,
         "wires": []
     },
     {
@@ -454,8 +454,8 @@
         "topic": "",
         "payload": "{\"diagnosis_id\":\"1\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1V27rtt1TmP6sFTRjdX4lijQr2b5_B3_Y\",\"topic\":\"Your diagnosis is done\"}",
         "payloadType": "json",
-        "x": 930,
-        "y": 660,
+        "x": 2140,
+        "y": 180,
         "wires": [
             [
                 "b4e36fb621eba55a"
@@ -478,8 +478,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1350,
-        "y": 660,
+        "x": 2560,
+        "y": 180,
         "wires": [
             [
                 "fa19b47c0c5225ad"
@@ -499,8 +499,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1680,
-        "y": 660,
+        "x": 2890,
+        "y": 180,
         "wires": []
     },
     {
@@ -515,8 +515,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1130,
-        "y": 660,
+        "x": 2340,
+        "y": 180,
         "wires": [
             [
                 "1379da5a80a0f148"
@@ -544,8 +544,8 @@
         "topic": "",
         "payload": "{\"diagnosis_id\":\"2\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1dJ8PjR06e9PiVKSbURbDXv-tWEYvRoSr\"}",
         "payloadType": "json",
-        "x": 2010,
-        "y": 680,
+        "x": 2110,
+        "y": 840,
         "wires": [
             [
                 "4e92fac7482758cf"
@@ -568,8 +568,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2430,
-        "y": 680,
+        "x": 2490,
+        "y": 700,
         "wires": [
             [
                 "c6beb89fe4cd1749"
@@ -605,8 +605,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2200,
-        "y": 660,
+        "x": 2440,
+        "y": 820,
         "wires": [
             [
                 "e0ddbb03bd6f7925"
@@ -713,8 +713,8 @@
         "topic": "",
         "payload": "{\"numPatients\": 2, \"numDoctors\": 1, \"numMachines\": 2 }",
         "payloadType": "json",
-        "x": 1930,
-        "y": 860,
+        "x": 2360,
+        "y": 1060,
         "wires": [
             [
                 "931a03adf6dd3a0c"
@@ -737,8 +737,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2350,
-        "y": 860,
+        "x": 2780,
+        "y": 1060,
         "wires": [
             [
                 "5de25010ca5d254c"
@@ -758,8 +758,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2680,
-        "y": 860,
+        "x": 2840,
+        "y": 920,
         "wires": []
     },
     {
@@ -774,8 +774,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2130,
-        "y": 860,
+        "x": 2560,
+        "y": 1060,
         "wires": [
             [
                 "d76c318192d05d84"
@@ -850,8 +850,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 950,
-        "y": 580,
+        "x": 970,
+        "y": 560,
         "wires": [
             [
                 "f3efb5d97534e697"
@@ -871,12 +871,256 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1140,
-        "y": 580,
+        "x": 1220,
+        "y": 560,
         "wires": []
     },
     {
-        "id": "d9e6bd3bb0d8d7dd",
+        "id": "6a45301da478796d",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 490,
+        "y": 860,
+        "wires": [
+            [
+                "2fbb6227e4a07fd8"
+            ]
+        ]
+    },
+    {
+        "id": "59b9d6066cb5cc86",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/api/sim/events",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 860,
+        "wires": [
+            [
+                "6a45301da478796d"
+            ]
+        ]
+    },
+    {
+        "id": "2fbb6227e4a07fd8",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "b24d569b7080da44",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"diagnosis_id\":\"2\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1dJ8PjR06e9PiVKSbURbDXv-tWEYvRoSr\"}",
+        "payloadType": "json",
+        "x": 1250,
+        "y": 980,
+        "wires": [
+            [
+                "5e218a7edf4b278b"
+            ]
+        ]
+    },
+    {
+        "id": "5e218a7edf4b278b",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/start",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1430,
+        "y": 980,
+        "wires": [
+            [
+                "f8ea4161653eb03b"
+            ]
+        ]
+    },
+    {
+        "id": "f8ea4161653eb03b",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1650,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "1e56f3059ffb223c",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 450,
+        "y": 1100,
+        "wires": [
+            [
+                "bc23bb11d2ec7448"
+            ]
+        ]
+    },
+    {
+        "id": "2299f3f0620d0819",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/api/sim/final",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 1100,
+        "wires": [
+            [
+                "1e56f3059ffb223c"
+            ]
+        ]
+    },
+    {
+        "id": "bc23bb11d2ec7448",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "72184e758e6c120b",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict-url",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1230,
+        "y": 720,
+        "wires": [
+            [
+                "dcd6cff24b4b7e41"
+            ]
+        ]
+    },
+    {
+        "id": "959066283e6c43df",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/predict-url",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 980,
+        "y": 720,
+        "wires": [
+            [
+                "72184e758e6c120b",
+                "e59efb1076400de4"
+            ]
+        ]
+    },
+    {
+        "id": "e59efb1076400de4",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "dcd6cff24b4b7e41",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1330,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "cc409f73cccf9a21",
         "type": "global-config",
         "env": [],
         "modules": {
