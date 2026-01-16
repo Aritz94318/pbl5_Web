@@ -168,18 +168,18 @@
                         <!-- DICOM FILE -->
 
                         <div class="field">
-                            <input type="url" name="dicomUrls"
+                            <input type="url" name="dicomUrl"
                                 placeholder="https://drive.google.com/uc?export=download&id=..." required>
 
-                            <input type="url" name="dicomUrls2"
+                            <input type="url" name="dicomUrl2"
                                 placeholder="https://drive.google.com/uc?export=download&id=..." required
                                 style="margin-top:8px;">
 
-                            <input type="url" name="dicomUrls3"
+                            <input type="url" name="dicomUrl3"
                                 placeholder="https://drive.google.com/uc?export=download&id=..." required
                                 style="margin-top:8px;">
 
-                            <input type="url" name="dicomUrls4"
+                            <input type="url" name="dicomUrl4"
                                 placeholder="https://drive.google.com/uc?export=download&id=..." required
                                 style="margin-top:8px;">
                         </div>
