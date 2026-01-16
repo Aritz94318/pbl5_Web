@@ -92,17 +92,17 @@ public class DataLoader implements CommandLineRunner {
                     new Patient(LocalDate.of(2004, 10, 28)));
 
             // Create the linked User row for that patient
-            User patientUser2 = new User();
-            patientUser2.setEmail("patient2@pinkalert.com");
-            patientUser2.setUsername("patient2");
-            patientUser2.setFullName("Ekaitz Aramburu");
-            patientUser2.setRole(Role.PATIENT);
-            patientUser2.setDoctor(null);
+           // User patientUser2 = new User();
+           // patientUser2.setEmail("patient2@pinkalert.com");
+           // patientUser2.setUsername("patient2");
+           // patientUser2.setFullName("Ekaitz Aramburu");
+           // patientUser2.setRole(Role.PATIENT);
+           // patientUser2.setDoctor(null);
 
             // ✅ LINK BOTH SIDES HERE
-            patientUser2.linkPatient(patient);
+           // patientUser2.linkPatient(patient);
 
-            userService.createUser(patientUser2, "123");
+           // userService.createUser(patientUser2, "123");
 
             // Diagnosis now points to a fully linked patient
 
