@@ -13,13 +13,13 @@ public class AiPredictUrlRequest {
     @JsonProperty("dicom_url")
     private String dicom_url;
 
-    @JsonProperty("dicom_url")
+    @JsonProperty("dicom_url2")
     private String dicom_url2;
 
-    @JsonProperty("dicom_url")
+    @JsonProperty("dicom_url3")
     private String dicom_url3;
 
-    @JsonProperty("dicom_url")
+    @JsonProperty("dicom_url4")
     private String dicom_url4;
 
     public AiPredictUrlRequest() {
@@ -78,7 +78,7 @@ public class AiPredictUrlRequest {
 
 
       public String getDicom_url4() {
-        return dicom_url;
+        return dicom_url4;
     }
 
     public void setDicom_url4(String dicom_url4) {
