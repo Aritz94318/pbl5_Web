@@ -276,7 +276,7 @@
         "topic": "",
         "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
         "payloadType": "json",
-        "x": 1960,
+        "x": 1970,
         "y": 440,
         "wires": [
             [
@@ -404,13 +404,13 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 370,
-        "y": 560,
+        "x": 350,
+        "y": 580,
         "wires": [
             [
                 "0bd9637b6f5b9ae8",
-                "4ad79bbad1644f4f",
-                "7de60871414f010e"
+                "7de60871414f010e",
+                "4ad79bbad1644f4f"
             ]
         ]
     },
@@ -425,11 +425,12 @@
         "skipBodyParsing": true,
         "swaggerDoc": "",
         "x": 170,
-        "y": 560,
+        "y": 580,
         "wires": [
             [
                 "1068dd7d1f207a41",
-                "bae911627f6dfdf0"
+                "bae911627f6dfdf0",
+                "aea0c1cd647099aa"
             ]
         ]
     },
@@ -685,7 +686,7 @@
         "finalize": "",
         "libs": [],
         "x": 760,
-        "y": 560,
+        "y": 600,
         "wires": [
             [
                 "493c658fe1794010"
@@ -783,38 +784,6 @@
         ]
     },
     {
-        "id": "4ad79bbad1644f4f",
-        "type": "debug",
-        "z": "4df3273b04370a1b",
-        "name": "debug 2",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 460,
-        "y": 680,
-        "wires": []
-    },
-    {
-        "id": "bae911627f6dfdf0",
-        "type": "debug",
-        "z": "4df3273b04370a1b",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 260,
-        "y": 680,
-        "wires": []
-    },
-    {
         "id": "7de60871414f010e",
         "type": "function",
         "z": "4df3273b04370a1b",
@@ -826,8 +795,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 600,
-        "y": 560,
+        "x": 560,
+        "y": 580,
         "wires": [
             [
                 "f12fc64f88afbb6f"
@@ -840,7 +809,7 @@
         "z": "4df3273b04370a1b",
         "name": "",
         "method": "PUT",
-        "ret": "obj",
+        "ret": "txt",
         "paytoqs": "ignore",
         "url": "https://crud-rest-db-591094411846.europe-west1.run.app/diagnoses/{{path}}/ai-result",
         "tls": "",
@@ -850,8 +819,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 970,
-        "y": 560,
+        "x": 1010,
+        "y": 500,
         "wires": [
             [
                 "f3efb5d97534e697"
@@ -960,7 +929,7 @@
         "z": "4df3273b04370a1b",
         "name": "",
         "method": "POST",
-        "ret": "obj",
+        "ret": "txt",
         "paytoqs": "ignore",
         "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/start",
         "tls": "",
@@ -1078,12 +1047,13 @@
         "upload": false,
         "skipBodyParsing": true,
         "swaggerDoc": "",
-        "x": 980,
+        "x": 940,
         "y": 720,
         "wires": [
             [
                 "72184e758e6c120b",
-                "e59efb1076400de4"
+                "e59efb1076400de4",
+                "cd4108bc8f781a1e"
             ]
         ]
     },
@@ -1115,12 +1085,66 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1330,
-        "y": 680,
+        "x": 1440,
+        "y": 600,
         "wires": []
     },
     {
-        "id": "cc409f73cccf9a21",
+        "id": "4ad79bbad1644f4f",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "bae911627f6dfdf0",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 260,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "cd4108bc8f781a1e",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1100,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "aea0c1cd647099aa",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 314.8125305175781,
+        "y": 646.8125,
+        "wires": []
+    },
+    {
+        "id": "df7c0ed5b3330e99",
         "type": "global-config",
         "env": [],
         "modules": {

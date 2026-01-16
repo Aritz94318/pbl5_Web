@@ -308,6 +308,9 @@ public class AdminController {
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
+                        @RequestParam("dicomUrl2") String dicomUrl2,
+                        @RequestParam("dicomUrl3") String dicomUrl3,
+                        @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
                         @RequestParam(name = "email", required = false) String email,
@@ -322,16 +325,24 @@ public class AdminController {
                 Patient patient = patientRepository.findById(patientId)
                                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
 
-                if (dicomUrl == null || dicomUrl.isBlank()) {
-                        model.addAttribute("error", "Please provide a DICOM URL.");
+                List<String> dicomUrls = List.of(
+                                dicomUrl,
+                                dicomUrl2,
+                                dicomUrl3,
+                                dicomUrl4);
+
+                if (dicomUrls.stream().anyMatch(u -> u == null || u.isBlank())) {
+                        model.addAttribute("error", "All 4 DICOM URLs are required.");
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
 
-                // Optional: enforce Drive direct-download format
-                if (!dicomUrl.contains("drive.google.com") || !dicomUrl.contains("uc?export=download&id=")) {
+                boolean invalidDriveUrl = dicomUrls.stream().anyMatch(u -> !u.contains("drive.google.com") ||
+                                !u.contains("uc?export=download&id="));
+
+                if (invalidDriveUrl) {
                         model.addAttribute("error",
-                                        "Please use a public Google Drive direct-download URL: uc?export=download&id=FILE_ID");
+                                        "All DICOM URLs must be public Google Drive direct-download links (uc?export=download&id=...).");
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
@@ -366,11 +377,13 @@ public class AdminController {
 
                 // Store the DICOM URL in ImagePath (or make a dedicated column)
                 diag.setImagePath(dicomUrl);
-
+                diag.setImage2Path(dicomUrl2);
+                diag.setImage3Path(dicomUrl3);
+                diag.setImage4Path(dicomUrl4);
                 diagnosisService.save(diag);
 
                 // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()),email,dicomUrl);
+                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()), email, dicomUrl,dicomUrl2,dicomUrl3,dicomUrl4);
 
                 aiClientService.sendPredictUrl(payload);
 

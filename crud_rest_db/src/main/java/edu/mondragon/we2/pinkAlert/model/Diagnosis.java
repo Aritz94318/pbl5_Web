@@ -16,6 +16,14 @@ public class Diagnosis {
     @Column(name = "ImagePath", nullable = false, length = 100)
     private String imagePath;
 
+        @Column(name = "ImagePath", nullable = false, length = 100)
+    private String image2Path;
+        @Column(name = "ImagePath", nullable = false, length = 100)
+    private String image3Path;
+    @Column(name = "ImagePath", nullable = false, length = 100)
+    private String image4Path;
+
+
     @Column(name = "Date", nullable = false)
     private LocalDate date;
 
@@ -42,9 +50,12 @@ public class Diagnosis {
     public Diagnosis() {
     }
 
-    public Diagnosis(String imagePath, LocalDate date, String description,
+    public Diagnosis(String imagePath,String image2Path,String image3Path,String image4Path, LocalDate date, String description,
             boolean urgent, Doctor doctor, Patient patient) {
         this.imagePath = imagePath;
+        this.imagePath = image2Path;
+   this.imagePath = image3Path;
+      this.imagePath = image4Path;
         this.date = date;
         this.description = description;
         this.urgent = urgent;
@@ -70,6 +81,32 @@ public class Diagnosis {
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
+ public String getImage2Path() {
+        return image2Path;
+    }
+
+    public void setImage2Path(String image2Path) {
+        this.image2Path = image2Path;
+    }
+
+     public String getImage3Path() {
+        return image3Path;
+    }
+
+    public void setImage3Path(String image3Path) {
+        this.image3Path = image3Path;
+    }
+
+
+
+     public String getImage4Path() {
+        return image4Path;
+    }
+
+    public void setImage4Path(String image4Path) {
+        this.image4Path = image4Path;
+    }
+
 
     public LocalDate getDate() {
         return date;
