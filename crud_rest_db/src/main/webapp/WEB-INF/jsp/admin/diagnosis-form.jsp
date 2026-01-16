@@ -144,7 +144,7 @@
                     </c:if>
 
                     <form id="newDiagnosisForm" class="form-grid" style="margin-top:14px;" method="post"
-                        action="${pageContext.request.contextPath}/admin/diagnoses" enctype="multipart/form-data">
+                        action="${pageContext.request.contextPath}/admin/diagnoses">
 
                         <!-- PATIENT SUGGEST -->
                         <div class="field suggest-wrap">
@@ -200,7 +200,7 @@
                 </div>
             </div>
 
-            
+
             <script>
                 (function () {
                     var ctx = "<c:out value='${pageContext.request.contextPath}'/>";

@@ -370,10 +370,8 @@ public class AdminController {
                 diagnosisService.save(diag);
 
                 // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(
-                                String.valueOf(diag.getId()),
-                                email,
-                                dicomUrl);
+                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()),email,dicomUrl);
+
                 aiClientService.sendPredictUrl(payload);
 
                 return "redirect:/admin/dashboard";
