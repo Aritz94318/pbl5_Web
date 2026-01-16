@@ -12,6 +12,7 @@ import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -44,13 +45,15 @@ public class AdminController {
         private final UserService userService;
         private final AiClientService aiClientService;
         private final DiagnosisService diagnosisService;
+        private final DoctorService doctorService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService, DiagnosisService diagnosisService) {
+                        AiClientService aiClientService, DiagnosisService diagnosisService,
+                        DoctorService doctorService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
@@ -58,6 +61,7 @@ public class AdminController {
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
                 this.diagnosisService = diagnosisService;
+                this.doctorService = doctorService;
         }
 
         @GetMapping("/dashboard")
@@ -184,7 +188,6 @@ public class AdminController {
                 return "admin/user-form";
         }
 
-        @Transactional
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
                         @ModelAttribute("user") User posted,
@@ -233,34 +236,14 @@ public class AdminController {
                         userRepository.saveAndFlush(existing);
                         return "redirect:/admin/users";
                 }
+                userService.save(existing);
 
-                userRepository.save(existing);
                 return "redirect:/admin/users";
         }
 
-        @Transactional
         @PostMapping("/users/{id}/delete")
         public String deleteUser(@PathVariable Integer id) {
-                User u = userService.get(id);
-
-                Doctor doctorToDelete = u.getDoctor();
-                Patient patientToDelete = u.getPatient();
-
-                u.setRole(Role.ADMIN);
-                u.setDoctor(null);
-                u.unlinkPatient();
-
-                userRepository.saveAndFlush(u);
-
-                userRepository.delete(u);
-                userRepository.flush();
-
-                if (doctorToDelete != null) {
-                        doctorRepository.delete(doctorToDelete);
-                }
-                if (patientToDelete != null) {
-                        patientRepository.delete(patientToDelete);
-                }
+                userService.deleteUserCompletely(id);
 
                 return "redirect:/admin/users";
         }
