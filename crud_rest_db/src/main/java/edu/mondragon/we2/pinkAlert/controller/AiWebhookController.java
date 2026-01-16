@@ -19,10 +19,17 @@ public class AiWebhookController {
     }
 
     @PutMapping("/{id}/ai-result")
-    public ResponseEntity<Diagnosis> applyAiResult(
+    public ResponseEntity<Void> applyAiResult(
             @PathVariable Integer id,
             @RequestBody AiResultRequest request) {
-        Diagnosis updated = aiResultService.applyAiResult(id, request);
-        return ResponseEntity.ok(updated);
+
+        try {
+            aiResultService.applyAiResult(id, request);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
+
 }
