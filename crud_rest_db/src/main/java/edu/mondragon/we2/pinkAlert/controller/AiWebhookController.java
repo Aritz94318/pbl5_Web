@@ -18,7 +18,8 @@ public class AiWebhookController {
         this.aiResultService = aiResultService;
     }
 
-    @PutMapping("/{id}/ai-result")
+    @PutMapping(value="/{id}/ai-result",consumes = { "application/json", "application/xml" }, produces = {
+            "application/json", "application/xml" })
     public ResponseEntity<Void> applyAiResult(
             @PathVariable Integer id,
             @RequestBody AiResultRequest request) {
