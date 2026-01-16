@@ -21,7 +21,7 @@ public class AiClientService {
 
         try {
             ResponseEntity<String> resp = restTemplate.postForEntity(AI_PREDICT_URL, entity, String.class);
-            return resp.getBody();
+            return "redirect:/admin/dashboard";
         } catch (RestClientException e) {
             throw new RuntimeException("Failed to call AI service at " + AI_PREDICT_URL + ": " + e.getMessage(), e);
         }
