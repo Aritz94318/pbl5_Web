@@ -18,9 +18,9 @@ public class Diagnosis {
 
     @Column(name = "Image2Path", nullable = false, length = 100)
     private String image2Path;
-    @Column(name = "Image2Path", nullable = false, length = 100)
+    @Column(name = "Image3Path", nullable = false, length = 100)
     private String image3Path;
-    @Column(name = "Image2Path", nullable = false, length = 100)
+    @Column(name = "Image4Path", nullable = false, length = 100)
     private String image4Path;
 
     @Column(name = "Date", nullable = false)
