@@ -65,7 +65,6 @@ public class Diagnosis {
         this.reviewed = false;
     }
 
-    // Getters & setters
     public Integer getId() {
         return id;
     }
