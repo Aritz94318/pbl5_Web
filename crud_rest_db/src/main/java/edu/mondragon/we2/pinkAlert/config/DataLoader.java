@@ -109,6 +109,9 @@ public class DataLoader implements CommandLineRunner {
             // No revisado no urgente
             Diagnosis diag = new Diagnosis();
             diag.setImagePath("1.jpg");
+            diag.setImage2Path("1.jpg");
+            diag.setImage3Path("1.jpg");
+            diag.setImage4Path("1.jpg");
             diag.setDate(LocalDate.of(2026, 01, 13));
             diag.setDescription("Grade 3 breast cancer.");
             diag.setUrgent(false);
@@ -119,6 +122,10 @@ public class DataLoader implements CommandLineRunner {
             // Revisado no urgente
             Diagnosis diag2 = new Diagnosis();
             diag2.setImagePath("1.jpg");
+            diag.setImage2Path("1.jpg");
+            diag.setImage3Path("1.jpg");
+            diag.setImage4Path("1.jpg");
+
             diag2.setDate(LocalDate.of(2026, 01, 13));
             diag2.setDescription("Grade 3 breast cancer.");
             diag2.setUrgent(false);
@@ -129,6 +136,10 @@ public class DataLoader implements CommandLineRunner {
             // Revisado urgente
             Diagnosis diag3 = new Diagnosis();
             diag3.setImagePath("1.jpg");
+            diag.setImage2Path("1.jpg");
+            diag.setImage3Path("1.jpg");
+            diag.setImage4Path("1.jpg");
+
             diag3.setDate(LocalDate.of(2026, 01, 13));
             diag3.setDescription("Grade 3 breast cancer.");
             diag3.setUrgent(true);
@@ -139,6 +150,9 @@ public class DataLoader implements CommandLineRunner {
             // No revisado urgente
             Diagnosis diag4 = new Diagnosis();
             diag4.setImagePath("1.jpg");
+            diag.setImage2Path("1.jpg");
+            diag.setImage3Path("1.jpg");
+            diag.setImage4Path("1.jpg");
             diag4.setDate(LocalDate.of(2026, 01, 13));
             diag4.setDescription("Grade 3 breast cancer.");
             diag4.setUrgent(true);
