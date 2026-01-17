@@ -1021,7 +1021,7 @@
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict-url",
+        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict4-url",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -1144,11 +1144,11 @@
         "wires": []
     },
     {
-        "id": "df7c0ed5b3330e99",
+        "id": "01acd6828df94f17",
         "type": "global-config",
         "env": [],
         "modules": {
-            "node-red-node-email": "5.0.5"
+            "node-red-node-email": "5.1.0"
         }
     }
 ]
