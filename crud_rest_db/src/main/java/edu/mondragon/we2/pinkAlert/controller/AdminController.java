@@ -285,7 +285,7 @@ public class AdminController {
                         @RequestParam int numMachines) {
 
                 RestTemplate rt = new RestTemplate();
-                String url = "http://localhost:8081/Simulation/modify"; // tu servidor de simulación
+                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de simulación
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
@@ -311,7 +311,7 @@ public class AdminController {
         public ResponseEntity<Void>  start() {
 
                 RestTemplate rt = new RestTemplate();
-                String url = "http://localhost:8081/Simulation/start"; // tu servidor de simulación
+                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de simulación
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
