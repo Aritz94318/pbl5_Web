@@ -845,22 +845,6 @@
         "wires": []
     },
     {
-        "id": "6a45301da478796d",
-        "type": "json",
-        "z": "4df3273b04370a1b",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 490,
-        "y": 860,
-        "wires": [
-            [
-                "2fbb6227e4a07fd8"
-            ]
-        ]
-    },
-    {
         "id": "59b9d6066cb5cc86",
         "type": "http in",
         "z": "4df3273b04370a1b",
@@ -874,7 +858,9 @@
         "y": 860,
         "wires": [
             [
-                "6a45301da478796d"
+                "2a4db04f46aee86d",
+                "7f30656c5873ed88",
+                "7097951ebce3d2e6"
             ]
         ]
     },
@@ -964,22 +950,6 @@
         "wires": []
     },
     {
-        "id": "1e56f3059ffb223c",
-        "type": "json",
-        "z": "4df3273b04370a1b",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 450,
-        "y": 1100,
-        "wires": [
-            [
-                "bc23bb11d2ec7448"
-            ]
-        ]
-    },
-    {
         "id": "2299f3f0620d0819",
         "type": "http in",
         "z": "4df3273b04370a1b",
@@ -989,11 +959,12 @@
         "upload": false,
         "skipBodyParsing": true,
         "swaggerDoc": "",
-        "x": 190,
-        "y": 1100,
+        "x": 170,
+        "y": 1060,
         "wires": [
             [
-                "1e56f3059ffb223c"
+                "2ed9ae5608c92a55",
+                "9b887627278fbebc"
             ]
         ]
     },
@@ -1009,8 +980,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 840,
-        "y": 1080,
+        "x": 700,
+        "y": 1180,
         "wires": []
     },
     {
@@ -1144,7 +1115,349 @@
         "wires": []
     },
     {
-        "id": "01acd6828df94f17",
+        "id": "89b6ce0dcee1133d",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/start",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1410,
+        "y": 1220,
+        "wires": [
+            [
+                "153cb39df39987c1"
+            ]
+        ]
+    },
+    {
+        "id": "abc8046a7c60671b",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/Simulation/start",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 980,
+        "y": 1220,
+        "wires": [
+            [
+                "89b6ce0dcee1133d",
+                "8f909981c04ce1c5",
+                "a9fdd07bf67ca2f1",
+                "e4a31a07ad1e7ec9"
+            ]
+        ]
+    },
+    {
+        "id": "8f909981c04ce1c5",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "a9fdd07bf67ca2f1",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1280,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "a6d886072d80f736",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "PUT",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/modify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1370,
+        "y": 1500,
+        "wires": [
+            [
+                "718885ad429228fb"
+            ]
+        ]
+    },
+    {
+        "id": "87d5f4aef0793c2f",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/Simulation/modify",
+        "method": "put",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 1100,
+        "y": 1500,
+        "wires": [
+            [
+                "1f5b803bcff0f8a4",
+                "9c64b274789a3ea6",
+                "e7f01f0cf3f64f2c",
+                "a6d886072d80f736"
+            ]
+        ]
+    },
+    {
+        "id": "1f5b803bcff0f8a4",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "9c64b274789a3ea6",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1240,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "153cb39df39987c1",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1570,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "718885ad429228fb",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1590,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "e4a31a07ad1e7ec9",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1030,
+        "y": 1080,
+        "wires": [
+            [
+                "4d7df5f66ebaa2be"
+            ]
+        ]
+    },
+    {
+        "id": "4d7df5f66ebaa2be",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 13",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1190,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "e7f01f0cf3f64f2c",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 820,
+        "y": 1360,
+        "wires": [
+            [
+                "ba70d9a735bc8a8a"
+            ]
+        ]
+    },
+    {
+        "id": "ba70d9a735bc8a8a",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 14",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "2a4db04f46aee86d",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/api/sim/events",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 610,
+        "y": 840,
+        "wires": [
+            [
+                "2fbb6227e4a07fd8"
+            ]
+        ]
+    },
+    {
+        "id": "2ed9ae5608c92a55",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/diagnoses/api/sim/final",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 430,
+        "y": 1040,
+        "wires": [
+            [
+                "bc23bb11d2ec7448"
+            ]
+        ]
+    },
+    {
+        "id": "7f30656c5873ed88",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 460,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "9b887627278fbebc",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 320,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "7097951ebce3d2e6",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 380,
+        "y": 980,
+        "wires": [
+            [
+                "5cb64b786713e17a"
+            ]
+        ]
+    },
+    {
+        "id": "5cb64b786713e17a",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 15",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "05a164fde61c025d",
         "type": "global-config",
         "env": [],
         "modules": {

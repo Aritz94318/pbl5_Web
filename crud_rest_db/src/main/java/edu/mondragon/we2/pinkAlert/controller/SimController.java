@@ -10,7 +10,7 @@ import edu.mondragon.we2.pinkAlert.model.SimEvent;
 import edu.mondragon.we2.pinkAlert.model.SimTime;
 import edu.mondragon.we2.pinkAlert.service.SimulationService;
 
-@Controller
+@RestController
 public class SimController {
 
     private final SimulationService hub;
