@@ -59,4 +59,9 @@ public class NotificationService {
 
     }
 
+    protected InputStream getSchemaStream() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSchemaStream'");
+    }
+
 }

@@ -2,6 +2,8 @@ package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.model.Doctor;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,11 +33,16 @@ public class DoctorService {
 
     public Doctor update(Integer id, Doctor updated) {
         Doctor existing = findById(id);
-        //existing.setName(updated.getName());
+        // existing.setName(updated.getName());
         return doctorRepository.save(existing);
     }
 
     public void delete(Integer id) {
         doctorRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void delete(Doctor doctor) {
+        doctorRepository.delete(doctor);
     }
 }

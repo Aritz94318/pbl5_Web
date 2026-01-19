@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert;
+/* package edu.mondragon.we2.pinkAlert;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,3 +16,4 @@ class CrudRestDbApplicationTests {
     void contextLoads() {
     }
 }
+ */

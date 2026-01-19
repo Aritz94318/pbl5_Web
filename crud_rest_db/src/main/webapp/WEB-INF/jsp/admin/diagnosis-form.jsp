@@ -144,7 +144,7 @@
                     </c:if>
 
                     <form id="newDiagnosisForm" class="form-grid" style="margin-top:14px;" method="post"
-                        action="${pageContext.request.contextPath}/admin/diagnoses" enctype="multipart/form-data">
+                        action="${pageContext.request.contextPath}/admin/diagnoses">
 
                         <!-- PATIENT SUGGEST -->
                         <div class="field suggest-wrap">
@@ -166,13 +166,27 @@
                         </div>
 
                         <!-- DICOM FILE -->
-                        <label>DICOM URL (Google Drive direct download)</label>
-                        <input type="url" name="dicomUrl"
-                            placeholder="https://drive.google.com/uc?export=download&id=..." required>
-                        <div class="hint" style="margin-top:6px;">
-                            Must be a public Google Drive download link (uc?export=download&id=...).
+
+                        <div class="field">
+                            <input type="url" name="dicomUrl"
+                                placeholder="https://drive.google.com/uc?export=download&id=..." required>
+
+                            <input type="url" name="dicomUrl2"
+                                placeholder="https://drive.google.com/uc?export=download&id=..." required
+                                style="margin-top:8px;">
+
+                            <input type="url" name="dicomUrl3"
+                                placeholder="https://drive.google.com/uc?export=download&id=..." required
+                                style="margin-top:8px;">
+
+                            <input type="url" name="dicomUrl4"
+                                placeholder="https://drive.google.com/uc?export=download&id=..." required
+                                style="margin-top:8px;">
                         </div>
 
+                        <div class="hint" style="margin-top:6px;">
+                            Must be public Google Drive direct download links (uc?export=download&id=...).
+                        </div>
                         <!-- <div class="field">
                             <label>DICOM Mammography (.dcm)</label>
                             <input id="dicomFile" type="file" name="image"
@@ -182,6 +196,7 @@
                             </div>
                         </div> -->
 
+                        
                         <div class="field">
                             <label>Date</label>
                             <input type="date" name="date" value="${today}" required>
@@ -199,6 +214,7 @@
                     </form>
                 </div>
             </div>
+
 
             <script>
                 (function () {
