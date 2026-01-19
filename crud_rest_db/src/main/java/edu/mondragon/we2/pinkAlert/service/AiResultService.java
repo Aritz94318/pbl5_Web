@@ -19,10 +19,8 @@ public class AiResultService {
     }
 
     @Transactional
-    public Diagnosis applyAiResult(AiResultRequest req) {
-        if (req.getDiagnosisId() == null) {
-            throw new IllegalArgumentException("diagnosis_id is required");
-        }
+    public Diagnosis applyAiResult(Integer diagnosisId, AiResultRequest req) {
+
         if (req.getPrediction() == null || req.getPrediction().isBlank()) {
             throw new IllegalArgumentException("prediction is required");
         }
@@ -30,27 +28,25 @@ public class AiResultService {
             throw new IllegalArgumentException("prob_malignant is required");
         }
 
-        Diagnosis d = diagnosisRepository.findById(req.getDiagnosisId())
-                .orElseThrow(() -> new IllegalArgumentException("Diagnosis not found: " + req.getDiagnosisId()));
+        Diagnosis d = diagnosisRepository.findById(diagnosisId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Diagnosis not found: " + diagnosisId)
+                );
 
-        // Map prediction -> urgent boolean
         boolean urgent = "MALIGNANT".equalsIgnoreCase(req.getPrediction().trim());
-        // If you ever receive "BENIGN" explicitly, urgent becomes false (good)
 
-        // Normalize probability to DECIMAL(10,8)
         BigDecimal prob = req.getProbMalignant()
                 .setScale(8, RoundingMode.HALF_UP);
 
-        // Optional sanity clamp (0..1)
-        if (prob.compareTo(BigDecimal.ZERO) < 0)
+        if (prob.compareTo(BigDecimal.ZERO) < 0) {
             prob = BigDecimal.ZERO;
-        if (prob.compareTo(BigDecimal.ONE) > 0)
+        }
+        if (prob.compareTo(BigDecimal.ONE) > 0) {
             prob = BigDecimal.ONE;
+        }
 
         d.setUrgent(urgent);
         d.setProbability(prob);
-
-        // Usually AI result means "not reviewed yet" (doctor still must review)
         d.setReviewed(false);
 
         return diagnosisRepository.save(d);

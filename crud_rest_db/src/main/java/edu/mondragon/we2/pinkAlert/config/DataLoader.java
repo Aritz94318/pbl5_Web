@@ -78,7 +78,8 @@ public class DataLoader implements CommandLineRunner {
             adminUser.setPatient(null);
             userService.createUser(adminUser, "admin123");
         }
-
+ 
+        
         // ========================
         // DIAGNOSES
         // ========================
@@ -91,23 +92,26 @@ public class DataLoader implements CommandLineRunner {
                     new Patient(LocalDate.of(2004, 10, 28)));
 
             // Create the linked User row for that patient
-            User patientUser2 = new User();
+           User patientUser2 = new User();
             patientUser2.setEmail("patient2@pinkalert.com");
-            patientUser2.setUsername("patient2");
-            patientUser2.setFullName("Ekaitz Aramburu");
+           patientUser2.setUsername("patient2");
+           patientUser2.setFullName("Ekaitz Aramburu");
             patientUser2.setRole(Role.PATIENT);
-            patientUser2.setDoctor(null);
+           patientUser2.setDoctor(null);
 
-            // ✅ LINK BOTH SIDES HERE
+             
             patientUser2.linkPatient(patient);
 
             userService.createUser(patientUser2, "123");
 
-            // Diagnosis now points to a fully linked patient
+            
 
             // No revisado no urgente
             Diagnosis diag = new Diagnosis();
             diag.setImagePath("1.jpg");
+            diag.setImage2Path("1.jpg");
+            diag.setImage3Path("1.jpg");
+            diag.setImage4Path("1.jpg");
             diag.setDate(LocalDate.of(2026, 01, 13));
             diag.setDescription("Grade 3 breast cancer.");
             diag.setUrgent(false);
@@ -118,6 +122,10 @@ public class DataLoader implements CommandLineRunner {
             // Revisado no urgente
             Diagnosis diag2 = new Diagnosis();
             diag2.setImagePath("1.jpg");
+            diag2.setImage2Path("1.jpg");
+            diag2.setImage3Path("1.jpg");
+            diag2.setImage4Path("1.jpg");
+
             diag2.setDate(LocalDate.of(2026, 01, 13));
             diag2.setDescription("Grade 3 breast cancer.");
             diag2.setUrgent(false);
@@ -128,6 +136,10 @@ public class DataLoader implements CommandLineRunner {
             // Revisado urgente
             Diagnosis diag3 = new Diagnosis();
             diag3.setImagePath("1.jpg");
+            diag3.setImage2Path("1.jpg");
+            diag3.setImage3Path("1.jpg");
+            diag3.setImage4Path("1.jpg");
+
             diag3.setDate(LocalDate.of(2026, 01, 13));
             diag3.setDescription("Grade 3 breast cancer.");
             diag3.setUrgent(true);
@@ -138,6 +150,9 @@ public class DataLoader implements CommandLineRunner {
             // No revisado urgente
             Diagnosis diag4 = new Diagnosis();
             diag4.setImagePath("1.jpg");
+            diag4.setImage2Path("1.jpg");
+            diag4.setImage3Path("1.jpg");
+            diag4.setImage4Path("1.jpg");
             diag4.setDate(LocalDate.of(2026, 01, 13));
             diag4.setDescription("Grade 3 breast cancer.");
             diag4.setUrgent(true);

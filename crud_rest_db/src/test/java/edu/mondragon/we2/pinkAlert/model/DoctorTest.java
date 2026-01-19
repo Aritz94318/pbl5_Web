@@ -1,33 +1,62 @@
-// package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkAlert.model;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
 
-// import org.junit.jupiter.api.Test;
+class DoctorTest {
 
+    private Doctor doctor;
 
-// import java.util.List;
+    @BeforeEach
+    void setUp() {
+        doctor = new Doctor();
+    }
 
-// import static org.junit.jupiter.api.Assertions.*;
+    @Test
+    void testDefaultConstructor() {
+        assertNotNull(doctor);
+        assertNull(doctor.getId());
+        assertNull(doctor.getDiagnoses());
+    }
 
-// class DoctorTest {
+    @Test
+    void testSetterAndGetters() {
+        Integer id = 1;
+        List<Diagnosis> diagnoses = new ArrayList<>();
+        
+        // Add some test diagnoses
+        Diagnosis diagnosis1 = new Diagnosis();
+        Diagnosis diagnosis2 = new Diagnosis();
+        diagnoses.add(diagnosis1);
+        diagnoses.add(diagnosis2);
 
-//     @Test
-//     void testGettersAndSetters() {
-//         Doctor doctor = new Doctor();
+        doctor.setId(id);
+        doctor.setDiagnoses(diagnoses);
 
-//         doctor.setId(1);
-//         doctor.setName("Dr Smith");
+        assertEquals(id, doctor.getId());
+        assertEquals(diagnoses, doctor.getDiagnoses());
+        assertEquals(2, doctor.getDiagnoses().size());
+    }
 
-//         assertEquals(1, doctor.getId());
-//         assertEquals("Dr Smith", doctor.getName());
-//     }
+    @Test
+    void testSetDiagnosesWithNull() {
+        doctor.setDiagnoses(null);
+        assertNull(doctor.getDiagnoses());
+    }
 
-//     @Test
-//     void testDiagnosesList() {
-//         Doctor doctor = new Doctor("Dr Test");
+    @Test
+    void testSetDiagnosesWithEmptyList() {
+        doctor.setDiagnoses(new ArrayList<>());
+        assertNotNull(doctor.getDiagnoses());
+        assertTrue(doctor.getDiagnoses().isEmpty());
+    }
 
-//         Diagnosis diagnosis = new Diagnosis();
-//         doctor.setDiagnoses(List.of(diagnosis));
-
-//         assertEquals(1, doctor.getDiagnoses().size());
-//     }
-// }
+    @Test
+    void testSetterWithNullId() {
+        doctor.setId(null);
+        assertNull(doctor.getId());
+    }
+}

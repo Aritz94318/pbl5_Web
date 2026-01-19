@@ -2,6 +2,8 @@ package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,5 +40,10 @@ public class PatientService {
 
     public void delete(Integer id) {
         patientRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void delete( Patient patient) {
+        patientRepository.delete(patient);
     }
 }
