@@ -3,7 +3,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
@@ -12,8 +11,6 @@ import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -27,22 +24,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Controller
 @RequestMapping("/admin")
@@ -54,24 +48,19 @@ public class AdminController {
         private final UserRepository userRepository;
         private final UserService userService;
         private final AiClientService aiClientService;
-        private final DiagnosisService diagnosisService;
-        private final DoctorService doctorService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService, DiagnosisService diagnosisService,
-                        DoctorService doctorService) {
+                        AiClientService aiClientService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
-                this.diagnosisService = diagnosisService;
-                this.doctorService = doctorService;
         }
 
         @GetMapping("/dashboard")
@@ -146,7 +135,7 @@ public class AdminController {
                 model.addAttribute("timelineCompletedJs",
                                 completes.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-                return "admin-dashboard";
+                return "admin/admin-dashboard";
         }
 
         // ---------------------------
@@ -198,6 +187,7 @@ public class AdminController {
                 return "admin/user-form";
         }
 
+        @Transactional
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
                         @ModelAttribute("user") User posted,
@@ -246,14 +236,34 @@ public class AdminController {
                         userRepository.saveAndFlush(existing);
                         return "redirect:/admin/users";
                 }
-                userService.save(existing);
 
+                userRepository.save(existing);
                 return "redirect:/admin/users";
         }
 
+        @Transactional
         @PostMapping("/users/{id}/delete")
         public String deleteUser(@PathVariable Integer id) {
-                userService.deleteUserCompletely(id);
+                User u = userService.get(id);
+
+                Doctor doctorToDelete = u.getDoctor();
+                Patient patientToDelete = u.getPatient();
+
+                u.setRole(Role.ADMIN);
+                u.setDoctor(null);
+                u.unlinkPatient();
+
+                userRepository.saveAndFlush(u);
+
+                userRepository.delete(u);
+                userRepository.flush();
+
+                if (doctorToDelete != null) {
+                        doctorRepository.delete(doctorToDelete);
+                }
+                if (patientToDelete != null) {
+                        patientRepository.delete(patientToDelete);
+                }
 
                 return "redirect:/admin/users";
         }
@@ -270,58 +280,6 @@ public class AdminController {
                 model.addAttribute("users", userService.findByRole(Role.PATIENT));
                 model.addAttribute("title", "Patients");
                 return "admin/role-list";
-        }
-
-        // Provisional
-        @GetMapping("/simulation")
-        public String simulationPage(Model model) {
-                model.addAttribute("numPatients", 2);
-                model.addAttribute("numDoctors", 1);
-                model.addAttribute("numMachines", 2);
-                return "admin/simulation";
-        }
-
-        @PostMapping("/simulation/modify")
-        public ResponseEntity<Void> modify(@RequestParam int numPatients,
-                        @RequestParam int numDoctors,
-                        @RequestParam int numMachines) {
-
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
-                                                                                                     // simulación
-
-                GlobalUpdateRequest body;
-                body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
-
-                try {
-                        rt.exchange(url, HttpMethod.PUT, entity, Void.class);
-                        return ResponseEntity.ok().build();
-                } catch (RestClientException e) {
-                        throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(),
-                                        e);
-                }
-        }
-
-        @PostMapping("/simulation/start")
-        public ResponseEntity<Void> start() {
-
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
-                                                                                                    // simulación
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-                HttpEntity<String> request = new HttpEntity<>("start", headers);
-
-                rt.exchange(url, HttpMethod.POST, request, String.class);
-
-                return ResponseEntity.ok().build();
-
         }
 
         private static double round1(double v) {
@@ -366,7 +324,7 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-
+        @Transactional
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
@@ -378,79 +336,123 @@ public class AdminController {
                         @RequestParam(name = "email", required = false) String email,
                         Model model) {
 
-                if (patientId == null) {
-                        model.addAttribute("error", "You must select a patient.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                Patient patient = patientRepository.findById(patientId)
-                                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
-
-                List<String> dicomUrls = List.of(
-                                dicomUrl,
-                                dicomUrl2,
-                                dicomUrl3,
-                                dicomUrl4);
-
-                if (dicomUrls.stream().anyMatch(u -> u == null || u.isBlank())) {
-                        model.addAttribute("error", "All 4 DICOM URLs are required.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                boolean invalidDriveUrl = dicomUrls.stream().anyMatch(u -> !u.contains("drive.google.com") ||
-                                !u.contains("uc?export=download&id="));
-
-                if (invalidDriveUrl) {
-                        model.addAttribute("error",
-                                        "All DICOM URLs must be public Google Drive direct-download links (uc?export=download&id=...).");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                // Email fallback: if not provided, try to use patient user email
-                if (email == null || email.isBlank()) {
-                        if (patient.getUser() != null && patient.getUser().getEmail() != null) {
-                                email = patient.getUser().getEmail();
+                try {
+                        if (patientId == null) {
+                                model.addAttribute("error", "You must select a patient.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
                         }
-                }
-                if (email == null || email.isBlank()) {
-                        model.addAttribute("error",
-                                        "Email is required (add it in the form or link patient user email).");
+
+                        Patient patient = patientRepository.findById(patientId)
+                                        .orElseThrow(() -> new IllegalArgumentException(
+                                                        "Patient not found: " + patientId));
+
+                        List<String> dicomUrls = List.of(dicomUrl, dicomUrl2, dicomUrl3, dicomUrl4);
+
+                        if (dicomUrls.stream().anyMatch(u -> u == null || u.isBlank())) {
+                                model.addAttribute("error", "All 4 DICOM URLs are required.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
+
+                        boolean invalidDriveUrl = dicomUrls.stream().anyMatch(u -> !u.contains("drive.google.com") ||
+                                        !u.contains("uc?export=download&id="));
+                        if (invalidDriveUrl) {
+                                model.addAttribute("error",
+                                                "All DICOM URLs must be public Google Drive direct-download links (uc?export=download&id=...).");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
+
+                        // Email fallback
+                        if (email == null || email.isBlank()) {
+                                if (patient.getUser() != null && patient.getUser().getEmail() != null) {
+                                        email = patient.getUser().getEmail();
+                                }
+                        }
+                        if (email == null || email.isBlank()) {
+                                model.addAttribute("error", "Email is required.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
+
+                        if (description == null || description.trim().isEmpty()) {
+                                description = "Pending AI analysis";
+                        }
+
+                        LocalDate date = LocalDate.parse(dateStr);
+
+                        // ✅ Assign doctor (NOT NULL issue fix)
+                        Doctor doctor = doctorRepository.findAll().stream().findFirst()
+                                        .orElseThrow(() -> new IllegalStateException(
+                                                        "No doctors exist. Create one doctor first."));
+
+                        // 1) Create Diagnosis
+                        Diagnosis diag = new Diagnosis();
+                        diag.setPatient(patient);
+                        diag.setDoctor(doctor);
+                        diag.setReviewed(false);
+                        diag.setUrgent(false);
+                        diag.setDescription(description);
+                        diag.setDate(date);
+
+                        // store original DICOM URLs
+                        diag.setImagePath(dicomUrl);
+                        diag.setImage2Path(dicomUrl2);
+                        diag.setImage3Path(dicomUrl3);
+                        diag.setImage4Path(dicomUrl4);
+
+                        // save first to get ID
+                        diag = diagnosisRepository.saveAndFlush(diag);
+
+                        // 2) Download + convert 4 previews into /static/previews/
+                        String previewsDir = "previews";
+                        Path previewsPath = Paths.get("src/main/resources/static/" + previewsDir);
+                        Files.createDirectories(previewsPath);
+
+                        // local temp dicom folder
+                        Path tmpDicomPath = Paths.get("tmp/dicom");
+                        Files.createDirectories(tmpDicomPath);
+
+                        // For i=1..4
+                        List<String> urls = dicomUrls;
+                        for (int i = 1; i <= 4; i++) {
+                                String u = urls.get(i - 1);
+
+                                Path dicomFile = tmpDicomPath.resolve("diag_" + diag.getId() + "_" + i + ".dcm");
+                                downloadToFile(u, dicomFile);
+
+                                File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
+                                edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
+                                                outPng);
+
+                                String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
+
+                                // store into preview columns
+                                if (i == 1)
+                                        diag.setPreviewPath(publicPreviewPath);
+                                if (i == 2)
+                                        diag.setPreview2Path(publicPreviewPath);
+                                if (i == 3)
+                                        diag.setPreview3Path(publicPreviewPath);
+                                if (i == 4)
+                                        diag.setPreview4Path(publicPreviewPath);
+                        }
+
+                        diagnosisRepository.save(diag);
+
+                        // 3) Call AI (you already do this)
+                        AiPredictUrlRequest payload = new AiPredictUrlRequest(
+                                        String.valueOf(diag.getId()), email, dicomUrl, dicomUrl2, dicomUrl3, dicomUrl4);
+                        aiClientService.sendPredictUrl(payload);
+
+                        return "redirect:/admin/dashboard";
+
+                } catch (Exception e) {
+                        model.addAttribute("error", "Failed to create diagnosis: " + e.getMessage());
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
-
-                if (description == null || description.trim().isEmpty()) {
-                        description = "Pending AI analysis"; // or "" if you prefer, but keep NOT NULL
-                }
-
-                LocalDate date = LocalDate.parse(dateStr);
-
-                // Create Diagnosis
-                Diagnosis diag = new Diagnosis();
-                diag.setPatient(patient);
-                diag.setDoctor(null);
-                diag.setReviewed(false);
-                diag.setUrgent(false); // AI will update this later via webhook
-                diag.setDescription(description);
-                diag.setDate(date);
-
-                // Store the DICOM URL in ImagePath (or make a dedicated column)
-                diag.setImagePath(dicomUrl);
-                diag.setImage2Path(dicomUrl2);
-                diag.setImage3Path(dicomUrl3);
-                diag.setImage4Path(dicomUrl4);
-                diagnosisService.save(diag);
-
-                // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()), email, dicomUrl,
-                                dicomUrl2, dicomUrl3, dicomUrl4);
-
-                aiClientService.sendPredictUrl(payload);
-
-                return "redirect:/admin/dashboard";
         }
 
         private static String getBaseUrl(HttpServletRequest request) {
@@ -485,4 +487,27 @@ public class AdminController {
                         return false;
                 }
         }
+
+        private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
+                Files.createDirectories(target.getParent());
+
+                HttpClient client = HttpClient.newBuilder()
+                                .followRedirects(HttpClient.Redirect.ALWAYS)
+                                .build();
+
+                HttpRequest req = HttpRequest.newBuilder()
+                                .uri(URI.create(url))
+                                .GET()
+                                .build();
+
+                HttpResponse<byte[]> resp = client.send(req, HttpResponse.BodyHandlers.ofByteArray());
+
+                if (resp.statusCode() < 200 || resp.statusCode() >= 300) {
+                        throw new IOException("Failed to download " + url + " status=" + resp.statusCode());
+                }
+
+                Files.write(target, resp.body());
+                return target;
+        }
+
 }
