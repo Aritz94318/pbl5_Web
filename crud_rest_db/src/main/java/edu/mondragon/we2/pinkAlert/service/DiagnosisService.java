@@ -6,8 +6,6 @@ import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import jakarta.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -101,11 +99,4 @@ public class DiagnosisService {
 
         return diagnosisRepository.save(diagnosis);
     }
-
-
-   @Transactional
-    public Diagnosis save(Diagnosis diagnosis) {
-        return diagnosisRepository.saveAndFlush(diagnosis);
-    }
-
 }

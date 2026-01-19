@@ -10,7 +10,7 @@
 
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
-
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/doctor-diagnosis.css">
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         </head>
@@ -20,15 +20,16 @@
 
                 <div class="header-admin">
                     <div class="header-left-admin">
-                        <!-- BACK TO DASHBOARD -->
                         <a class="btn-back-icon"
                             href="${pageContext.request.contextPath}/doctor/dashboard?date=${diagnosis.date}"
                             title="Back to Dashboard">
                             <i class="bi bi-arrow-left-circle-fill"></i>
                         </a>
+
                         <div class="admin-shield">
                             <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
                         </div>
+
                         <div>
                             <h1>Mammography Review Portal</h1>
                             <p>Diagnosis details</p>
@@ -42,160 +43,355 @@
                         </a>
                     </div>
                 </div>
-                <!-- </div>
-                <header class="header">
-                    <div class="header-left">
-                        <a class="btn-back-icon" href="${pageContext.request.contextPath}/doctor/dashboard?date=${diagnosis.date}"
-                            title="Back to Dashboard" style="margin-right:12px; color:#fff; text-decoration:none;">
-                            <i class="bi bi-arrow-left-circle-fill" style="font-size:1.6rem;"></i>
-                        </a>
-                        <div class="admin-shield">
-                            <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
-                        </div>
-                        <h1>Mammography Review Portal</h1>
-                        <p>Diagnosis details</p>
-                    </div>
 
-                    <div class="header-right" style="display:flex; gap:10px;">
-                        <a class="btn-ghost"
-                            href="${pageContext.request.contextPath}/doctor/dashboard?date=${diagnosis.date}">
-                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                            Back
-                        </a>
-                        <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
-                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                            Logout
-                        </a>
-                    </div>
-                </header> -->
+                <div class="page-wrap">
+                    <div class="content-grid">
 
-                <!-- PATIENT + DIAGNOSIS CARD -->
-                <section class="card">
-                    <div class="screening-header-top">
+                        <!-- LEFT COLUMN -->
+                        <!-- LEFT COLUMN -->
                         <div>
-                            <div class="text-main">
-                                ${patient.user.fullName} (PT-${patient.id})
-                            </div>
-                            <div class="text-meta">
-                                ${patient.age} years old • Birthdate: ${patient.birthDate}
-                            </div>
-                        </div>
-
-                        <div class="legend">
-                            <c:if test="${diagnosis.urgent}">
-                                <div class="legend-item">
-                                    <span class="legend-dot urgent"></span> Urgent
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <i class="bi bi-person"></i>
+                                    <span>Patient Information</span>
                                 </div>
-                            </c:if>
-                            <c:if test="${diagnosis.reviewed}">
-                                <div class="legend-item">
-                                    <span class="legend-dot completed"></span> Reviewed
+
+                                <div class="info-row">
+                                    <div class="info-label">Full Name</div>
+                                    <div class="info-value">${patient.user.fullName}</div>
                                 </div>
-                            </c:if>
-                        </div>
-                    </div>
 
-                    <div style="margin-top:14px; display:flex; gap:14px; flex-wrap:wrap;">
-                        <!-- Patient info -->
-                        <div class="card" style="flex: 1; min-width: 280px;">
-                            <div class="card-title">Patient information</div>
-                            <div class="text-meta" style="margin-top:10px; line-height:1.8;">
-                                <div><strong>Full name:</strong> ${patient.user.fullName}</div>
-                                <div><strong>Email:</strong> ${patient.user.email}</div>
-                                <div><strong>Username:</strong> ${patient.user.username}</div>
-                                <div><strong>Patient ID:</strong> PT-${patient.id}</div>
-                                <div><strong>Birthdate:</strong> ${patient.birthDate}</div>
-                                <div><strong>Age:</strong> ${patient.age}</div>
-                            </div>
-                        </div>
+                                <div class="info-row">
+                                    <div class="info-label">Patient ID</div>
+                                    <div class="info-value">PT-${patient.id}</div>
+                                </div>
 
-                        <!-- Diagnosis info -->
-                        <div class="card" style="flex: 1; min-width: 280px;">
-                            <div class="card-title">Diagnosis information</div>
+                                <div class="info-row">
+                                    <div class="info-label">Age</div>
+                                    <div class="info-value">${patient.age} years</div>
+                                </div>
 
-                            <div class="text-meta" style="margin-top:10px; line-height:1.8;">
-                                <div><strong>Diagnosis ID:</strong> ${diagnosis.id}</div>
-                                <div><strong>Date:</strong> ${diagnosis.date}</div>
+                                <div class="info-row">
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">${patient.user.email}</div>
+                                </div>
 
-                                <div>
-                                    <strong>Status:</strong>
+                                <div class="info-row" style="margin-bottom:0;">
                                     <c:choose>
-                                        <c:when test="${not diagnosis.reviewed}">
-                                            Pending Review
-                                        </c:when>
-                                        <c:when test="${diagnosis.urgent}">
-                                            Malignant
+                                        <c:when test="${not empty previousScreenings}">
+                                            ${previousScreenings[d.patient.id]} total screenings
                                         </c:when>
                                         <c:otherwise>
-                                            Benignant
+                                            Total screenings unavailable
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
-
-                                <div><strong>Urgent:</strong> ${diagnosis.urgent}</div>
-                                <div><strong>Reviewed:</strong> ${diagnosis.reviewed}</div>
-
-                                <!-- Only show Probability if you added it to the model -->
-                                <div><strong>Probability:</strong> ${diagnosis.probability}</div>
-
-                                <div><strong>Image path:</strong> ${diagnosis.imagePath}</div>
                             </div>
 
-                            <div style="margin-top:12px;">
-                                <div class="card-title" style="font-size:14px;">Description</div>
-                                <div class="text-meta" style="margin-top:6px;">
-                                    ${diagnosis.description}
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Screening Details</span>
+                                </div>
+
+                                <div class="info-row">
+                                    <div class="info-label">Date</div>
+                                    <div class="info-value">${diagnosis.date}</div>
+                                </div>
+
+                                <div class="info-row">
+                                    <div class="info-label">Diagnosis ID</div>
+                                    <div class="info-value">${diagnosis.id}</div>
+                                </div>
+
+                                <div class="info-row">
+                                    <div class="info-label">Status</div>
+                                    <div class="info-value">
+                                        <c:choose>
+                                            <c:when test="${not diagnosis.reviewed}">
+                                                <span class="warn">Pending Review</span>
+                                            </c:when>
+                                            <c:when test="${diagnosis.urgent}">
+                                                <span class="danger">Malignant</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="ok">Benignant</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+
+                                <div class="chip-row">
+                                    <c:if test="${diagnosis.urgent}">
+                                        <span class="chip urgent"><i class="bi bi-exclamation-triangle"></i>
+                                            Urgent</span>
+                                    </c:if>
+                                    <c:if test="${diagnosis.reviewed}">
+                                        <span class="chip reviewed"><i class="bi bi-check-circle"></i> Reviewed</span>
+                                    </c:if>
+                                </div>
+
+                                <div class="info-row" style="margin-top:14px; margin-bottom:0;">
+                                    <div class="info-label">Probability (malignant)</div>
+                                    <div class="info-value">
+                                        <c:out value="${diagnosis.probability}" default="—" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- HISTORY TABLE (NOW ON THE LEFT, BELOW SCREENING DETAILS) -->
+                            <div class="panel" style="margin-top:14px;">
+                                <div class="panel-title">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Patient diagnosis history</span>
+                                </div>
+
+                                <div class="table-wrap">
+                                    <table class="hist" style="min-width: 0;">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <!-- <th>Reviewed</th>
+                                                <th>Urgent</th>
+                                                <th>Probability</th> -->
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="h" items="${historyDiagnoses}">
+                                                <tr>
+                                                    <td>${h.date}</td>
+                                                    <!-- <td>
+                                                        <c:choose>
+                                                            <c:when test="${h.reviewed}">Yes</c:when>
+                                                            <c:otherwise>No</c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${h.urgent}">Yes</c:when>
+                                                            <c:otherwise>No</c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <c:out value="${h.probability}" default="—" />
+                                                    </td> -->
+                                                    <td>
+                                                        <a class="btn-soft"
+                                                            href="${pageContext.request.contextPath}/doctor/diagnosis/${h.id}">
+                                                            <i class="bi bi-box-arrow-up-right"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- RIGHT COLUMN -->
+                        <div>
+                            <!-- Mammography Images (4) -->
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <i class="bi bi-image"></i>
+                                    <span>Mammography Images</span>
+                                </div>
+
+                                <div class="images-grid">
+
+                                    <!-- Image 1 -->
+                                    <div class="image-card">
+                                        <c:choose>
+                                            <c:when test="${not empty diagnosis.previewPath}">
+                                                <img class="preview-img"
+                                                    src="${pageContext.request.contextPath}/${diagnosis.previewPath}"
+                                                    alt="Mammography preview 1" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="image-tile">
+                                                    Preview not generated yet.<br />
+                                                    Use Open/Download.
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <div class="image-meta">
+                                            <div class="image-actions">
+                                                <c:if test="${not empty diagnosis.previewPath}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.previewPath}"
+                                                        download>
+                                                        <i class="bi bi-download"></i> Download
+                                                    </a>
+                                                </c:if>
+
+                                                <!-- Optional open PNG -->
+                                                <c:if test="${not empty diagnosis.previewPath}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.previewPath}"
+                                                        target="_blank" rel="noopener">
+                                                        <i class="bi bi-box-arrow-up-right"></i> Open
+                                                    </a>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Image 2 -->
+                                    <div class="image-card">
+                                        <c:choose>
+                                            <c:when test="${not empty diagnosis.preview2Path}">
+                                                <img class="preview-img"
+                                                    src="${pageContext.request.contextPath}/${diagnosis.preview2Path}"
+                                                    alt="Mammography preview 2" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="image-tile">
+                                                    Preview not generated yet.<br />
+                                                    Use Open/Download.
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <div class="image-meta">
+                                            <div class="image-actions">
+                                                <c:if test="${not empty diagnosis.preview2Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview2Path}"
+                                                        download>
+                                                        <i class="bi bi-download"></i> Download
+                                                    </a>
+                                                </c:if>
+
+                                                <!-- Optional open PNG -->
+                                                <c:if test="${not empty diagnosis.preview2Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview2Path}"
+                                                        target="_blank" rel="noopener">
+                                                        <i class="bi bi-box-arrow-up-right"></i> Open
+                                                    </a>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Image 3 -->
+                                    <div class="image-card">
+                                        <c:choose>
+                                            <c:when test="${not empty diagnosis.preview3Path}">
+                                                <img class="preview-img"
+                                                    src="${pageContext.request.contextPath}/${diagnosis.preview3Path}"
+                                                    alt="Mammography preview 3" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="image-tile">
+                                                    Preview not generated yet.<br />
+                                                    Use Open/Download.
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <div class="image-meta">
+                                            <div class="image-actions">
+                                                <c:if test="${not empty diagnosis.preview3Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview3Path}"
+                                                        download>
+                                                        <i class="bi bi-download"></i> Download
+                                                    </a>
+                                                </c:if>
+
+                                                <!-- Optional open PNG -->
+                                                <c:if test="${not empty diagnosis.preview3Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview3Path}"
+                                                        target="_blank" rel="noopener">
+                                                        <i class="bi bi-box-arrow-up-right"></i> Open
+                                                    </a>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Image 4 -->
+                                    <div class="image-card">
+                                        <c:choose>
+                                            <c:when test="${not empty diagnosis.preview4Path}">
+                                                <img class="preview-img"
+                                                    src="${pageContext.request.contextPath}/${diagnosis.preview4Path}"
+                                                    alt="Mammography preview 4" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="image-tile">
+                                                    Preview not generated yet.<br />
+                                                    Use Open/Download.
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <div class="image-meta">
+                                            <div class="image-actions">
+                                                <c:if test="${not empty diagnosis.preview4Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview4Path}"
+                                                        download>
+                                                        <i class="bi bi-download"></i> Download
+                                                    </a>
+                                                </c:if>
+
+                                                <!-- Optional open PNG -->
+                                                <c:if test="${not empty diagnosis.preview4Path}">
+                                                    <a class="btn-soft"
+                                                        href="${pageContext.request.contextPath}/${diagnosis.preview4Path}"
+                                                        target="_blank" rel="noopener">
+                                                        <i class="bi bi-box-arrow-up-right"></i> Open
+                                                    </a>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Screening Results -->
+                            <div class="panel" style="margin-top:14px;">
+                                <div class="panel-title">
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                    <span>Screening Results</span>
+                                </div>
+
+                                <div class="info-label" style="margin-bottom:6px;">Result</div>
+
+                                <!-- display-only pills -->
+                                <div class="chip-row">
+                                    <span
+                                        class="chip <c:if test='${diagnosis.reviewed and not diagnosis.urgent}'>reviewed</c:if>">
+                                        Benignant
+                                    </span>
+                                    <span
+                                        class="chip <c:if test='${diagnosis.reviewed and diagnosis.urgent}'>urgent</c:if>">
+                                        Malignant
+                                    </span>
+                                    <span class="chip <c:if test='${not diagnosis.reviewed}'>urgent</c:if>">
+                                        Pending
+                                    </span>
+                                </div>
+
+                                <div style="margin-top:14px;">
+                                    <div class="notes-label">Clinical Notes</div>
+                                    <div class="notes">
+                                        <c:out value="${diagnosis.description}" default="—" />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                </section>
-
-                <!-- HISTORY TABLE -->
-                <section class="card" style="margin-top:14px;">
-                    <div class="card-title">Patient diagnosis history</div>
-
-                    <div style="margin-top:10px; overflow:auto;">
-                        <table style="width:100%; border-collapse:collapse;">
-                            <thead>
-                                <tr style="text-align:left;">
-                                    <th style="padding:10px;">Date</th>
-                                    <th style="padding:10px;">Reviewed</th>
-                                    <th style="padding:10px;">Urgent</th>
-                                    <th style="padding:10px;">Probability</th>
-                                    <th style="padding:10px;">Open</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="h" items="${historyDiagnoses}">
-                                    <tr style="border-top:1px solid rgba(0,0,0,0.06);">
-                                        <td style="padding:10px;">${h.date}</td>
-                                        <td style="padding:10px;">
-                                            <c:choose>
-                                                <c:when test="${h.reviewed}">Yes</c:when>
-                                                <c:otherwise>No</c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td style="padding:10px;">
-                                            <c:choose>
-                                                <c:when test="${h.urgent}">Yes</c:when>
-                                                <c:otherwise>No</c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td style="padding:10px;">${h.probability}</td>
-                                        <td style="padding:10px;">
-                                            <a class="btn-ghost"
-                                                href="${pageContext.request.contextPath}/doctor/diagnosis/${h.id}">
-                                                Open
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
+                </div>
             </div>
         </body>
 

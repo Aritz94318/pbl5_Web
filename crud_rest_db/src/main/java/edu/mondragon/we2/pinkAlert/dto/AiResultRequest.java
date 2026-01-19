@@ -12,6 +12,8 @@ public class AiResultRequest {
     @JsonProperty("prob_malignant")
     private BigDecimal probMalignant;
 
+    @JsonProperty("diagnosis_id")
+    private Integer diagnosisId;
 
     public AiResultRequest() {
     }
@@ -32,4 +34,11 @@ public class AiResultRequest {
         this.probMalignant = probMalignant;
     }
 
+    public Integer getDiagnosisId() {
+        return diagnosisId;
+    }
+
+    public void setDiagnosisId(Integer diagnosisId) {
+        this.diagnosisId = diagnosisId;
+    }
 }

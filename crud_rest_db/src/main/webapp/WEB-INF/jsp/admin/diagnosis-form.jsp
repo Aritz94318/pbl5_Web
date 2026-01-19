@@ -196,7 +196,7 @@
                             </div>
                         </div> -->
 
-                        
+
                         <div class="field">
                             <label>Date</label>
                             <input type="date" name="date" value="${today}" required>
