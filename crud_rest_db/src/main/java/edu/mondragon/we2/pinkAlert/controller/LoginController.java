@@ -48,7 +48,7 @@ public class LoginController {
         if (user.getRole() == Role.DOCTOR)
             return "redirect:/doctor/dashboard";
         if (user.getRole() == Role.PATIENT)
-            return "redirect:/patient/dashboard"; // /portal
+            return "redirect:/patient/portal";
         return "redirect:/admin/dashboard";
     }
 }

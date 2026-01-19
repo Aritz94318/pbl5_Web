@@ -3,7 +3,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
@@ -12,8 +11,6 @@ import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -30,15 +27,6 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -60,24 +48,19 @@ public class AdminController {
         private final UserRepository userRepository;
         private final UserService userService;
         private final AiClientService aiClientService;
-        private final DiagnosisService diagnosisService;
-        private final DoctorService doctorService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService, DiagnosisService diagnosisService,
-                        DoctorService doctorService) {
+                        AiClientService aiClientService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
-                this.diagnosisService = diagnosisService;
-                this.doctorService = doctorService;
         }
 
         @GetMapping("/dashboard")
@@ -204,6 +187,7 @@ public class AdminController {
                 return "admin/user-form";
         }
 
+        @Transactional
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
                         @ModelAttribute("user") User posted,
@@ -252,14 +236,34 @@ public class AdminController {
                         userRepository.saveAndFlush(existing);
                         return "redirect:/admin/users";
                 }
-                userService.save(existing);
 
+                userRepository.save(existing);
                 return "redirect:/admin/users";
         }
 
+        @Transactional
         @PostMapping("/users/{id}/delete")
         public String deleteUser(@PathVariable Integer id) {
-                userService.deleteUserCompletely(id);
+                User u = userService.get(id);
+
+                Doctor doctorToDelete = u.getDoctor();
+                Patient patientToDelete = u.getPatient();
+
+                u.setRole(Role.ADMIN);
+                u.setDoctor(null);
+                u.unlinkPatient();
+
+                userRepository.saveAndFlush(u);
+
+                userRepository.delete(u);
+                userRepository.flush();
+
+                if (doctorToDelete != null) {
+                        doctorRepository.delete(doctorToDelete);
+                }
+                if (patientToDelete != null) {
+                        patientRepository.delete(patientToDelete);
+                }
 
                 return "redirect:/admin/users";
         }
@@ -276,58 +280,6 @@ public class AdminController {
                 model.addAttribute("users", userService.findByRole(Role.PATIENT));
                 model.addAttribute("title", "Patients");
                 return "admin/role-list";
-        }
-
-        // Provisional
-        @GetMapping("/simulation")
-        public String simulationPage(Model model) {
-                model.addAttribute("numPatients", 2);
-                model.addAttribute("numDoctors", 1);
-                model.addAttribute("numMachines", 2);
-                return "admin/simulation";
-        }
-
-        @PostMapping("/simulation/modify")
-        public ResponseEntity<Void> modify(@RequestParam int numPatients,
-                        @RequestParam int numDoctors,
-                        @RequestParam int numMachines) {
-
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
-                                                                                                     // simulación
-
-                GlobalUpdateRequest body;
-                body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
-
-                try {
-                        rt.exchange(url, HttpMethod.PUT, entity, Void.class);
-                        return ResponseEntity.ok().build();
-                } catch (RestClientException e) {
-                        throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(),
-                                        e);
-                }
-        }
-
-        @PostMapping("/simulation/start")
-        public ResponseEntity<Void> start() {
-
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
-                                                                                                    // simulación
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-                HttpEntity<String> request = new HttpEntity<>("start", headers);
-
-                rt.exchange(url, HttpMethod.POST, request, String.class);
-
-                return ResponseEntity.ok().build();
-
         }
 
         private static double round1(double v) {
@@ -372,22 +324,53 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
+<<<<<<< HEAD
+=======
+        @Transactional
+>>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
-                        @RequestParam("dicomUrl2") String dicomUrl2,
-                        @RequestParam("dicomUrl3") String dicomUrl3,
-                        @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
                         @RequestParam(name = "email", required = false) String email,
                         Model model) {
 
+<<<<<<< HEAD
                 try {
                         if (patientId == null) {
                                 model.addAttribute("error", "You must select a patient.");
                                 model.addAttribute("today", LocalDate.now().toString());
                                 return "admin/diagnosis-form";
+=======
+                if (patientId == null) {
+                        model.addAttribute("error", "You must select a patient.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
+
+                Patient patient = patientRepository.findById(patientId)
+                                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
+
+                if (dicomUrl == null || dicomUrl.isBlank()) {
+                        model.addAttribute("error", "Please provide a DICOM URL.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
+
+                // Optional: enforce Drive direct-download format
+                if (!dicomUrl.contains("drive.google.com") || !dicomUrl.contains("uc?export=download&id=")) {
+                        model.addAttribute("error",
+                                        "Please use a public Google Drive direct-download URL: uc?export=download&id=FILE_ID");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
+                }
+
+                // Email fallback: if not provided, try to use patient user email
+                if (email == null || email.isBlank()) {
+                        if (patient.getUser() != null && patient.getUser().getEmail() != null) {
+                                email = patient.getUser().getEmail();
+>>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
                         }
 
                         Patient patient = patientRepository.findById(patientId)
@@ -500,6 +483,38 @@ public class AdminController {
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
+<<<<<<< HEAD
+=======
+
+                if (description == null || description.trim().isEmpty()) {
+                        description = "Pending AI analysis"; // or "" if you prefer, but keep NOT NULL
+                }
+
+                LocalDate date = LocalDate.parse(dateStr);
+
+                // Create Diagnosis
+                Diagnosis diag = new Diagnosis();
+                diag.setPatient(patient);
+                diag.setDoctor(null);
+                diag.setReviewed(false);
+                diag.setUrgent(false); // AI will update this later via webhook
+                diag.setDescription(description);
+                diag.setDate(date);
+
+                // Store the DICOM URL in ImagePath (or make a dedicated column)
+                diag.setImagePath(dicomUrl);
+
+                diagnosisRepository.saveAndFlush(diag);
+
+                // Call AI
+                AiPredictUrlRequest payload = new AiPredictUrlRequest(
+                                String.valueOf(diag.getId()),
+                                email,
+                                dicomUrl);
+                aiClientService.sendPredictUrl(payload);
+
+                return "redirect:/admin/dashboard";
+>>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
         }
 
         private static String getBaseUrl(HttpServletRequest request) {

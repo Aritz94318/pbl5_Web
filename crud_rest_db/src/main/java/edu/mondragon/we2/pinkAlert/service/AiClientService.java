@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class AiClientService {
 
-    private static final String AI_PREDICT_URL = "https://node-red-591094411846.europe-west1.run.app/predict-url";
+    private static final String AI_PREDICT_URL = "https://dicom-api-591094411846.europe-west1.run.app/predict-url";
 
     private final RestTemplate restTemplate = new RestTemplate();
 

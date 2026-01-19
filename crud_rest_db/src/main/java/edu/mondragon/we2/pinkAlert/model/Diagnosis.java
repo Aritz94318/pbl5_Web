@@ -16,6 +16,7 @@ public class Diagnosis {
     @Column(name = "ImagePath", nullable = false, length = 100)
     private String imagePath;
 
+<<<<<<< HEAD
     @Column(name = "Image2Path", nullable = false, length = 100)
     private String image2Path;
 
@@ -25,6 +26,8 @@ public class Diagnosis {
     @Column(name = "Image4Path", nullable = false, length = 100)
     private String image4Path;
 
+=======
+>>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
     @Column(name = "Date", nullable = false)
     private LocalDate date;
 
@@ -51,13 +54,9 @@ public class Diagnosis {
     public Diagnosis() {
     }
 
-    public Diagnosis(String imagePath, String image2Path, String image3Path, String image4Path, LocalDate date,
-            String description,
+    public Diagnosis(String imagePath, LocalDate date, String description,
             boolean urgent, Doctor doctor, Patient patient) {
         this.imagePath = imagePath;
-        this.image2Path = image2Path;
-        this.image3Path = image3Path;
-        this.image4Path = image4Path;
         this.date = date;
         this.description = description;
         this.urgent = urgent;
@@ -67,6 +66,7 @@ public class Diagnosis {
         this.reviewed = false;
     }
 
+    // Getters & setters
     public Integer getId() {
         return id;
     }
