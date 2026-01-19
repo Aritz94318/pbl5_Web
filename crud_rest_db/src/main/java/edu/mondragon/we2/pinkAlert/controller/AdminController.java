@@ -324,53 +324,23 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-<<<<<<< HEAD
-=======
         @Transactional
->>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
+                        @RequestParam("dicomUrl2") String dicomUrl2,
+                        @RequestParam("dicomUrl3") String dicomUrl3,
+                        @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
                         @RequestParam(name = "email", required = false) String email,
                         Model model) {
 
-<<<<<<< HEAD
                 try {
                         if (patientId == null) {
                                 model.addAttribute("error", "You must select a patient.");
                                 model.addAttribute("today", LocalDate.now().toString());
                                 return "admin/diagnosis-form";
-=======
-                if (patientId == null) {
-                        model.addAttribute("error", "You must select a patient.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                Patient patient = patientRepository.findById(patientId)
-                                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
-
-                if (dicomUrl == null || dicomUrl.isBlank()) {
-                        model.addAttribute("error", "Please provide a DICOM URL.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                // Optional: enforce Drive direct-download format
-                if (!dicomUrl.contains("drive.google.com") || !dicomUrl.contains("uc?export=download&id=")) {
-                        model.addAttribute("error",
-                                        "Please use a public Google Drive direct-download URL: uc?export=download&id=FILE_ID");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                // Email fallback: if not provided, try to use patient user email
-                if (email == null || email.isBlank()) {
-                        if (patient.getUser() != null && patient.getUser().getEmail() != null) {
-                                email = patient.getUser().getEmail();
->>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
                         }
 
                         Patient patient = patientRepository.findById(patientId)
@@ -483,38 +453,6 @@ public class AdminController {
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
-<<<<<<< HEAD
-=======
-
-                if (description == null || description.trim().isEmpty()) {
-                        description = "Pending AI analysis"; // or "" if you prefer, but keep NOT NULL
-                }
-
-                LocalDate date = LocalDate.parse(dateStr);
-
-                // Create Diagnosis
-                Diagnosis diag = new Diagnosis();
-                diag.setPatient(patient);
-                diag.setDoctor(null);
-                diag.setReviewed(false);
-                diag.setUrgent(false); // AI will update this later via webhook
-                diag.setDescription(description);
-                diag.setDate(date);
-
-                // Store the DICOM URL in ImagePath (or make a dedicated column)
-                diag.setImagePath(dicomUrl);
-
-                diagnosisRepository.saveAndFlush(diag);
-
-                // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(
-                                String.valueOf(diag.getId()),
-                                email,
-                                dicomUrl);
-                aiClientService.sendPredictUrl(payload);
-
-                return "redirect:/admin/dashboard";
->>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
         }
 
         private static String getBaseUrl(HttpServletRequest request) {

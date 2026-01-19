@@ -16,7 +16,6 @@ public class Diagnosis {
     @Column(name = "ImagePath", nullable = false, length = 100)
     private String imagePath;
 
-<<<<<<< HEAD
     @Column(name = "Image2Path", nullable = false, length = 100)
     private String image2Path;
 
@@ -26,8 +25,6 @@ public class Diagnosis {
     @Column(name = "Image4Path", nullable = false, length = 100)
     private String image4Path;
 
-=======
->>>>>>> 1aee04f50ae5825a4cd79cf37ab0d5971db48e2c
     @Column(name = "Date", nullable = false)
     private LocalDate date;
 
