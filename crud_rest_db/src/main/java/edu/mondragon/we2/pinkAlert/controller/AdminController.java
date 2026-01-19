@@ -3,6 +3,7 @@ package edu.mondragon.we2.pinkAlert.controller;
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -280,42 +282,39 @@ public class AdminController {
         }
 
         @PostMapping("/simulation/modify")
-        public ResponseEntity<Void>  modify(@RequestParam int numPatients,
+        public ResponseEntity<Void> modify(@RequestParam int numPatients,
                         @RequestParam int numDoctors,
                         @RequestParam int numMachines) {
 
                 RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de simulación
+                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
+                                                                                                     // simulación
 
+                GlobalUpdateRequest body;
+                body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
                 HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-                // JSON que mandas
-                String json = """
-                                {
-                                        "numPatients": %d,
-                                        "numDoctors": %d,
-                                        "numMachines": %d
-                                }
-                                """.formatted(numPatients, numDoctors, numMachines);
+                HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
 
-                HttpEntity<String> request = new HttpEntity<>(json, headers);
-
-                rt.exchange(url, HttpMethod.PUT, request, String.class);
-
-                return ResponseEntity.ok().build();
-
+                try {
+                        ResponseEntity<String> resp = rt.postForEntity(url, entity, String.class);
+                        return ResponseEntity.ok().build();
+                } catch (RestClientException e) {
+                        throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(),
+                                        e);
+                }
         }
-        
+
         @PostMapping("/simulation/start")
-        public ResponseEntity<Void>  start() {
+        public ResponseEntity<Void> start() {
 
                 RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de simulación
+                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
+                                                                                                    // simulación
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
 
                 HttpEntity<String> request = new HttpEntity<>("start", headers);
 
@@ -328,7 +327,6 @@ public class AdminController {
         private static double round1(double v) {
                 return Math.round(v * 10.0) / 10.0;
         }
-
 
         // ---------------------------
         // MACHINE SIMULATOR - NEW DIAGNOSIS
@@ -447,7 +445,8 @@ public class AdminController {
                 diagnosisService.save(diag);
 
                 // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()), email, dicomUrl,dicomUrl2,dicomUrl3,dicomUrl4);
+                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()), email, dicomUrl,
+                                dicomUrl2, dicomUrl3, dicomUrl4);
 
                 aiClientService.sendPredictUrl(payload);
 
