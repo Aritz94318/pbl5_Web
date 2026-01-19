@@ -37,7 +37,7 @@ jobs:
             -Dsonar.qualitygate.wait=true \
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }} || true
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
             
       - name: List target directory
         run: ls -lh ./crud_rest_db/target
