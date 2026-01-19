@@ -108,11 +108,11 @@ public class DataLoader implements CommandLineRunner {
 
             // No revisado no urgente
             Diagnosis diag = new Diagnosis();
-            diag.setImagePath("1.jpg");
+            diag.setImagePath("2.dcm");
             diag.setImage2Path("1.jpg");
             diag.setImage3Path("1.jpg");
             diag.setImage4Path("1.jpg");
-            diag.setDate(LocalDate.of(2026, 01, 13));
+            diag.setDate(LocalDate.of(2026, 01, 19));
             diag.setDescription("Grade 3 breast cancer.");
             diag.setUrgent(false);
             diag.setReviewed(false);
@@ -121,12 +121,12 @@ public class DataLoader implements CommandLineRunner {
 
             // Revisado no urgente
             Diagnosis diag2 = new Diagnosis();
-            diag2.setImagePath("1.jpg");
+            diag2.setImagePath("2.dcm");
             diag2.setImage2Path("1.jpg");
             diag2.setImage3Path("1.jpg");
             diag2.setImage4Path("1.jpg");
 
-            diag2.setDate(LocalDate.of(2026, 01, 13));
+            diag2.setDate(LocalDate.of(2026, 01, 19));
             diag2.setDescription("Grade 3 breast cancer.");
             diag2.setUrgent(false);
             diag2.setReviewed(true);
@@ -135,12 +135,12 @@ public class DataLoader implements CommandLineRunner {
 
             // Revisado urgente
             Diagnosis diag3 = new Diagnosis();
-            diag3.setImagePath("1.jpg");
+            diag3.setImagePath("2.dcm");
             diag3.setImage2Path("1.jpg");
             diag3.setImage3Path("1.jpg");
             diag3.setImage4Path("1.jpg");
 
-            diag3.setDate(LocalDate.of(2026, 01, 13));
+            diag3.setDate(LocalDate.of(2026, 01, 19));
             diag3.setDescription("Grade 3 breast cancer.");
             diag3.setUrgent(true);
             diag3.setReviewed(true);
@@ -149,11 +149,11 @@ public class DataLoader implements CommandLineRunner {
 
             // No revisado urgente
             Diagnosis diag4 = new Diagnosis();
-            diag4.setImagePath("1.jpg");
+            diag4.setImagePath("2.dcm");
             diag4.setImage2Path("1.jpg");
             diag4.setImage3Path("1.jpg");
             diag4.setImage4Path("1.jpg");
-            diag4.setDate(LocalDate.of(2026, 01, 13));
+            diag4.setDate(LocalDate.of(2026, 01, 19));
             diag4.setDescription("Grade 3 breast cancer.");
             diag4.setUrgent(true);
             diag4.setReviewed(false);

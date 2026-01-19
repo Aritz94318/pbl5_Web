@@ -140,10 +140,10 @@
                                             <span class="dot-separator">
                                                 <c:choose>
                                                     <c:when test="${not empty previousScreenings}">
-                                                        ${previousScreenings[d.patient.id]} previous screenings
+                                                        ${previousScreenings[d.patient.id]} total screenings
                                                     </c:when>
                                                     <c:otherwise>
-                                                        previous screenings unavailable
+                                                        Total screenings unavailable
                                                     </c:otherwise>
                                                 </c:choose>
                                             </span>

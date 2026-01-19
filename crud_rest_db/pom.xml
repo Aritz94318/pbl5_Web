@@ -19,6 +19,14 @@
 		<java.version>17</java.version>
 		<sonar.organization>pbl5</sonar.organization>
 	</properties>
+	<repositories>
+		<repository>
+			<id>dcm4che</id>
+			<name>dcm4che Maven Repository</name>
+			<url>https://www.dcm4che.org/maven2</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -111,7 +119,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>32.1.2-jre</version> 
+			<version>32.1.2-jre</version>
 		</dependency>
 
 		<!-- JSTL for JSP tags like <c:if> etc -->
@@ -126,18 +134,24 @@
 			<version>3.0.1</version>
 		</dependency>
 
-		 <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <scope>test</scope>
-    </dependency>
-    
-    <!-- JUnit 5 -->
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <scope>test</scope>
-    </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.dcm4che</groupId>
+			<artifactId>dcm4che-imageio</artifactId>
+			<version>5.33.0</version>
+		</dependency>
+		
+		<!-- JUnit 5 -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

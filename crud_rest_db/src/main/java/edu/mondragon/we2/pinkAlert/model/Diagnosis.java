@@ -18,8 +18,10 @@ public class Diagnosis {
 
     @Column(name = "Image2Path", nullable = false, length = 100)
     private String image2Path;
+
     @Column(name = "Image3Path", nullable = false, length = 100)
     private String image3Path;
+
     @Column(name = "Image4Path", nullable = false, length = 100)
     private String image4Path;
 
@@ -87,6 +89,50 @@ public class Diagnosis {
 
     public void setImage2Path(String image2Path) {
         this.image2Path = image2Path;
+    }
+
+    @Column(name = "PreviewPath", length = 600)
+    private String previewPath;
+
+    @Column(name = "Preview2Path", length = 600)
+    private String preview2Path;
+
+    @Column(name = "Preview3Path", length = 600)
+    private String preview3Path;
+
+    @Column(name = "Preview4Path", length = 600)
+    private String preview4Path;
+
+    public String getPreviewPath() {
+        return previewPath;
+    }
+
+    public void setPreviewPath(String previewPath) {
+        this.previewPath = previewPath;
+    }
+
+    public String getPreview2Path() {
+        return preview2Path;
+    }
+
+    public void setPreview2Path(String preview2Path) {
+        this.preview2Path = preview2Path;
+    }
+
+    public String getPreview3Path() {
+        return preview3Path;
+    }
+
+    public void setPreview3Path(String preview3Path) {
+        this.preview3Path = preview3Path;
+    }
+
+    public String getPreview4Path() {
+        return preview4Path;
+    }
+
+    public void setPreview4Path(String preview4Path) {
+        this.preview4Path = preview4Path;
     }
 
     public String getImage3Path() {
