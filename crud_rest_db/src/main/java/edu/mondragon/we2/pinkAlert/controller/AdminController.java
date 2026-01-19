@@ -298,7 +298,7 @@ public class AdminController {
                 HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
 
                 try {
-                        ResponseEntity<String> resp = rt.postForEntity(url, entity, String.class);
+                        rt.exchange(url, HttpMethod.PUT, entity, Void.class);
                         return ResponseEntity.ok().build();
                 } catch (RestClientException e) {
                         throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(),
