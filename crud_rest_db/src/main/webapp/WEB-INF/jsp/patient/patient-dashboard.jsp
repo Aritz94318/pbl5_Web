@@ -176,7 +176,7 @@
                             <!-- LEFT -->
                             <div class="history-left">
                                 <div class="history-date">
-                                    ${d.date}
+                                    ${d.dateDisplay}
                                 </div>
                                 <div class="history-sub">
                                     Screening ID: ${d.id}
