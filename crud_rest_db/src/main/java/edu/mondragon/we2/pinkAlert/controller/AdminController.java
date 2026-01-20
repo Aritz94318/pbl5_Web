@@ -14,6 +14,7 @@ import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.DoctorService;
+import edu.mondragon.we2.pinkAlert.service.SimulationService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -58,6 +59,7 @@ public class AdminController {
         private final AiClientService aiClientService;
         private final DiagnosisService diagnosisService;
         private final DoctorService doctorService;
+        private final SimulationService simulationService;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
@@ -65,7 +67,7 @@ public class AdminController {
                         UserService userService,
                         DoctorRepository doctorRepository,
                         AiClientService aiClientService, DiagnosisService diagnosisService,
-                        DoctorService doctorService) {
+                        DoctorService doctorService, SimulationService simulationService) {
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
@@ -74,6 +76,7 @@ public class AdminController {
                 this.aiClientService = aiClientService;
                 this.diagnosisService = diagnosisService;
                 this.doctorService = doctorService;
+                this.simulationService = simulationService;
         }
 
         @GetMapping("/dashboard")
@@ -284,45 +287,15 @@ public class AdminController {
         }
 
         @PostMapping("/simulation/modify")
-        public ResponseEntity<Void> modify(@RequestParam int numPatients,
-                        @RequestParam int numDoctors,
+        public ResponseEntity<Void> modify(@RequestParam int numPatients, @RequestParam int numDoctors,
                         @RequestParam int numMachines) {
-
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
-                                                                                                     // simulación
-
-                GlobalUpdateRequest body;
-                body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
-
-                try {
-                        rt.exchange(url, HttpMethod.PUT, entity, Void.class);
-                        return ResponseEntity.ok().build();
-                } catch (RestClientException e) {
-                        throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(),
-                                        e);
-                }
+                return simulationService.modify(numPatients, numDoctors, numMachines);
         }
 
         @PostMapping("/simulation/start")
         public ResponseEntity<Void> start() {
 
-                RestTemplate rt = new RestTemplate();
-                String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
-                                                                                                    // simulación
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-                HttpEntity<String> request = new HttpEntity<>("start", headers);
-
-                rt.exchange(url, HttpMethod.POST, request, String.class);
-
-                return ResponseEntity.ok().build();
+                return simulationService.start();
 
         }
 

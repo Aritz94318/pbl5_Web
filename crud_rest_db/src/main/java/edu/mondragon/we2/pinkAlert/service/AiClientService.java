@@ -56,7 +56,7 @@ public class AiClientService {
                 throw new RuntimeException("Failed to call AI service at " + AI_PREDICT_URL + ": " + e.getMessage(), e);
             }
         } else {
-            throw new RuntimeException("Not Valid!");
+            throw new IllegalArgumentException("Not Valid!");
         }
 
     }

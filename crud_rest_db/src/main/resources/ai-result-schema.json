@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "AI-Result",
+    "description": "Schema for an AI result",
+    "type": "object",
+    "properties": {
+        "prediction": {
+            "type": "string",
+            "enum": [
+                "MALIGNANT",
+                "BENIGN"
+            ]
+        },
+        "prob_malignant": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        }
+    },
+    "required": [
+        "diagnosis",
+        "confidence"
+    ],
+    "additionalProperties": false
+}

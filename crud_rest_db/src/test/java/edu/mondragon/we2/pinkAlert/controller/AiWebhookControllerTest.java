@@ -1,6 +1,8 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+
 import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
 import edu.mondragon.we2.pinkAlert.service.AiResultService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -366,7 +369,7 @@ class AiWebhookControllerTest {
     }
     
     @Test
-    void applyAiResult_DirectControllerMethodTest() {
+    void applyAiResult_DirectControllerMethodTest() throws IOException, ProcessingException {
         // Test the controller method directly (not through MockMvc)
         // Given
         Integer diagnosisId = 909;
@@ -383,7 +386,7 @@ class AiWebhookControllerTest {
     }
     
     @Test
-    void applyAiResult_DirectControllerMethodTest_Exception() {
+    void applyAiResult_DirectControllerMethodTest_Exception() throws IOException, ProcessingException {
         // Given
         Integer diagnosisId = 1010;
         AiResultRequest request = new AiResultRequest();
