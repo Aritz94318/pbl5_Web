@@ -86,7 +86,7 @@
                 <div>
                   <label for="numPatients" class="detail-label">NUmber of patients</label>
                   <input id="numPatients" name="numPatients" type="number" min="0" step="1"
-                    value="${empty numPatients ? 2 : numPatients}" placeholder="2" required />
+                    value="${empty numPatients ? 1 : numPatients}" placeholder="1" required />
                 </div>
 
                 <div>
@@ -98,7 +98,7 @@
                 <div>
                   <label for="numMachines" class="detail-label">Number of machines</label>
                   <input id="numMachines" name="numMachines" type="number" min="0" step="1"
-                    value="${empty numMachines ? 2 : numMachines}" placeholder="2" required />
+                    value="${empty numMachines ? 1 : numMachines}" placeholder="1" required />
                 </div>
 
                 <div style="display:flex; align-items:flex-end; gap:10px;">
