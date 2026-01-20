@@ -72,4 +72,6 @@ public class AiResultService {
 
         return diagnosisRepository.save(d);
     }
+
+    
 }

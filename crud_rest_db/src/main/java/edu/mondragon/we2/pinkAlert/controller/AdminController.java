@@ -288,15 +288,16 @@ public class AdminController {
 
         @PostMapping("/simulation/modify")
         public ResponseEntity<Void> modify(@RequestParam int numPatients, @RequestParam int numDoctors,
-                        @RequestParam int numMachines) {
-                return simulationService.modify(numPatients, numDoctors, numMachines);
+                        @RequestParam int numMachines) throws IOException, ProcessingException {
+                simulationService.modify(numPatients, numDoctors, numMachines);
+                return ResponseEntity.ok().build();
         }
 
         @PostMapping("/simulation/start")
         public ResponseEntity<Void> start() {
 
-                return simulationService.start();
-
+                simulationService.start();
+                return ResponseEntity.ok().build();
         }
 
         private static double round1(double v) {

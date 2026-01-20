@@ -69,6 +69,8 @@ jobs:
             --allow-unauthenticated \
             --add-cloudsql-instances ${{ secrets.CLOUDSQL_INSTANCE }} \
             --set-env-vars \
+            --timeout=600s \
+            --startup-timeout=300s \
           DB_NAME=pinkalert,\
           DB_USER=${{ secrets.DB_USER }},\
           DB_PASS=${{ secrets.DB_PASS }},\

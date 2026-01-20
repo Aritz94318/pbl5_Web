@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "SimEvent",
+    "description": "Schema for each simulation event",
+    "type": "object",
+    "properties": {
+        "actor": {
+            "type": "string",
+            "minLength": 1
+        },
+        "actorId": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "text": {
+            "type": "string",
+            "minLength": 1
+        },
+        "ts": {
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "required": [
+        "actor",
+        "actorId",
+        "text",
+        "ts"
+    ]
+}

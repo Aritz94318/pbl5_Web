@@ -1,6 +1,7 @@
 package edu.mondragon.we2.pinkAlert.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -15,12 +16,46 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.google.gson.Gson;
+
 import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 import edu.mondragon.we2.pinkAlert.model.SimEvent;
 import edu.mondragon.we2.pinkAlert.model.SimTime;
+import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
 
 @Service
 public class SimulationService {
+    private final Gson gson = new Gson();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final JsonSchema modifyschema;
+    private final JsonSchema simEventSchema;
+    private final JsonSchema simTimeSchema;
+
+    public SimulationService() throws IOException, ProcessingException {
+
+        JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+
+        this.modifyschema = factory.getJsonSchema(mapper.readTree(getSchema("/modify-sim-schema.json")));
+
+        this.simEventSchema = factory.getJsonSchema(mapper.readTree(getSchema("/sim-event-schema.json")));
+
+        this.simTimeSchema = factory.getJsonSchema(mapper.readTree(getSchema("/sim-time-schema.json")));
+
+    }
+
+    public InputStream getSchema(String path) {
+        InputStream schemaStream = getClass().getResourceAsStream(path);
+        if (schemaStream == null) {
+            throw new IllegalStateException("modify-sim-schema.json couldn't be found");
+        }
+        return schemaStream;
+
+    }
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
@@ -77,28 +112,37 @@ public class SimulationService {
         }
     }
 
-    public ResponseEntity<Void> modify(int numPatients, int numDoctors, int numMachines) {
+    public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
 
         RestTemplate rt = new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
                                                                                              // simulación
-
         GlobalUpdateRequest body;
         body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
+        String json = gson.toJson(body);
+        JsonNode node = mapper.readTree(json);
+
+        if (!ValidationUtils.isJsonValid(modifyschema, node)) {
+            throw new IllegalArgumentException("Not Valid!");
+
+        } else {
+            System.out.println("Valid!");
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<GlobalUpdateRequest> entity = new HttpEntity<>(body, headers);
+        HttpEntity<String> entity = new HttpEntity<>(json, headers);
 
         try {
             rt.exchange(url, HttpMethod.PUT, entity, Void.class);
-            return ResponseEntity.ok().build();
+
         } catch (RestClientException e) {
             throw new RuntimeException("Failed to call Simulator service at " + url + ": " + e.getMessage(), e);
         }
     }
 
-    public ResponseEntity<Void> start() {
+    public void start() {
 
         RestTemplate rt = new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
@@ -111,7 +155,36 @@ public class SimulationService {
 
         rt.exchange(url, HttpMethod.POST, request, String.class);
 
-        return ResponseEntity.ok().build();
-
     }
+
+    public void publishValidated(SimEvent event)
+            throws IOException, ProcessingException {
+
+        String json = gson.toJson(event);
+        JsonNode node = mapper.readTree(json);
+
+        if (!ValidationUtils.isJsonValid(simEventSchema, node)) {
+            throw new IllegalArgumentException("Invalid SimEvent JSON");
+        }else{
+            System.out.println("Valid event");
+        }
+
+        publish(event);
+    }
+
+    public void publishValidated(SimTime time)
+            throws IOException, ProcessingException {
+
+        String json = gson.toJson(time);
+        JsonNode node = mapper.readTree(json);
+
+        if (!ValidationUtils.isJsonValid(simTimeSchema, node)) {
+            throw new IllegalArgumentException("Invalid SimTime JSON");
+        }else{
+            System.out.println("Valid time");
+        }
+
+        publish(time);
+    }
+
 }
