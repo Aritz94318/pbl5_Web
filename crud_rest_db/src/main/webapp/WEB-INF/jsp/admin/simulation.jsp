@@ -291,6 +291,9 @@
           document.getElementById("patientList").innerHTML = "";
           document.getElementById("doctorList").innerHTML = "";
           document.getElementById("machineList").innerHTML = "";
+          document.getElementById("simTimeText").innerHTML = "En espera…";
+
+
         }
 
         function removeEmptyText(listEl) {
@@ -369,7 +372,7 @@
         }; es.addEventListener("sim-time", (evt) => {
           const t = JSON.parse(evt.data);
           // t = { time, hours, minutes, seconds }
-          const text = t.hours+"h " +t.minutes+"m"+t.seconds+"s";
+          const text = t.hours + "h " + t.minutes + "m" + t.seconds + "s";
 
           //const text = `${t.hours}h ${t.minutes}m ${t.seconds}s`;
           document.getElementById("simTimeText").textContent = text;
