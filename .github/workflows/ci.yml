@@ -66,10 +66,11 @@ jobs:
            --region ${{ secrets.GCP_REGION }} \
            --platform managed \
            --memory=1Gi \
+            --timeout=600s \
+            --startup-timeout=300s \
             --allow-unauthenticated \
             --add-cloudsql-instances ${{ secrets.CLOUDSQL_INSTANCE }} \
             --set-env-vars \
-            --timeout: 600s \
           DB_NAME=pinkalert,\
           DB_USER=${{ secrets.DB_USER }},\
           DB_PASS=${{ secrets.DB_PASS }},\
