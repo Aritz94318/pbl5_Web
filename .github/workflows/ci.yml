@@ -66,8 +66,6 @@ jobs:
            --region ${{ secrets.GCP_REGION }} \
            --platform managed \
            --memory=1Gi \
-            --timeout=600s \
-            --startup-timeout=300s \
             --allow-unauthenticated \
             --add-cloudsql-instances ${{ secrets.CLOUDSQL_INSTANCE }} \
             --set-env-vars \
