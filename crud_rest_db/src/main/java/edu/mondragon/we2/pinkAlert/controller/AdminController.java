@@ -24,6 +24,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -376,7 +378,7 @@ public class AdminController {
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
                         @RequestParam(name = "email", required = false) String email,
-                        Model model) {
+                        Model model) throws IOException, ProcessingException {
 
                 if (patientId == null) {
                         model.addAttribute("error", "You must select a patient.");
