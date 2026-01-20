@@ -7,31 +7,29 @@ public class SimTime {
     private int minutes;
     private int seconds;
 
-    public SimTime(long time) {
+    public SimTime(long time, int hours, int minutes,int seconds) {
         this.time = time;
-        this.hours = (int) getSimHours();
-        this.minutes = (int) getSimMinutes();
-        this.seconds = (int) getSimSeconds();
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
     }
 
     // getters para que se serialice a JSON
-    public long getTime() { return time; }
-    public int getHours() { return hours; }
-    public int getMinutes() { return minutes; }
-    public int getSeconds() { return seconds; }
-
-    // 1 segundo real = 1 minuto simulado
-    public synchronized long getSimHours() {
-        long totalMinutes = (time / 1_000_000_000L);
-        return totalMinutes / 60;
+    public long getTime() {
+        return time;
     }
 
-    public synchronized long getSimMinutes() {
-        long totalMinutes = (time / 1_000_000_000L);
-        return totalMinutes % 60;
+    public int getHours() {
+        return hours;
     }
 
-    public synchronized long getSimSeconds() {
-        return 0;
+    public int getMinutes() {
+        return minutes;
     }
+
+    public int getSeconds() {
+        return seconds;
+    }
+
+
 }
