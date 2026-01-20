@@ -61,13 +61,13 @@
           <div class="header-left-admin">
             <div class="admin-shield">🛡</div>
             <div>
-              <h1>Admin · Simulación</h1>
-              <p>Configura parámetros y visualiza acciones en tiempo real</p>
+              <h1>Admin · Simulation</h1>
+              <p>Configure parameters and visualize real-time actions</p>
             </div>
           </div>
 
           <div class="admin-actions">
-            <a class="btn-ghost" href="<c:url value='/admin'/>">← Volver</a>
+            <a class="btn-ghost" href="<c:url value='/admin'/>">← Return</a>
           </div>
         </header>
 
@@ -75,7 +75,7 @@
 
           <!-- FORM CONFIG -->
           <section class="admin-card">
-            <h2>Configuración</h2>
+            <h2>Settings</h2>
 
             <c:if test="${not empty error}">
               <div class="error-box">${error}</div>
@@ -84,19 +84,19 @@
             <form action="<c:url value='/admin/simulation/start'/>" method="post">
               <div class="admin-grid-2" style="margin-top: 0;">
                 <div>
-                  <label for="numPatients" class="detail-label">Número de pacientes</label>
+                  <label for="numPatients" class="detail-label">NUmber of patients</label>
                   <input id="numPatients" name="numPatients" type="number" min="0" step="1"
                     value="${empty numPatients ? 2 : numPatients}" placeholder="2" required />
                 </div>
 
                 <div>
-                  <label for="numDoctors" class="detail-label">Número de doctores</label>
+                  <label for="numDoctors" class="detail-label">Number of doctors</label>
                   <input id="numDoctors" name="numDoctors" type="number" min="0" step="1"
                     value="${empty numDoctors ? 1 : numDoctors}" placeholder="1" required />
                 </div>
 
                 <div>
-                  <label for="numMachines" class="detail-label">Número de máquinas</label>
+                  <label for="numMachines" class="detail-label">Number of machines</label>
                   <input id="numMachines" name="numMachines" type="number" min="0" step="1"
                     value="${empty numMachines ? 2 : numMachines}" placeholder="2" required />
                 </div>
@@ -118,7 +118,7 @@
 
             <!-- PACIENTES -->
             <div class="admin-card">
-              <h2>Acciones · Pacientes</h2>
+              <h2>Actions · Patients</h2>
 
               <div class="card" style="margin-top:0;">
                 <div id="patientList" class="patient-list" style="margin-top: 0;">
@@ -129,7 +129,7 @@
                           <div class="patient-main">
                             <div class="patient-icon">🧑</div>
                             <div class="patient-info">
-                              <div class="patient-name">Paciente</div>
+                              <div class="patient-name">Patient</div>
                               <div class="patient-subinfo">
                                 <span>${line}</span>
                               </div>
@@ -139,7 +139,7 @@
                       </c:forEach>
                     </c:when>
                     <c:otherwise>
-                      <p class="text-meta">Aún no hay acciones de pacientes.</p>
+                      <p class="text-meta">There are no patients yet.</p>
                     </c:otherwise>
                   </c:choose>
                 </div>
@@ -148,7 +148,7 @@
 
             <!-- DOCTORES -->
             <div class="admin-card">
-              <h2>Acciones · Doctores</h2>
+              <h2>Actions · Doctors</h2>
 
               <div class="card" style="margin-top:0;">
                 <div id="doctorList" class="patient-list" style="margin-top: 0;">
@@ -169,7 +169,7 @@
                       </c:forEach>
                     </c:when>
                     <c:otherwise>
-                      <p class="text-meta">Aún no hay acciones de doctores.</p>
+                      <p class="text-meta">There are no doctors yet.</p>
                     </c:otherwise>
                   </c:choose>
                 </div>
@@ -178,7 +178,7 @@
 
             <!-- MÁQUINAS -->
             <div class="admin-card">
-              <h2>Acciones · Máquinas</h2>
+              <h2>Actions · Machines</h2>
 
               <div class="card" style="margin-top:0;">
                 <div id="machineList" class="patient-list" style="margin-top: 0;">
@@ -189,7 +189,7 @@
                           <div class="patient-main">
                             <div class="patient-icon" style="background:#7f8bad;">🖥</div>
                             <div class="patient-info">
-                              <div class="patient-name">Máquina</div>
+                              <div class="patient-name">Machine</div>
                               <div class="patient-subinfo">
                                 <span>${line}</span>
                               </div>
@@ -199,7 +199,7 @@
                       </c:forEach>
                     </c:when>
                     <c:otherwise>
-                      <p class="text-meta">Aún no hay acciones de máquinas.</p>
+                      <p class="text-meta">There are no patients yet.</p>
                     </c:otherwise>
                   </c:choose>
                 </div>
@@ -207,16 +207,16 @@
             </div>
             <!-- TIEMPO DE SIMULACIÓN -->
             <div class="admin-card">
-              <h2>⏱️ Tiempo de simulación</h2>
+              <h2>⏱️ Simulation Time</h2>
 
               <div class="card">
                 <div class="patient-card" style="cursor: default; border-left-color:#f5b700;">
                   <div class="patient-main">
                     <div class="patient-icon" style="background:#f5b700;">⏳</div>
                     <div class="patient-info">
-                      <div class="patient-name">Tiempo total</div>
+                      <div class="patient-name">Total time</div>
                       <div class="patient-subinfo">
-                        <span id="simTimeText">En espera…</span>
+                        <span id="simTimeText">Waiting…</span>
                       </div>
                     </div>
                   </div>
@@ -291,7 +291,7 @@
           document.getElementById("patientList").innerHTML = "";
           document.getElementById("doctorList").innerHTML = "";
           document.getElementById("machineList").innerHTML = "";
-          document.getElementById("simTimeText").innerHTML = "En espera…";
+          document.getElementById("simTimeText").innerHTML = "Waiting";
 
 
         }
