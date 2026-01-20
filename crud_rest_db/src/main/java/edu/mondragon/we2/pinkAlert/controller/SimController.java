@@ -30,11 +30,10 @@ public class SimController {
 
     
      @PostMapping("/api/sim/final")
-    public ResponseEntity<Void> receiveFinalTime(@RequestBody long timeNanoSeconds) {
+    public ResponseEntity<Void> receiveFinalTime(@RequestBody SimTime time) {
 
-        hub.publish(new SimTime(timeNanoSeconds));
-        System.out.println("🏁 Tiempo final recibido (ns): " + timeNanoSeconds);
-        System.out.println("⏱️ Tiempo final (s): " + (timeNanoSeconds / 1_000_000_000.0));
+        hub.publish(time);
+        System.out.println("⏱️ Tiempo final (s): " + (time.getSeconds()));
 
         return ResponseEntity.ok().build();
     }
