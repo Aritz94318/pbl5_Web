@@ -20,6 +20,5 @@
     "required": [
         "prediction",
         "prob_malignant"
-    ],
-    "additionalProperties": false
+    ]
 }
