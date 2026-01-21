@@ -28,6 +28,9 @@ public class Patient {
     @JsonIgnore
     private List<Diagnosis> diagnoses;
 
+    @Column(length = 30)
+    private String phone;
+
     @OneToOne(mappedBy = "patient", fetch = FetchType.LAZY)
     private User user;
 
@@ -36,6 +39,11 @@ public class Patient {
 
     public Patient(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public Patient(LocalDate birthDate, String phone) {
+        this.birthDate = birthDate;
+        this.phone = phone;
     }
 
     public Integer getId() {
@@ -74,5 +82,13 @@ public class Patient {
         if (birthDate == null)
             return 0;
         return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

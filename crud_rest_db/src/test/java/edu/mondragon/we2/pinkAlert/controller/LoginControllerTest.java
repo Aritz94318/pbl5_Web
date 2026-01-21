@@ -1,4 +1,4 @@
-/* package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
@@ -83,4 +83,3 @@ class LoginControllerTest extends EasyMockSupport {
         EasyMock.verify(userRepository);
     }
 }
- */

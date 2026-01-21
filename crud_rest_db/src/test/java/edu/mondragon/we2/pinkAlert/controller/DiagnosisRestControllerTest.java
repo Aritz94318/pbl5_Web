@@ -1,4 +1,4 @@
-/* package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
@@ -168,4 +168,3 @@ class DiagnosisRestControllerTest extends EasyMockSupport {
         }
 
 }
- */

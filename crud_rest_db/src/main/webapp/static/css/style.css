@@ -1,3 +1,18 @@
+.btn-primary {
+    background: #d58aaa !important;
+    color: #fff !important;
+    border: 0 !important;
+}
+
+.btn-secondary {
+    border: 1px solid #d58aaa63 !important;
+    color: #d58aaa !important;
+}
+
+.btn-primary:hover {
+    background: #d58aaaa8 !important;
+}
+
 .patient-card.ok-border {
     border-left: 4px solid #218e53b0
 }
@@ -15,13 +30,15 @@
 }
 
 .status-chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
     border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 14px;
+    padding: 8px 12px;
     font-weight: 600;
-    border: 1px solid #cfd7ff;
-    background: #e9f0ff;
-    color: #7f8bad;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .status-chip.positive {
@@ -36,23 +53,40 @@
     color: #218e53;
 }
 
-/* .status-chip {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85rem;
+/* .chip-row {
+    display: flex;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
     font-weight: 600;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 } */
 
+.status-chip.status-warning {
+    border-color: rgb(163 104 26 / 25%);
+    background: #fffbeb;
+    color: #78350f;
+}
+
 .status-chip.status-danger {
-    background: #ff4b4b1a;
-    border: 1px solid #ff4b4b;
-    color: #ff4b4b;
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
 }
 
 .status-chip.status-success {
-    background: #20a52217;
-    border: 1px solid #20a522;
-    color: #20a522;
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46
 }
 
 .urgent-icon {
@@ -69,18 +103,6 @@
     transition: transform .15s ease, opacity .15s ease;
     transform: translateX(2px);
     opacity: 1;
-}
-
-/* Background gradient */
-.bg-gradient {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    /* background: linear-gradient(135deg, #1e56ff, #004ad7); */
-    background: linear-gradient(135deg, hotpink, hotpink);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 /* Header brand */
@@ -105,22 +127,10 @@
     height: 65px;
 }
 
-/* Login card */
-.login-card {
-    background: white;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    width: 350px;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    text-align: center;
-}
-
 .icon-circle {
     width: 70px;
     height: 70px;
-    background: hotpink;
+    background: #d58aaa;
     margin: 0 auto;
     border-radius: 50%;
     display: flex;
@@ -133,19 +143,6 @@
     font-size: 36px;
 }
 
-.login-title {
-    /* margin-top: 20px; */
-    color: darkslategrey;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.login-subtitle {
-    margin-top: 5px;
-    color: #777;
-}
-
-/* Form styling */
 .form {
     margin-top: 25px;
     text-align: left;
@@ -168,25 +165,6 @@
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 15px;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 12px;
-    background: hotpink;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    /* font-weight: bold; */
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.login-btn:hover {
-    transition: transform .15s ease, opacity .15s ease;
-    transform: translateY(-1px);
-    background: lightpink;
 }
 
 .back-link {
@@ -233,7 +211,7 @@ body {
 /* ====== HEADER GENERAL ====== */
 
 .header {
-    background: linear-gradient(90deg, hotpink, hotpink);
+    background: linear-gradient(90deg, #d58aaa, #d58aaa);
     color: #fff;
     border-radius: 16px;
     padding: 18px 24px;
@@ -366,8 +344,8 @@ body {
 }
 
 .date-pill.active {
-    background: hotpink;
-    border-color: hotpink;
+    background: #d58aaa;
+    border-color: #d58aaa;
 }
 
 .date-pill.active .label,
@@ -417,11 +395,15 @@ body {
     border-radius: 999px;
 }
 
-.legend-dot.urgent {
+.legend-dot.warning {
+    background: #d39f11;
+}
+
+.legend-dot.danger {
     background: #ff4b4b;
 }
 
-.legend-dot.completed {
+.legend-dot.success {
     background: #2ac769;
 }
 
@@ -437,7 +419,7 @@ body {
 .patient-card {
     background: #f7f9ff;
     border-radius: 16px;
-    border-left: 4px solid hotpink;
+    border-left: 4px solid #d58aaa;
     padding: 12px 18px;
     display: flex;
     align-items: center;
@@ -461,6 +443,20 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+/* Reuse patient icon, just smaller */
+.patient-icon--small {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
+}
+
+/* Completed icon styling */
+.legend-check {
+    font-size: 18px;
+    color: #22c55e;
+    /* same green as success */
 }
 
 .patient-icon {

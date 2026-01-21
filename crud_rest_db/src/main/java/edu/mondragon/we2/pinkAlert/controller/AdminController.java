@@ -3,7 +3,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
@@ -20,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,22 +30,19 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Controller
 @RequestMapping("/admin")
@@ -68,6 +65,7 @@ public class AdminController {
                         DoctorRepository doctorRepository,
                         AiClientService aiClientService, DiagnosisService diagnosisService,
                         DoctorService doctorService, SimulationService simulationService) {
+                 
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
@@ -151,7 +149,7 @@ public class AdminController {
                 model.addAttribute("timelineCompletedJs",
                                 completes.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-                return "admin-dashboard";
+                return "admin/admin-dashboard";
         }
 
         // ---------------------------
@@ -173,20 +171,35 @@ public class AdminController {
 
         @PostMapping("/users")
         public String createUser(@ModelAttribute("user") User user,
-                        @RequestParam(name = "rawPassword", required = false) String rawPassword) {
+                        @RequestParam(name = "rawPassword", required = false) String rawPassword,
+                        @RequestParam(name = "doctorPhone", required = false) String doctorPhone,
+                        @RequestParam(name = "patientPhone", required = false) String patientPhone,
+                        @RequestParam(name = "patientBirthDate", required = false) String patientBirthDate) {
 
-                if (rawPassword == null || rawPassword.isBlank()) {
+                if (rawPassword == null || rawPassword.isBlank())
                         rawPassword = "123";
-                }
 
                 if (user.getRole() == Role.DOCTOR) {
-                        Doctor doc = doctorRepository.save(new Doctor());
+                        Doctor doc = new Doctor();
+                        doc.setPhone(doctorPhone);
+                        doc = doctorRepository.save(doc);
+
                         user.setDoctor(doc);
                         user.setPatient(null);
+
                 } else if (user.getRole() == Role.PATIENT) {
-                        Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
+                        LocalDate bd = (patientBirthDate == null || patientBirthDate.isBlank())
+                                        ? LocalDate.of(2000, 1, 1)
+                                        : LocalDate.parse(patientBirthDate);
+
+                        Patient p = new Patient();
+                        p.setBirthDate(bd);
+                        p.setPhone(patientPhone);
+                        p = patientRepository.save(p);
+
                         user.linkPatient(p);
                         user.setDoctor(null);
+
                 } else {
                         user.unlinkDoctor();
                         user.unlinkPatient();
@@ -203,62 +216,123 @@ public class AdminController {
                 return "admin/user-form";
         }
 
+        @Transactional
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
                         @ModelAttribute("user") User posted,
-                        @RequestParam(name = "rawPassword", required = false) String rawPassword) {
+                        @RequestParam(name = "rawPassword", required = false) String rawPassword,
+                        @RequestParam(name = "doctorPhone", required = false) String doctorPhone,
+                        @RequestParam(name = "patientPhone", required = false) String patientPhone,
+                        @RequestParam(name = "patientBirthDate", required = false) String patientBirthDate) {
 
                 User existing = userService.get(id);
 
+                // base fields
                 existing.setUsername(posted.getUsername());
                 existing.setEmail(posted.getEmail());
                 existing.setFullName(posted.getFullName());
-
-                Role oldRole = existing.getRole();
-                Role newRole = posted.getRole();
 
                 if (rawPassword != null && !rawPassword.isBlank()) {
                         userService.setPassword(existing, rawPassword);
                 }
 
-                if (oldRole != newRole) {
+                Role oldRole = existing.getRole();
+                Role newRole = posted.getRole();
 
+                // =========================
+                // CASE 1: Role didn't change
+                // =========================
+                if (oldRole == newRole) {
+
+                        if (newRole == Role.DOCTOR && existing.getDoctor() != null) {
+                                existing.getDoctor().setPhone(doctorPhone);
+                                doctorRepository.save(existing.getDoctor());
+                        }
+
+                        if (newRole == Role.PATIENT && existing.getPatient() != null) {
+                                if (patientBirthDate != null && !patientBirthDate.isBlank()) {
+                                        existing.getPatient().setBirthDate(LocalDate.parse(patientBirthDate));
+                                }
+                                existing.getPatient().setPhone(patientPhone);
+                                patientRepository.save(existing.getPatient());
+                        }
+
+                        userService.save(existing);
+                        return "redirect:/admin/users";
+                }
+
+                // =========================
+                // CASE 2: Role DID change
+                // =========================
+
+                // reset links first (to satisfy triggers / FK constraints)
+                existing.setRole(Role.ADMIN);
+                existing.setDoctor(null);
+                existing.unlinkPatient();
+                userRepository.saveAndFlush(existing);
+
+                if (newRole == Role.ADMIN) {
                         existing.setRole(Role.ADMIN);
                         existing.setDoctor(null);
                         existing.unlinkPatient();
-                        userRepository.saveAndFlush(existing);
 
-                        if (newRole == Role.ADMIN) {
-                                existing.setRole(Role.ADMIN);
-                                existing.setDoctor(null);
-                                existing.unlinkPatient();
-                        } else if (newRole == Role.DOCTOR) {
-                                existing.setRole(Role.DOCTOR);
-                                existing.unlinkPatient();
-                                if (existing.getDoctor() == null) {
-                                        Doctor doc = doctorRepository.save(new Doctor());
-                                        existing.setDoctor(doc);
-                                }
-                        } else if (newRole == Role.PATIENT) {
-                                existing.setRole(Role.PATIENT);
-                                existing.setDoctor(null);
-                                if (existing.getPatient() == null) {
-                                        Patient p = patientRepository.save(new Patient(LocalDate.of(2000, 1, 1)));
-                                        existing.linkPatient(p);
-                                }
-                        }
+                } else if (newRole == Role.DOCTOR) {
+                        existing.setRole(Role.DOCTOR);
+                        existing.unlinkPatient();
 
-                        userRepository.saveAndFlush(existing);
-                        return "redirect:/admin/users";
+                        Doctor doc = existing.getDoctor();
+                        if (doc == null)
+                                doc = new Doctor();
+                        doc.setPhone(doctorPhone);
+                        doc = doctorRepository.save(doc);
+
+                        existing.setDoctor(doc);
+
+                } else if (newRole == Role.PATIENT) {
+                        existing.setRole(Role.PATIENT);
+                        existing.setDoctor(null);
+
+                        LocalDate bd = (patientBirthDate == null || patientBirthDate.isBlank())
+                                        ? LocalDate.of(2000, 1, 1)
+                                        : LocalDate.parse(patientBirthDate);
+
+                        Patient p = existing.getPatient();
+                        if (p == null)
+                                p = new Patient();
+                        p.setBirthDate(bd);
+                        p.setPhone(patientPhone);
+                        p = patientRepository.save(p);
+
+                        existing.linkPatient(p);
                 }
-                userService.save(existing);
 
+                userRepository.saveAndFlush(existing);
                 return "redirect:/admin/users";
         }
 
+        @Transactional
         @PostMapping("/users/{id}/delete")
         public String deleteUser(@PathVariable Integer id) {
-                userService.deleteUserCompletely(id);
+                User u = userService.get(id);
+
+                Doctor doctorToDelete = u.getDoctor();
+                Patient patientToDelete = u.getPatient();
+
+                u.setRole(Role.ADMIN);
+                u.setDoctor(null);
+                u.unlinkPatient();
+
+                userRepository.saveAndFlush(u);
+
+                userRepository.delete(u);
+                userRepository.flush();
+
+                if (doctorToDelete != null) {
+                        doctorRepository.delete(doctorToDelete);
+                }
+                if (patientToDelete != null) {
+                        patientRepository.delete(patientToDelete);
+                }
 
                 return "redirect:/admin/users";
         }
@@ -342,7 +416,7 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-
+        // @Transactional
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
@@ -351,114 +425,171 @@ public class AdminController {
                         @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
-                        @RequestParam(name = "email", required = false) String email,
-                        Model model) throws IOException, ProcessingException {
+                        // @RequestParam(name = "email", required = false) String email,
+                        Model model) {
 
-                if (patientId == null) {
-                        model.addAttribute("error", "You must select a patient.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
+                try {
+                        if (patientId == null) {
+                                model.addAttribute("error", "You must select a patient.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
 
-                Patient patient = patientRepository.findById(patientId)
-                                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
+                        Patient patient = patientRepository.findById(patientId)
+                                        .orElseThrow(() -> new IllegalArgumentException(
+                                                        "Patient not found: " + patientId));
 
-                List<String> dicomUrls = List.of(
-                                dicomUrl,
-                                dicomUrl2,
-                                dicomUrl3,
-                                dicomUrl4);
+                        List<String> dicomUrls = List.of(dicomUrl, dicomUrl2, dicomUrl3, dicomUrl4);
 
-                if (dicomUrls.stream().anyMatch(u -> u == null || u.isBlank())) {
-                        model.addAttribute("error", "All 4 DICOM URLs are required.");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
+                        if (dicomUrls.stream().anyMatch(u -> u == null || u.isBlank())) {
+                                model.addAttribute("error", "All 4 DICOM URLs are required.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
 
-                boolean invalidDriveUrl = dicomUrls.stream().anyMatch(u -> !u.contains("drive.google.com") ||
-                                !u.contains("uc?export=download&id="));
+                        boolean invalidDriveUrl = dicomUrls.stream().anyMatch(u -> !u.contains("drive.google.com") ||
+                                        !u.contains("uc?export=download&id="));
+                        if (invalidDriveUrl) {
+                                model.addAttribute("error",
+                                                "All DICOM URLs must be public Google Drive direct-download links (uc?export=download&id=...).");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
 
-                if (invalidDriveUrl) {
-                        model.addAttribute("error",
-                                        "All DICOM URLs must be public Google Drive direct-download links (uc?export=download&id=...).");
-                        model.addAttribute("today", LocalDate.now().toString());
-                        return "admin/diagnosis-form";
-                }
-
-                // Email fallback: if not provided, try to use patient user email
-                if (email == null || email.isBlank()) {
-                        if (patient.getUser() != null && patient.getUser().getEmail() != null) {
+                        String email = null;
+                        if (patient.getUser() != null) {
                                 email = patient.getUser().getEmail();
                         }
-                }
-                if (email == null || email.isBlank()) {
-                        model.addAttribute("error",
-                                        "Email is required (add it in the form or link patient user email).");
+
+                        if (email == null || email.isBlank()) {
+                                model.addAttribute("error",
+                                                "Selected patient has no email linked. Please edit the user and add an email.");
+                                model.addAttribute("today", LocalDate.now().toString());
+                                return "admin/diagnosis-form";
+                        }
+
+                        if (description == null || description.trim().isEmpty()) {
+                                description = "Pending final diagnosis";
+                        }
+
+                        LocalDate date = LocalDate.parse(dateStr);
+
+                        Doctor doctor = doctorRepository.findAll().stream().findFirst()
+                                        .orElseThrow(() -> new IllegalStateException(
+                                                        "No doctors exist. Create one doctor first."));
+
+                        Diagnosis diag = new Diagnosis();
+                        diag.setPatient(patient);
+                        diag.setDoctor(doctor);
+                        diag.setReviewed(false);
+                        diag.setUrgent(false);
+                        diag.setDescription(description);
+                        diag.setDate(date);
+
+                        diag.setImagePath(dicomUrl);
+                        diag.setImage2Path(dicomUrl2);
+                        diag.setImage3Path(dicomUrl3);
+                        diag.setImage4Path(dicomUrl4);
+
+                        diag = diagnosisRepository.saveAndFlush(diag);
+
+                        String previewsDir = "previews";
+                        Path previewsPath = Paths.get("src/main/resources/static/" + previewsDir);
+                        Files.createDirectories(previewsPath);
+
+                        Path tmpDicomPath = Paths.get("tmp/dicom");
+                        Files.createDirectories(tmpDicomPath);
+
+                        List<String> urls = dicomUrls;
+                        for (int i = 1; i <= 4; i++) {
+                                String u = urls.get(i - 1);
+
+                                Path dicomFile = tmpDicomPath.resolve("diag_" + diag.getId() + "_" + i + ".dcm");
+                                downloadToFile(u, dicomFile);
+
+                                File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
+                                edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
+                                                outPng);
+
+                                String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
+
+                                if (i == 1)
+                                        diag.setPreviewPath(publicPreviewPath);
+                                if (i == 2)
+                                        diag.setPreview2Path(publicPreviewPath);
+                                if (i == 3)
+                                        diag.setPreview3Path(publicPreviewPath);
+                                if (i == 4)
+                                        diag.setPreview4Path(publicPreviewPath);
+                        }
+
+                        diagnosisRepository.save(diag);
+
+                        AiPredictUrlRequest payload = new AiPredictUrlRequest(
+                                        String.valueOf(diag.getId()), email, dicomUrl, dicomUrl2, dicomUrl3, dicomUrl4);
+                        aiClientService.sendPredictUrl(payload);
+
+                        return "redirect:/admin/dashboard";
+
+                } catch (Exception e) {
+                        model.addAttribute("error", "Failed to create diagnosis: " + e.getMessage());
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
+        }
 
-                if (description == null || description.trim().isEmpty()) {
-                        description = "Pending AI analysis"; // or "" if you prefer, but keep NOT NULL
+        // private static String getBaseUrl(HttpServletRequest request) {
+        //         String scheme = request.getScheme();
+        //         String host = request.getServerName();
+        //         int port = request.getServerPort();
+
+        //         boolean isDefaultPort = (scheme.equals("http") && port == 80)
+        //                         || (scheme.equals("https") && port == 443);
+
+        //         StringBuilder sb = new StringBuilder();
+        //         sb.append(scheme).append("://").append(host);
+        //         if (!isDefaultPort)
+        //                 sb.append(":").append(port);
+
+        //         // include contextPath if you deploy under a subpath
+        //         sb.append(request.getContextPath());
+
+        //         return sb.toString();
+        // }
+
+        // private static boolean looksLikeDicom(MultipartFile file) {
+        //         try (InputStream is = file.getInputStream()) {
+        //                 byte[] header = is.readNBytes(132);
+        //                 if (header.length < 132)
+        //                         return false;
+
+        //                 // Standard DICOM: "DICM" at offset 128
+        //                 return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' && header[131] == 'M';
+        //         } catch (Exception e) {
+        //                 return false;
+        //         }
+        // }
+
+        private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
+                Files.createDirectories(target.getParent());
+
+                HttpClient client = HttpClient.newBuilder()
+                                .followRedirects(HttpClient.Redirect.ALWAYS)
+                                .build();
+
+                HttpRequest req = HttpRequest.newBuilder()
+                                .uri(URI.create(url))
+                                .GET()
+                                .build();
+
+                HttpResponse<byte[]> resp = client.send(req, HttpResponse.BodyHandlers.ofByteArray());
+
+                if (resp.statusCode() < 200 || resp.statusCode() >= 300) {
+                        throw new IOException("Failed to download " + url + " status=" + resp.statusCode());
                 }
 
-                LocalDate date = LocalDate.parse(dateStr);
-
-                // Create Diagnosis
-                Diagnosis diag = new Diagnosis();
-                diag.setPatient(patient);
-                diag.setDoctor(null);
-                diag.setReviewed(false);
-                diag.setUrgent(false); // AI will update this later via webhook
-                diag.setDescription(description);
-                diag.setDate(date);
-
-                // Store the DICOM URL in ImagePath (or make a dedicated column)
-                diag.setImagePath(dicomUrl);
-                diag.setImage2Path(dicomUrl2);
-                diag.setImage3Path(dicomUrl3);
-                diag.setImage4Path(dicomUrl4);
-                diagnosisService.save(diag);
-
-                // Call AI
-                AiPredictUrlRequest payload = new AiPredictUrlRequest(String.valueOf(diag.getId()), email, dicomUrl,
-                                dicomUrl2, dicomUrl3, dicomUrl4);
-
-                aiClientService.sendPredictUrl(payload);
-
-                return "redirect:/admin/dashboard";
+                Files.write(target, resp.body());
+                return target;
         }
 
-        private static String getBaseUrl(HttpServletRequest request) {
-                // Example: https://yourdomain.com (no trailing slash)
-                String scheme = request.getScheme();
-                String host = request.getServerName();
-                int port = request.getServerPort();
-
-                boolean isDefaultPort = (scheme.equals("http") && port == 80)
-                                || (scheme.equals("https") && port == 443);
-
-                StringBuilder sb = new StringBuilder();
-                sb.append(scheme).append("://").append(host);
-                if (!isDefaultPort)
-                        sb.append(":").append(port);
-
-                // include contextPath if you deploy under a subpath
-                sb.append(request.getContextPath());
-
-                return sb.toString();
-        }
-
-        private static boolean looksLikeDicom(MultipartFile file) {
-                try (InputStream is = file.getInputStream()) {
-                        byte[] header = is.readNBytes(132);
-                        if (header.length < 132)
-                                return false;
-
-                        // Standard DICOM: "DICM" at offset 128
-                        return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' && header[131] == 'M';
-                } catch (Exception e) {
-                        return false;
-                }
-        }
 }

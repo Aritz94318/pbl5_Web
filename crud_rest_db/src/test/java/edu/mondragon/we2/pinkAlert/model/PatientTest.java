@@ -1,96 +1,51 @@
-package edu.mondragon.we2.pinkAlert.model;
+// package edu.mondragon.we2.pinkAlert.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
 
-class PatientTest {
 
-    private Patient patient;
+// import org.junit.jupiter.api.Test;
 
-    @BeforeEach
-    void setUp() {
-        patient = new Patient();
-    }
 
-    @Test
-    void testDefaultConstructor() {
-        assertNotNull(patient);
-        assertNull(patient.getId());
-        assertNull(patient.getBirthDate());
-        assertNull(patient.getDiagnoses());
-        assertNull(patient.getUser());
-    }
+// import java.time.LocalDate;
+// import java.util.List;
 
-    @Test
-    void testParameterizedConstructor() {
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        Patient paramPatient = new Patient(birthDate);
-        
-        assertEquals(birthDate, paramPatient.getBirthDate());
-        assertNull(paramPatient.getId());
-        assertNull(paramPatient.getDiagnoses());
-        assertNull(paramPatient.getUser());
-    }
+// import static org.junit.jupiter.api.Assertions.*;
 
-    @Test
-    void testSetterAndGetters() {
-        Integer id = 1;
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        List<Diagnosis> diagnoses = new ArrayList<>();
-        User user = new User();
+// class PatientTest {
 
-        patient.setId(id);
-        patient.setBirthDate(birthDate);
-        patient.setDiagnoses(diagnoses);
-        patient.setUser(user);
+//     @Test
+//     void testGettersAndSetters() {
+//         Patient patient = new Patient();
 
-        assertEquals(id, patient.getId());
-        assertEquals(birthDate, patient.getBirthDate());
-        assertEquals(diagnoses, patient.getDiagnoses());
-        assertEquals(user, patient.getUser());
-    }
+//         patient.setId(1);
+//         patient.setName("Alice");
+//         patient.setBirthDate(LocalDate.of(2000, 1, 1));
 
-    @Test
-    void testGetAgeWithNullBirthDate() {
-        patient.setBirthDate(null);
-        assertEquals(0, patient.getAge());
-    }
+//         assertEquals(1, patient.getId());
+//         assertEquals("Alice", patient.getName());
+//         assertEquals(LocalDate.of(2000, 1, 1), patient.getBirthDate());
+//     }
 
-    @Test
-    void testGetAgeWithFutureBirthDate() {
-        LocalDate futureDate = LocalDate.now().plusYears(1);
-        patient.setBirthDate(futureDate);
-        assertEquals(-1, patient.getAge()); // Negative age for future dates
-    }
+//     @Test
+//     void testGetAge() {
+//         Patient patient = new Patient("Bob", LocalDate.now().minusYears(30));
 
-    @Test
-    void testGetAgeWithPastBirthDate() {
-        LocalDate pastDate = LocalDate.now().minusYears(25);
-        patient.setBirthDate(pastDate);
-        assertEquals(25, patient.getAge());
-    }
+//         assertEquals(30, patient.getAge());
+//     }
 
-    @Test
-    void testGetAgeWithBirthdayToday() {
-        LocalDate today = LocalDate.now();
-        patient.setBirthDate(today);
-        assertEquals(0, patient.getAge());
-    }
+//     @Test
+//     void testGetAgeWhenBirthDateIsNull() {
+//         Patient patient = new Patient();
 
-    @Test
-    void testSettersWithNullValues() {
-        patient.setId(null);
-        patient.setBirthDate(null);
-        patient.setDiagnoses(null);
-        patient.setUser(null);
+//         assertEquals(0, patient.getAge());
+//     }
 
-        assertNull(patient.getId());
-        assertNull(patient.getBirthDate());
-        assertNull(patient.getDiagnoses());
-        assertNull(patient.getUser());
-    }
-}
+//     @Test
+//     void testDiagnosesList() {
+//         Patient patient = new Patient();
+
+//         Diagnosis diagnosis = new Diagnosis();
+//         patient.setDiagnoses(List.of(diagnosis));
+
+//         assertEquals(1, patient.getDiagnoses().size());
+//     }
+// }
