@@ -1,7 +1,8 @@
-package edu.mondragon.we2.pinkAlert.repository;
+package edu.mondragon.we2.pinkalert.repository;
 
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
 
 import java.time.LocalDate;
 import java.util.List;

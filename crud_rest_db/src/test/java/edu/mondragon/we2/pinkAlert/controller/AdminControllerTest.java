@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkalert.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -7,46 +7,36 @@ import java.nio.file.Path;
 import java.time.LocalDate;
  
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import edu.mondragon.we2.pinkAlert.repository.UserRepository;
-import edu.mondragon.we2.pinkAlert.service.AiClientService;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
-import edu.mondragon.we2.pinkAlert.service.SimulationService;
-import edu.mondragon.we2.pinkAlert.service.UserService;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
-import edu.mondragon.we2.pinkAlert.model.*;
-import edu.mondragon.we2.pinkAlert.repository.*;
-import edu.mondragon.we2.pinkAlert.service.*;
+
+import edu.mondragon.we2.pinkalert.controller.AdminController;
+import edu.mondragon.we2.pinkalert.dto.AiPredictUrlRequest;
+import edu.mondragon.we2.pinkalert.model.*;
+import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkalert.repository.PatientRepository;
+import edu.mondragon.we2.pinkalert.repository.UserRepository;
+import edu.mondragon.we2.pinkalert.service.AiClientService;
+import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkalert.service.DoctorService;
+import edu.mondragon.we2.pinkalert.service.SimulationService;
+import edu.mondragon.we2.pinkalert.service.UserService;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
-
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +44,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
@@ -114,9 +103,7 @@ class AdminControllerTest {
                 simulationService);
 
         objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules(); // Para soportar LocalDate
-
-        // Configurar MockMvc con ViewResolver personalizado
+        objectMapper.findAndRegisterModules(); 
         mockMvc = MockMvcBuilders.standaloneSetup(adminController)
                 .setViewResolvers(new DummyViewResolver())
                 .build();
@@ -144,12 +131,10 @@ class AdminControllerTest {
                         .param("dicomUrl4", fileUrl))
                 .andExpect(status().is4xxClientError());
     }
-    // ==============================
-    // TESTS PARA DASHBOARD
-    // ==============================
+   
     @Test
     void testDashboard_ReturnsCorrectViewAndModelAttributes() {
-        // Given
+
         List<Diagnosis> mockDiagnoses = Arrays.asList(
                 createDiagnosis(1, true, true, FinalResult.MALIGNANT), // "Malignant"
                 createDiagnosis(2, false, true, FinalResult.BENIGN), // "Benign"
@@ -166,10 +151,8 @@ class AdminControllerTest {
 
         Model model = mock(Model.class);
 
-        // When
         String viewName = adminController.dashboard(model);
 
-        // Then
         assertThat(viewName).isEqualTo("admin/admin-dashboard");
 
         // El controlador busca "Positive" pero getStatus() devuelve "Malignant"
@@ -180,7 +163,6 @@ class AdminControllerTest {
         verify(model).addAttribute("pendingCount", 1L); // "Pending Review" cuenta como pendiente
     }
 
-    // Método auxiliar actualizado
     private Diagnosis createDiagnosis(Integer id, boolean urgent, boolean reviewed, FinalResult finalResult) {
         Diagnosis diagnosis = new Diagnosis();
         diagnosis.setId(id);
@@ -199,7 +181,7 @@ class AdminControllerTest {
 
     @Test
     void testDashboard_WithEmptyData_HandlesGracefully() {
-        // Given
+    
         when(patientRepository.count()).thenReturn(0L);
         when(userRepository.count()).thenReturn(0L);
         when(diagnosisRepository.count()).thenReturn(0L);
@@ -209,32 +191,26 @@ class AdminControllerTest {
 
         Model model = mock(Model.class);
 
-        // When
         String viewName = adminController.dashboard(model);
 
-        // Then
         assertThat(viewName).isEqualTo("admin/admin-dashboard");
         verify(model).addAttribute("completionRate", 0.0);
         verify(model).addAttribute("positiveRate", 0.0);
     }
 
-    // ==============================
-    // TESTS PARA USERS CRUD
-    // ==============================
+
 
     @Test
     void testUsers_ReturnsUsersView() {
-        // Given
+     
         List<User> mockUsers = Arrays.asList(
                 createUser(1, "admin1", Role.ADMIN),
                 createUser(2, "doctor1", Role.DOCTOR));
         when(userService.findAll()).thenReturn(mockUsers);
         Model model = mock(Model.class);
 
-        // When
         String viewName = adminController.users(model);
 
-        // Then
         assertThat(viewName).isEqualTo("admin/users");
         verify(model).addAttribute("users", mockUsers);
     }
@@ -242,7 +218,6 @@ class AdminControllerTest {
     @Test
     void createDiagnosis_coverageOnly_exceptionPath() throws Exception {
 
-        // Make sure saveAndFlush returns a Diagnosis WITH an ID
         lenient().when(diagnosisRepository.saveAndFlush(any()))
                 .thenAnswer(inv -> {
                     Diagnosis d = inv.getArgument(0);
@@ -250,7 +225,6 @@ class AdminControllerTest {
                     return d;
                 });
 
-        // We EXPECT failure — we don't care
         mockMvc.perform(post("/admin/diagnosis")
                 .param("email", "test@test.com")
                 .param("dicomUrl", "http://invalid-url")
@@ -1561,27 +1535,22 @@ class AdminControllerTest {
         assertThat(errorMessage).contains("Failed to create diagnosis");
     }
 
-    // ==============================
-    // TESTS PARA VERIFICACIÓN DE MODEL ATTRIBUTES
-    // ==============================
+
 
     @Test
     void testNewUserForm_HasAllRequiredAttributes() {
-        // Given
+   
         Model model = mock(Model.class);
         ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Object> valueCaptor = ArgumentCaptor.forClass(Object.class);
 
-        // When
         adminController.newUser(model);
 
-        // Then
         verify(model, times(2)).addAttribute(keyCaptor.capture(), valueCaptor.capture());
 
         List<String> keys = keyCaptor.getAllValues();
         List<Object> values = valueCaptor.getAllValues();
 
-        // Verificar con AssertJ
         assertThat(keys).contains("user", "roles");
         assertThat(values.get(keys.indexOf("user"))).isInstanceOf(User.class);
         assertThat(values.get(keys.indexOf("roles"))).isEqualTo(Role.values());
@@ -1589,7 +1558,7 @@ class AdminControllerTest {
 
     @Test
     void testEditUserForm_HasAllRequiredAttributes() {
-        // Given
+      
         Integer userId = 1;
         User mockUser = createUser(userId, "testuser", Role.ADMIN);
         when(userService.get(userId)).thenReturn(mockUser);
@@ -1598,10 +1567,7 @@ class AdminControllerTest {
         ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Object> valueCaptor = ArgumentCaptor.forClass(Object.class);
 
-        // When
         adminController.editUser(userId, model);
-
-        // Then
         verify(model, times(2)).addAttribute(keyCaptor.capture(), valueCaptor.capture());
 
         List<String> keys = keyCaptor.getAllValues();

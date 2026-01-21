@@ -1,8 +1,14 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import edu.mondragon.we2.pinkalert.model.AiPrediction;
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
+import edu.mondragon.we2.pinkalert.model.Doctor;
+import edu.mondragon.we2.pinkalert.model.FinalResult;
+import edu.mondragon.we2.pinkalert.model.Patient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,8 +1,9 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
-import edu.mondragon.we2.pinkAlert.model.Patient;
-import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import org.springframework.stereotype.Service;
+
+import edu.mondragon.we2.pinkalert.model.Patient;
+import edu.mondragon.we2.pinkalert.repository.PatientRepository;
 
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class PatientService {
 
     public Patient update(Integer id, Patient updated) {
         Patient existing = findById(id);
-        //existing.setName(updated.getName());
         existing.setBirthDate(updated.getBirthDate());
         return patientRepository.save(existing);
     }

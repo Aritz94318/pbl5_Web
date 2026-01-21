@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 public class Notification {
     private String email;

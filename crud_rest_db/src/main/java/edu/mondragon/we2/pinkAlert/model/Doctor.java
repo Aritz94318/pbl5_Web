@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 import jakarta.persistence.*;
 import java.util.List;

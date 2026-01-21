@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 public class SimTime {
 
@@ -14,7 +14,6 @@ public class SimTime {
         this.seconds = seconds;
     }
 
-    // getters para que se serialice a JSON
     public long getTime() {
         return time;
     }

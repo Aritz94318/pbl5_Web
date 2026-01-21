@@ -1,8 +1,9 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
-import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import org.springframework.stereotype.Service;
+
+import edu.mondragon.we2.pinkalert.model.Doctor;
+import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
 
 import java.util.List;
 

@@ -1,8 +1,10 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.mondragon.we2.pinkalert.model.SimTime;
 
 class SimTimeTest {
 

@@ -1,21 +1,5 @@
-package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkalert.controller;
 
-import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
-import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.Patient;
-import edu.mondragon.we2.pinkAlert.model.Role;
-import edu.mondragon.we2.pinkAlert.model.User;
-import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import edu.mondragon.we2.pinkAlert.repository.UserRepository;
-import edu.mondragon.we2.pinkAlert.service.AiClientService;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
-import edu.mondragon.we2.pinkAlert.service.SimulationService;
-import edu.mondragon.we2.pinkAlert.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.MediaType;
@@ -23,16 +7,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+
+import edu.mondragon.we2.pinkalert.dto.AiPredictUrlRequest;
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
+import edu.mondragon.we2.pinkalert.model.Doctor;
+import edu.mondragon.we2.pinkalert.model.Patient;
+import edu.mondragon.we2.pinkalert.model.Role;
+import edu.mondragon.we2.pinkalert.model.User;
+import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkalert.repository.PatientRepository;
+import edu.mondragon.we2.pinkalert.repository.UserRepository;
+import edu.mondragon.we2.pinkalert.service.AiClientService;
+import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkalert.service.DoctorService;
+import edu.mondragon.we2.pinkalert.service.SimulationService;
+import edu.mondragon.we2.pinkalert.service.UserService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -54,8 +52,6 @@ public class AdminController {
         private final UserRepository userRepository;
         private final UserService userService;
         private final AiClientService aiClientService;
-        private final DiagnosisService diagnosisService;
-        private final DoctorService doctorService;
         private final SimulationService simulationService;
 
         public AdminController(PatientRepository patientRepository,
@@ -72,8 +68,6 @@ public class AdminController {
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
-                this.diagnosisService = diagnosisService;
-                this.doctorService = doctorService;
                 this.simulationService = simulationService;
         }
 
@@ -152,9 +146,6 @@ public class AdminController {
                 return "admin/admin-dashboard";
         }
 
-        // ---------------------------
-        // USERS CRUD (UNCHANGED)
-        // ---------------------------
 
         @GetMapping("/users")
         public String users(Model model) {
@@ -227,7 +218,6 @@ public class AdminController {
 
                 User existing = userService.get(id);
 
-                // base fields
                 existing.setUsername(posted.getUsername());
                 existing.setEmail(posted.getEmail());
                 existing.setFullName(posted.getFullName());
@@ -239,9 +229,6 @@ public class AdminController {
                 Role oldRole = existing.getRole();
                 Role newRole = posted.getRole();
 
-                // =========================
-                // CASE 1: Role didn't change
-                // =========================
                 if (oldRole == newRole) {
 
                         if (newRole == Role.DOCTOR && existing.getDoctor() != null) {
@@ -260,12 +247,6 @@ public class AdminController {
                         userService.save(existing);
                         return "redirect:/admin/users";
                 }
-
-                // =========================
-                // CASE 2: Role DID change
-                // =========================
-
-                // reset links first (to satisfy triggers / FK constraints)
                 existing.setRole(Role.ADMIN);
                 existing.setDoctor(null);
                 existing.unlinkPatient();
@@ -351,7 +332,6 @@ public class AdminController {
                 return "admin/role-list";
         }
 
-        // Provisional
         @GetMapping("/simulation")
         public String simulationPage(Model model) {
                 model.addAttribute("numPatients", 2);
@@ -378,9 +358,7 @@ public class AdminController {
                 return Math.round(v * 10.0) / 10.0;
         }
 
-        // ---------------------------
-        // MACHINE SIMULATOR - NEW DIAGNOSIS
-        // ---------------------------
+
 
         @GetMapping("/diagnoses/new")
         public String newDiagnosisForm(Model model) {
@@ -425,7 +403,6 @@ public class AdminController {
                         @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
-                        // @RequestParam(name = "email", required = false) String email,
                         Model model) {
 
                 try {
@@ -514,7 +491,7 @@ public class AdminController {
                                 System.out.println("DICOM size: " + Files.size(dicomFile));
                                 System.out.println("Ruta absoluta: " + f.getAbsolutePath());
                                 System.out.println("Ruta canonical (real): " + f.getCanonicalPath());
-                                edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
+                                edu.mondragon.we2.pinkalert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
                                                 outPng);
 
                                 String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
@@ -544,38 +521,6 @@ public class AdminController {
                 }
         }
 
-        // private static String getBaseUrl(HttpServletRequest request) {
-        // String scheme = request.getScheme();
-        // String host = request.getServerName();
-        // int port = request.getServerPort();
-
-        // boolean isDefaultPort = (scheme.equals("http") && port == 80)
-        // || (scheme.equals("https") && port == 443);
-
-        // StringBuilder sb = new StringBuilder();
-        // sb.append(scheme).append("://").append(host);
-        // if (!isDefaultPort)
-        // sb.append(":").append(port);
-
-        // // include contextPath if you deploy under a subpath
-        // sb.append(request.getContextPath());
-
-        // return sb.toString();
-        // }
-
-        // private static boolean looksLikeDicom(MultipartFile file) {
-        // try (InputStream is = file.getInputStream()) {
-        // byte[] header = is.readNBytes(132);
-        // if (header.length < 132)
-        // return false;
-
-        // // Standard DICOM: "DICM" at offset 128
-        // return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' &&
-        // header[131] == 'M';
-        // } catch (Exception e) {
-        // return false;
-        // }
-        // }
 
         private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
                 Files.createDirectories(target.getParent());

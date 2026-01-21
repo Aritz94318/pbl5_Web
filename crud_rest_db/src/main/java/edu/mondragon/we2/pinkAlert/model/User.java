@@ -1,7 +1,7 @@
 // ===============================
 // User.java (FULL FILE)
 // ===============================
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 import jakarta.persistence.*;
 
@@ -38,7 +38,6 @@ public class User {
     @JoinColumn(name = "PatientID")
     private Patient patient;
 
-    // --- convenience helpers for bidirectional patient link ---
     public void linkPatient(Patient p) {
         this.patient = p;
         if (p != null)
@@ -56,7 +55,6 @@ public class User {
         this.doctor = null;
     }
 
-    // getters & setters
     public Integer getId() {
         return id;
     }

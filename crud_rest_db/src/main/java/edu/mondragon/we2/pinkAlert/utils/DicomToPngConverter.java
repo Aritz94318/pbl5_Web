@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.utils;
+package edu.mondragon.we2.pinkalert.utils;
 import org.dcm4che3.imageio.plugins.dcm.DicomImageReadParam;
 import org.dcm4che3.imageio.plugins.dcm.DicomImageReader;
 import org.dcm4che3.imageio.plugins.dcm.DicomImageReaderSpi;

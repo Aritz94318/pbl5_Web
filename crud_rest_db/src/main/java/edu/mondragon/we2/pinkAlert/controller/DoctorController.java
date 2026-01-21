@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkalert.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,14 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
+import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 
 @Controller
 @RequestMapping("/doctor")
@@ -43,17 +42,14 @@ public class DoctorController {
             selectedDate = today;
         }
 
-        // FIX for lambda: final copy
         final LocalDate finalSelectedDate = selectedDate;
 
-        // 1) Fetch ONLY diagnoses for the selected date
         List<Diagnosis> diagnoses = diagnosisService.findByDateSortedByUrgency(finalSelectedDate);
 
         int total = diagnoses.size();
         long urgent = diagnoses.stream().filter(Diagnosis::isUrgent).count();
         long routine = total - urgent;
 
-        // Count previous screenings per patient
         Map<Integer, Long> previousScreenings = diagnoses.stream()
                 .collect(Collectors.groupingBy(
                         d -> d.getPatient().getId(),
@@ -66,9 +62,7 @@ public class DoctorController {
         model.addAttribute("previousScreenings", previousScreenings);
         model.addAttribute("selectedDate", finalSelectedDate);
 
-        // -----------------------------------------
-        // DYNAMIC DATE PILLS (last 5 days + today)
-        // -----------------------------------------
+
 
         DateTimeFormatter monthDayFmt = DateTimeFormatter.ofPattern("MMM dd");
         DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -88,7 +82,7 @@ public class DoctorController {
                         label = date.format(monthDayFmt);
 
                     String display = date.format(displayFmt);
-                    String param = date.toString(); // yyyy-MM-dd for URL
+                    String param = date.toString(); 
 
                     boolean active = date.equals(finalSelectedDate);
 
@@ -105,15 +99,14 @@ public class DoctorController {
     public String diagnosisDetails(@PathVariable("id") Integer id, Model model) {
         Diagnosis diagnosis = diagnosisService.findById(id);
 
-        // Load patient's diagnosis history (optional but useful)
         List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
-        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
+        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate()));
 
         model.addAttribute("diagnosis", diagnosis);
         model.addAttribute("patient", diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
-        return "doctor/doctor-diagnosis"; // -> /WEB-INF/jsp/doctor-diagnosis.jsp
+        return "doctor/doctor-diagnosis"; 
     }
 
     @PostMapping("/diagnosis/{id}/review")
@@ -125,7 +118,6 @@ public class DoctorController {
         return "redirect:/doctor/diagnosis/" + id;
     }
 
-    // Helper DTO for date buttons
     public static class DatePill {
         private final String label;
         private final String display;

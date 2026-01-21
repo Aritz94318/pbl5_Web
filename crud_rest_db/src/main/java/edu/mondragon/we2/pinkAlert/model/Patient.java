@@ -1,7 +1,5 @@
-// ===============================
-// Patient.java (FULL FILE)
-// ===============================
-package edu.mondragon.we2.pinkAlert.model;
+
+package edu.mondragon.we2.pinkalert.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

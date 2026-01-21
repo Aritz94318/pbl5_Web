@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -6,11 +6,12 @@ import org.springframework.http.MediaType;
 
 import com.google.gson.Gson;
 
+import edu.mondragon.we2.pinkalert.model.Notification;
+import edu.mondragon.we2.pinkalert.service.NotificationService;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-
-import edu.mondragon.we2.pinkAlert.model.Notification;
 
 class NotificationServiceTest {
 

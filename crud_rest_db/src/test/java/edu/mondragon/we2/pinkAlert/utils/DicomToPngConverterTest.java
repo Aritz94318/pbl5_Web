@@ -1,7 +1,10 @@
-package edu.mondragon.we2.pinkAlert.utils;
+package edu.mondragon.we2.pinkalert.utils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import edu.mondragon.we2.pinkalert.utils.DicomToPngConverter;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;

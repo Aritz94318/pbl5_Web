@@ -1,6 +1,9 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 import org.junit.jupiter.api.Test;
+
+import edu.mondragon.we2.pinkalert.model.SimEvent;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimEventTest {

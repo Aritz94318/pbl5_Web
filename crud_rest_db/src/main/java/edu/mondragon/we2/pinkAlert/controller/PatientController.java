@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.controller;
+package edu.mondragon.we2.pinkalert.controller;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
-import edu.mondragon.we2.pinkAlert.model.Patient;
-import edu.mondragon.we2.pinkAlert.model.Role;
-import edu.mondragon.we2.pinkAlert.model.User;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.UserService;
-
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
+import edu.mondragon.we2.pinkalert.model.Patient;
+import edu.mondragon.we2.pinkalert.model.Role;
+import edu.mondragon.we2.pinkalert.model.User;
+import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkalert.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -52,7 +51,6 @@ public class PatientController {
 
         List<Diagnosis> diagnoses = diagnosisService.findByPatient(patient.getId());
 
-        // ✅ Un solo sort: urgent primero, y dentro de cada grupo por fecha (newest first)
         diagnoses.sort(
             (a, b) -> {
                 int urgentCmp = Boolean.compare(b.isUrgent(), a.isUrgent());
@@ -70,7 +68,6 @@ public class PatientController {
                 m.put("urgent", d.isUrgent());
                 m.put("reviewed", d.isReviewed());
                 m.put("dateDisplay", d.getDate() != null ? d.getDate().format(fmt) : "");
-                // ✅ añade aquí cualquier otra cosa que el JSP use (por ejemplo status, description...)
                 return m;
             })
             .toList();
@@ -101,14 +98,13 @@ public class PatientController {
     public String diagnosisDetails(@PathVariable("id") Integer id, Model model) {
         Diagnosis diagnosis = diagnosisService.findById(id);
 
-        // Load patient's diagnosis history (optional but useful)
         List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
-        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
+        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); 
 
         model.addAttribute("diagnosis", diagnosis);
         model.addAttribute("patient", diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
-        return "patient/patient-diagnosis"; // -> /WEB-INF/jsp/doctor-diagnosis.jsp
+        return "patient/patient-diagnosis"; 
     }
 }

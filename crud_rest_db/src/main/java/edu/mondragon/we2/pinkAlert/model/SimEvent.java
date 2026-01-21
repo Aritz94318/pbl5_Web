@@ -1,7 +1,7 @@
-package edu.mondragon.we2.pinkAlert.model;
+package edu.mondragon.we2.pinkalert.model;
 
 public record SimEvent(
-        String actor,   // "PATIENT", "DOCTOR", "MACHINE"
+        String actor,   
         int actorId,
         String text,
         long ts

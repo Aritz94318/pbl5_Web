@@ -1,13 +1,14 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
-import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.FinalResult;
-import edu.mondragon.we2.pinkAlert.model.Patient;
-import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import org.springframework.stereotype.Service;
+
+import edu.mondragon.we2.pinkalert.model.Diagnosis;
+import edu.mondragon.we2.pinkalert.model.Doctor;
+import edu.mondragon.we2.pinkalert.model.FinalResult;
+import edu.mondragon.we2.pinkalert.model.Patient;
+import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkalert.repository.PatientRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,19 +48,16 @@ public class DiagnosisService {
     public void saveDoctorReview(Integer id, String finalResultRaw, String description) {
         Diagnosis d = diagnosisRepository.findById(id).orElseThrow();
 
-        // notes
         d.setDescription(description == null ? "" : description.trim());
 
-        // finalResult (allow pending/clear)
         if (finalResultRaw == null || finalResultRaw.isBlank()) {
             d.setFinalResult(null);
-            d.setReviewed(false); // optional
+            d.setReviewed(false); 
         } else {
             FinalResult fr = FinalResult.valueOf(finalResultRaw);
             d.setFinalResult(fr);
             d.setReviewed(true);
 
-            // urgent policy example:
             d.setUrgent(fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE);
         }
 

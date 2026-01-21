@@ -1,3 +1,4 @@
+package edu.mondragon.we2.pinkalert.controller;
 // package edu.mondragon.we2.pinkAlert.controller;
 
 // import com.fasterxml.jackson.databind.ObjectMapper;

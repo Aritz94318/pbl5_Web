@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,10 +21,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchema;
+
+import edu.mondragon.we2.pinkalert.model.SimEvent;
+import edu.mondragon.we2.pinkalert.model.SimTime;
+import edu.mondragon.we2.pinkalert.service.SimulationService;
+import edu.mondragon.we2.pinkalert.utils.ValidationUtils;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import edu.mondragon.we2.pinkAlert.model.SimEvent;
-import edu.mondragon.we2.pinkAlert.model.SimTime;
-import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
 
 class SimulationServiceTest {
 

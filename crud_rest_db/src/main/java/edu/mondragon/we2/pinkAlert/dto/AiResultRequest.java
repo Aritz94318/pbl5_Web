@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.dto;
+package edu.mondragon.we2.pinkalert.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

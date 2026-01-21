@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+package edu.mondragon.we2.pinkalert.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -23,10 +21,10 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.google.gson.Gson;
 
-import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
-import edu.mondragon.we2.pinkAlert.model.SimEvent;
-import edu.mondragon.we2.pinkAlert.model.SimTime;
-import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
+import edu.mondragon.we2.pinkalert.model.GlobalUpdateRequest;
+import edu.mondragon.we2.pinkalert.model.SimEvent;
+import edu.mondragon.we2.pinkalert.model.SimTime;
+import edu.mondragon.we2.pinkalert.utils.ValidationUtils;
 
 @Service
 public class SimulationService {
@@ -63,17 +61,13 @@ public class SimulationService {
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     public SseEmitter connect() {
-        // 0L = sin timeout (o pon por ejemplo 30 * 60 * 1000L)
         SseEmitter emitter = new SseEmitter(0L);
 
         emitters.add(emitter);
 
-        // Cuando el cliente se desconecta, limpiamos
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
         emitter.onError((ex) -> emitters.remove(emitter));
-
-        // (Opcional) evento inicial para probar que conecta
         try {
             emitter.send(SseEmitter.event().name("sim").data(
                     new SimEvent("SYSTEM", 0, "SSE conectado", System.currentTimeMillis())));
@@ -90,7 +84,6 @@ public class SimulationService {
             try {
                 emitter.send(SseEmitter.event().name("sim").data(event));
             } catch (Exception ex) {
-                // Si está cerrado o falló, lo quitamos
                 emitters.remove(emitter);
                 try {
                     emitter.complete();
@@ -105,7 +98,6 @@ public class SimulationService {
             try {
                 emitter.send(SseEmitter.event().name("sim-time").data(event));
             } catch (Exception ex) {
-                // Si está cerrado o falló, lo quitamos
                 emitters.remove(emitter);
                 try {
                     emitter.complete();
@@ -117,8 +109,7 @@ public class SimulationService {
 
     public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
 
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
-                                                                                             // simulación
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; 
         GlobalUpdateRequest body;
         body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
         String json = gson.toJson(body);
@@ -146,8 +137,7 @@ public class SimulationService {
 
     public void start() {
 
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
-                                                                                            // simulación
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; 
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
