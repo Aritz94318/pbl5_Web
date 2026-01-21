@@ -494,7 +494,7 @@ public class AdminController {
                         diag = diagnosisRepository.saveAndFlush(diag);
 
                         String previewsDir = "previews";
-                        Path previewsPath = Paths.get("src/main/resources/static/" + previewsDir);
+                        Path previewsPath = Paths.get("/tmp/previews" + previewsDir);
                         Files.createDirectories(previewsPath);
 
                         Path tmpDicomPath = Paths.get("tmp/dicom");
