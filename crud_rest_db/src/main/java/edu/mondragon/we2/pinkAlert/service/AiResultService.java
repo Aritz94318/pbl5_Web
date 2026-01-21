@@ -46,7 +46,10 @@ public class AiResultService {
         String json = gson.toJson(req);
         JsonNode node = mapper.readTree(json);
 
-       
+        if (!ValidationUtils.isJsonValid(schema, node)) {
+            throw new IllegalArgumentException("Invalid AI result JSON");
+        }
+
 
 
         Diagnosis d = diagnosisRepository.findById(diagnosisId)

@@ -15,6 +15,10 @@ public class AiResultRequest {
 
     public AiResultRequest() {
     }
+    public AiResultRequest(String prediction,BigDecimal probMalignant) {
+        this.prediction=prediction;
+        this.probMalignant=probMalignant;
+    }
 
     public String getPrediction() {
         return prediction;
