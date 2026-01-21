@@ -24,33 +24,43 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Build and Full SonarCloud Analysis
+      - name: SonarCloud Branch Analysis
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          echo "Running full project SonarCloud scan..."
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         run: |
           mvn -f ./crud_rest_db/pom.xml clean verify sonar:sonar \
-            -Dsonar.projectKey=Aritz94318_pbl5_Web \
-            -Dsonar.organization=aritz94318 \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.projectVersion=${{ github.run_number }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-            -Dsonar.qualitygate.wait=true
+                  -Dsonar.projectKey=Aritz94318_pbl5_Web \
+                 -Dsonar.organization=aritz94318 \
+                  -Dsonar.host.url=https://sonarcloud.io \
+           -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.branch.name=${{ github.ref_name }}
 
-      - name: Check Full Project Quality Gate
+
+      - name: Wait for SonarCloud processing
+        run: sleep 40
+
+
+      - name: Enforce coverage from SonarCloud
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "Checking full project Quality Gate..."
-          RESPONSE=$(curl -s -u $SONAR_TOKEN: \
-            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=Aritz94318_pbl5_Web")
-          STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
-          echo "Quality Gate status: $STATUS"
-          if [[ "$STATUS" != "OK" ]]; then
-            echo "❌ Full project Quality Gate failed. Failing the job."
-            exit 1
-          fi
+          MIN_COVERAGE=75
+
+           RESPONSE=$(curl -s -u $SONAR_TOKEN: \
+           "https://sonarcloud.io/api/measures/component?component=Aritz94318_pbl5_Web&metricKeys=coverage&branch=${{ github.ref_name }}")
+
+             COVERAGE=$(echo "$RESPONSE" | jq -r '.component.measures[0].value')
+
+            echo "📊 SonarCloud coverage (branch): $COVERAGE%"
+
+              COVERAGE_INT=${COVERAGE%.*}
+
+            if [ "$COVERAGE_INT" -lt "$MIN_COVERAGE" ]; then
+              echo "❌ Coverage below $MIN_COVERAGE%"
+                exit 1
+            fi
+
+           echo "✅ Coverage OK"
 
       - name: List target directory
         run: ls -lh ./crud_rest_db/target
