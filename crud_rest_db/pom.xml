@@ -16,13 +16,13 @@
 	<name>crud_rest_db</name>
 	<description>Demo project for Spring Boot</description>
 	<repositories>
-    <repository>
-        <id>dcm4che-repo</id>
-        <name>dcm4che Maven Repo</name>
-        <url>https://maven.dcm4che.org/</url>
-    </repository>
-</repositories>
-<properties>
+		<repository>
+			<id>dcm4che-repo</id>
+			<name>dcm4che Maven Repo</name>
+			<url>https://maven.dcm4che.org/</url>
+		</repository>
+	</repositories>
+	<properties>
 		<java.version>17</java.version>
 		<sonar.organization>pbl5</sonar.organization>
 	</properties>
@@ -48,7 +48,6 @@
 			<artifactId>json-schema-core</artifactId>
 			<version>1.2.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
@@ -60,7 +59,6 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
@@ -79,13 +77,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
@@ -105,7 +101,6 @@
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
-		<!-- JSP rendering for Spring Boot 3 / Tomcat 10 -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
@@ -120,8 +115,6 @@
 			<artifactId>guava</artifactId>
 			<version>32.1.2-jre</version>
 		</dependency>
-
-		<!-- JSTL for JSP tags like <c:if> etc -->
 		<dependency>
 			<groupId>jakarta.servlet.jsp.jstl</groupId>
 			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
@@ -132,19 +125,11 @@
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 			<version>3.0.1</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.dcm4che</groupId>
 			<artifactId>dcm4che-imageio</artifactId>
-			<version>5.24.0</version> <!-- puedes usar la última versión estable -->
+			<version>5.24.0</version>
 		</dependency>
-		<!-- JUnit 5 -->
-		 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -154,7 +139,6 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -167,7 +151,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
@@ -194,5 +177,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

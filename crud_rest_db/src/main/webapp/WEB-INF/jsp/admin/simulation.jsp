@@ -7,73 +7,38 @@
       <title>Admin - User Form</title>
       <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
       <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/simulation.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-      <style>
-        /* Cada lista tendrá scroll vertical cuando se llene */
-        #patientList,
-        #doctorList,
-        #machineList {
-          max-height: 420px;
-          /* ajusta a tu gusto */
-          overflow-y: auto;
-          overflow-x: hidden;
-          padding-right: 6px;
-          /* deja espacio para la barra */
-        }
-
-        /* Scrollbar (Chrome/Edge) */
-        #patientList::-webkit-scrollbar,
-        #doctorList::-webkit-scrollbar,
-        #machineList::-webkit-scrollbar {
-          width: 10px;
-        }
-
-        #patientList::-webkit-scrollbar-thumb,
-        #doctorList::-webkit-scrollbar-thumb,
-        #machineList::-webkit-scrollbar-thumb {
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.25);
-        }
-
-        #patientList::-webkit-scrollbar-track,
-        #doctorList::-webkit-scrollbar-track,
-        #machineList::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.08);
-          border-radius: 10px;
-        }
-
-        /* Firefox */
-        #patientList,
-        #doctorList,
-        #machineList {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.25) rgba(0, 0, 0, 0.08);
-        }
-      </style>
-
     </head>
 
     <body>
       <div class="app-container">
-
-        <!-- HEADER ADMIN -->
-        <header class="header-admin">
+        <div class="header-admin">
           <div class="header-left-admin">
-            <div class="admin-shield">🛡</div>
+            <a class="btn-back-icon" href="${pageContext.request.contextPath}/admin/dashboard"
+              title="Back to Dashboard">
+              <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
+            <div class="admin-shield">
+              <i class="bi bi-shield-lock"></i>
+            </div>
             <div>
-              <h1>Admin · Simulation</h1>
+              <h1>Administrative Dashboard</h1>
               <p>Configure parameters and visualize real-time actions</p>
             </div>
           </div>
-
-          <div class="admin-actions">
-            <a class="btn-ghost" href="<c:url value='/admin'/>">← Return</a>
+          <div class="header-right">
+            <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
+              <i class="bi bi-box-arrow-right"></i>
+              Logout
+            </a>
           </div>
-        </header>
+        </div>
 
         <div class="admin-wrap">
 
-          <!-- FORM CONFIG -->
+          <!-- SETTINGS -->
           <section class="admin-card">
             <h2>Settings</h2>
 
@@ -81,42 +46,55 @@
               <div class="error-box">${error}</div>
             </c:if>
 
-            <form action="<c:url value='/admin/simulation/start'/>" method="post">
-              <div class="admin-grid-2" style="margin-top: 0;">
-                <div>
-                  <label for="numPatients" class="detail-label">NUmber of patients</label>
-                  <input id="numPatients" name="numPatients" type="number" min="0" step="1"
+            <form id="simForm" action="<c:url value='/admin/simulation/start'/>" method="post">
+
+              <div class="sim-form">
+                <div class="sim-field">
+                  <label for="numPatients" class="detail-label">Number of patients</label>
+                  <input class="sim-num" id="numPatients" name="numPatients" type="number" min="0" step="1"
                     value="${empty numPatients ? 1 : numPatients}" placeholder="1" required />
                 </div>
 
-                <div>
+                <div class="sim-field">
                   <label for="numDoctors" class="detail-label">Number of doctors</label>
-                  <input id="numDoctors" name="numDoctors" type="number" min="0" step="1"
+                  <input class="sim-num" id="numDoctors" name="numDoctors" type="number" min="0" step="1"
                     value="${empty numDoctors ? 1 : numDoctors}" placeholder="1" required />
                 </div>
 
-                <div>
+                <div class="sim-field">
                   <label for="numMachines" class="detail-label">Number of machines</label>
-                  <input id="numMachines" name="numMachines" type="number" min="0" step="1"
+                  <input class="sim-num" id="numMachines" name="numMachines" type="number" min="0" step="1"
                     value="${empty numMachines ? 1 : numMachines}" placeholder="1" required />
                 </div>
 
-                <div style="display:flex; align-items:flex-end; gap:10px;">
-                  <button class="btn-admin btn-primary" type="button" id="modifySimBtn">▶ Modify simulation</button>
+                <div class="sim-actions">
+                  <button class="btn-admin btn-primary" type="button" id="startSimBtn">▶ Start simulation</button>
+                  <button class="btn-admin btn-secondary" type="button" id="modifySimBtn">▶ Modify simulation</button>
                 </div>
               </div>
 
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+              <input type="hidden" id="csrfToken" name="${_csrf.parameterName}" value="${_csrf.token}" />
             </form>
-            <button class="btn-admin btn-primary" type="button" id="startSimBtn">▶ Start simulation</button>
-
-
           </section>
 
-          <!-- LOGS / ACTIONS -->
+          <!-- SIM TIME (unchanged) -->
           <section class="admin-grid-2">
+            <div class="patient-card" style="cursor: default; border-left-color:#f5b700;">
+              <div class="patient-main">
+                <div class="patient-icon" style="background:#f5b700;">⏳</div>
+                <div class="patient-info">
+                  <div class="patient-name">Predicted total time</div>
+                  <div class="patient-subinfo">
+                    <span id="simTimeText">Waiting…</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-            <!-- PACIENTES -->
+          <!-- ACTIONS: NOW ONE PER ROW -->
+          <section class="admin-grid-1">
+
             <div class="admin-card">
               <h2>Actions · Patients</h2>
 
@@ -146,7 +124,6 @@
               </div>
             </div>
 
-            <!-- DOCTORES -->
             <div class="admin-card">
               <h2>Actions · Doctors</h2>
 
@@ -176,7 +153,6 @@
               </div>
             </div>
 
-            <!-- MÁQUINAS -->
             <div class="admin-card">
               <h2>Actions · Machines</h2>
 
@@ -205,49 +181,27 @@
                 </div>
               </div>
             </div>
-            <!-- TIEMPO DE SIMULACIÓN -->
-            <div class="admin-card">
-              <h2>⏱️ Simulation Time</h2>
-
-              <div class="card">
-                <div class="patient-card" style="cursor: default; border-left-color:#f5b700;">
-                  <div class="patient-main">
-                    <div class="patient-icon" style="background:#f5b700;">⏳</div>
-                    <div class="patient-info">
-                      <div class="patient-name">Total time</div>
-                      <div class="patient-subinfo">
-                        <span id="simTimeText">Waiting…</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </section>
 
         </div>
       </div>
-      <script>
 
+      <script>
         const startSimBtn = document.getElementById("startSimBtn");
 
         startSimBtn.addEventListener("click", () => {
           clearLists();
-          fetch("/admin/simulation/start", {
-            method: "POST"
-          })
+          fetch("/admin/simulation/start", { method: "POST" })
             .then(res => {
-              if (!res.ok) {
-                console.error("Error al iniciar la simulación");
-              }
+              if (!res.ok) console.error("Error al iniciar la simulación");
             })
             .catch(err => console.error(err));
         });
+
         const modifyBtn = document.getElementById("modifySimBtn");
 
         modifyBtn.addEventListener("click", () => {
-
           const numPatients = document.getElementById("numPatients").value;
           const numDoctors = document.getElementById("numDoctors").value;
           const numMachines = document.getElementById("numMachines").value;
@@ -256,21 +210,12 @@
           const csrfToken = csrfInput?.value;
           const csrfParam = csrfInput?.name;
 
-          const params = new URLSearchParams({
-            numPatients,
-            numDoctors,
-            numMachines
-          });
-
-          if (csrfToken && csrfParam) {
-            params.append(csrfParam, csrfToken);
-          }
+          const params = new URLSearchParams({ numPatients, numDoctors, numMachines });
+          if (csrfToken && csrfParam) params.append(csrfParam, csrfToken);
 
           fetch("<c:url value='/admin/simulation/modify'/>", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: params
           })
             .then(async res => {
@@ -278,26 +223,19 @@
                 const txt = await res.text().catch(() => "");
                 throw new Error(`HTTP ${res.status}: ${txt}`);
               }
-              console.log("✅ Simulación iniciada");
+              console.log("✅ Simulación modificada");
             })
-            .catch(err => {
-              console.error("❌ Error iniciando simulación", err);
-            });
-
+            .catch(err => console.error("❌ Error modificando simulación", err));
         });
 
         function clearLists() {
-          // Vacía completamente los contenedores (borra todas las cards y el texto)
           document.getElementById("patientList").innerHTML = "";
           document.getElementById("doctorList").innerHTML = "";
           document.getElementById("machineList").innerHTML = "";
-          document.getElementById("simTimeText").innerHTML = "Waiting";
-
-
+          document.getElementById("simTimeText").textContent = "Waiting…";
         }
 
         function removeEmptyText(listEl) {
-          // Si existe el típico <p class="text-meta">Aún no hay...</p>, lo quitamos al primer evento
           const emptyP = listEl.querySelector("p.text-meta");
           if (emptyP) emptyP.remove();
         }
@@ -337,48 +275,39 @@
 
           main.appendChild(icon);
           main.appendChild(info);
-
           card.appendChild(main);
 
-          // Lo añadimos al final
           listEl.appendChild(card);
-
-          // Auto-scroll al final del contenedor (por si tiene overflow)
           listEl.scrollTop = listEl.scrollHeight;
         }
 
-        // Conexión SSE (tu backend debe exponer /admin/sim/stream)
+        const patientList = document.getElementById("patientList");
+        const doctorList = document.getElementById("doctorList");
+        const machineList = document.getElementById("machineList");
+
         const es = new EventSource("<c:url value='/admin/sim/stream'/>");
 
         es.addEventListener("sim", (evt) => {
           const e = JSON.parse(evt.data);
-          // e = { actor: "PATIENT"/"DOCTOR"/"MACHINE", actorId, text, ts, type, simId... }
-
-          // Texto que quieres mostrar:
-          const t = e.ts ? new Date(e.ts).toLocaleTimeString() : "";
 
           if (e.actor === "PATIENT") {
-            appendCard(patientList, "Paciente" + e.actorId, "🧑", null, null, e.text);
+            appendCard(patientList, "Paciente " + e.actorId, "🧑", null, null, e.text);
           } else if (e.actor === "DOCTOR") {
-            appendCard(doctorList, "Doctor" + e.actorId, "🩺", "#2ac769", "#2ac769", e.text);
+            appendCard(doctorList, "Doctor " + e.actorId, "🩺", "#2ac769", "#2ac769", e.text);
           } else if (e.actor === "MACHINE") {
-            appendCard(machineList, "Máquina" + e.actorId, "🖥", "#7f8bad", "#7f8bad", e.text);
+            appendCard(machineList, "Máquina " + e.actorId, "🖥", "#7f8bad", "#7f8bad", e.text);
           }
         });
 
-        es.onerror = () => {
-          // SSE reintenta solo, esto es solo informativo
-          console.log("SSE desconectado (reintentando)...");
-        }; es.addEventListener("sim-time", (evt) => {
+        es.addEventListener("sim-time", (evt) => {
           const t = JSON.parse(evt.data);
-          // t = { time, hours, minutes, seconds }
-          const text = t.hours + "h " + t.minutes + "m" + t.seconds + "s";
-
-          //const text = `${t.hours}h ${t.minutes}m ${t.seconds}s`;
+          const text = t.hours + "h " + t.minutes + "m " + t.seconds + "s";
           document.getElementById("simTimeText").textContent = text;
-
         });
 
+        es.onerror = () => {
+          console.log("SSE desconectado (reintentando)...");
+        };
       </script>
 
     </body>

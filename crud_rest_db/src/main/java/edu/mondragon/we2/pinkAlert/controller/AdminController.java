@@ -17,6 +17,8 @@ import edu.mondragon.we2.pinkAlert.service.SimulationService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import edu.mondragon.we2.pinkAlert.model.AiPrediction;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +79,35 @@ public class AdminController {
                 this.simulationService = simulationService;
         }
 
+        /**
+         * Finalized = doctor reviewed + finalResult is one of
+         * BENIGN/MALIGNANT/INCONCLUSIVE (not null, not PENDING).
+         */
+        private static boolean isFinalized(Diagnosis d) {
+                if (d == null)
+                        return false;
+                if (!d.isReviewed())
+                        return false;
+                FinalResult fr = d.getFinalResult();
+                if (fr == null)
+                        return false;
+                return fr != FinalResult.PENDING;
+        }
+
+        /** Map AI prediction enum to FinalResult (only for comparable values). */
+        private static FinalResult mapAiToFinal(AiPrediction ai) {
+                if (ai == null)
+                        return null;
+                // Adjust this switch if your AiPrediction enum differs
+                return switch (ai) {
+                        case MALIGNANT -> FinalResult.MALIGNANT;
+                        case BENIGN -> FinalResult.BENIGN;
+                        // case INCONCLUSIVE -> FinalResult.INCONCLUSIVE;
+                        // If you have other AI values, map them or return null
+                        default -> null;
+                };
+        }
+
         @GetMapping("/dashboard")
         public String dashboard(Model model) {
 
@@ -85,22 +116,188 @@ public class AdminController {
                 long totalScreenings = diagnosisRepository.count();
                 long urgentCases = diagnosisRepository.countByUrgentTrue();
 
-                long completed = diagnosisRepository.countByReviewedTrue();
+                List<Diagnosis> all = diagnosisRepository.findAll();
+
+                // -----------------------------
+                // COMPLETION + FINAL RESULTS
+                // -----------------------------
+                long completed = all.stream().filter(AdminController::isFinalized).count();
 
                 double completionRate = (totalScreenings == 0)
                                 ? 0.0
                                 : round1((completed * 100.0) / totalScreenings);
 
-                List<Diagnosis> all = diagnosisRepository.findAll();
+                long positiveCount = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
+                                .count();
 
-                long positive = all.stream()
-                                .filter(d -> d.getStatus() != null && "Positive".equalsIgnoreCase(d.getStatus()))
+                long negativeCount = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> d.getFinalResult() == FinalResult.BENIGN)
+                                .count();
+
+                long inconclusiveCount = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
+                                .count();
+
+                // Pending = anything not finalized (includes not reviewed, finalResult null, or
+                // finalResult=PENDING)
+                long pendingCount = all.stream()
+                                .filter(d -> !isFinalized(d))
                                 .count();
 
                 double positiveRate = (completed == 0)
                                 ? 0.0
-                                : round1((positive * 100.0) / completed);
+                                : round1((positiveCount * 100.0) / completed);
 
+                // -----------------------------
+                // REVIEW BACKLOG (pending only)
+                // -----------------------------
+                long backlogUrgent = all.stream()
+                                .filter(d -> !isFinalized(d))
+                                .filter(Diagnosis::isUrgent)
+                                .count();
+
+                long backlogRoutine = all.stream()
+                                .filter(d -> !isFinalized(d))
+                                .filter(d -> !d.isUrgent())
+                                .count();
+
+                model.addAttribute("backlogUrgent", backlogUrgent);
+                model.addAttribute("backlogRoutine", backlogRoutine);
+
+                // -----------------------------
+                // AGE-BASED ANALYTICS (finalized only)
+                // -----------------------------
+                LocalDate now = LocalDate.now();
+
+                java.util.function.Function<Diagnosis, Integer> ageOf = diag -> {
+                        try {
+                                if (diag.getPatient() == null)
+                                        return null;
+                                if (diag.getPatient().getBirthDate() == null)
+                                        return null;
+                                return java.time.Period.between(diag.getPatient().getBirthDate(), now).getYears();
+                        } catch (Exception e) {
+                                return null;
+                        }
+                };
+
+                java.util.function.Function<Integer, String> bucketOf = age -> {
+                        if (age == null)
+                                return "Unknown";
+                        if (age < 40)
+                                return "<40";
+                        if (age <= 49)
+                                return "40-49";
+                        if (age <= 59)
+                                return "50-59";
+                        if (age <= 69)
+                                return "60-69";
+                        return "70+";
+                };
+
+                // IMPORTANT: Use the exact same strings as bucketOf()
+                List<String> ageBuckets = List.of("<40", "40-49", "50-59", "60-69", "70+", "Unknown");
+
+                List<Diagnosis> finalized = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .collect(Collectors.toList());
+
+                Map<String, Long> totalByAgeBucket = finalized.stream()
+                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
+                                                Collectors.counting()));
+
+                Map<String, Long> malignantByAgeBucket = finalized.stream()
+                                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
+                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
+                                                Collectors.counting()));
+
+                Map<String, Long> benignByAgeBucket = finalized.stream()
+                                .filter(d -> d.getFinalResult() == FinalResult.BENIGN)
+                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
+                                                Collectors.counting()));
+
+                Map<String, Long> inconclusiveByAgeBucket = finalized.stream()
+                                .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
+                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
+                                                Collectors.counting()));
+
+                // Build JS arrays
+                List<String> ageLabelsJs = ageBuckets.stream().map(s -> "'" + s + "'").toList();
+
+                List<Long> ageTotals = ageBuckets.stream().map(b -> totalByAgeBucket.getOrDefault(b, 0L)).toList();
+                List<Long> ageMalignant = ageBuckets.stream().map(b -> malignantByAgeBucket.getOrDefault(b, 0L))
+                                .toList();
+                List<Long> ageBenign = ageBuckets.stream().map(b -> benignByAgeBucket.getOrDefault(b, 0L)).toList();
+                List<Long> ageInconclusive = ageBuckets.stream().map(b -> inconclusiveByAgeBucket.getOrDefault(b, 0L))
+                                .toList();
+
+                List<Double> ageMalignantRate = new ArrayList<>();
+                for (int i = 0; i < ageBuckets.size(); i++) {
+                        long tot = ageTotals.get(i);
+                        long mal = ageMalignant.get(i);
+                        double pct = (tot == 0) ? 0.0 : round1((mal * 100.0) / tot);
+                        ageMalignantRate.add(pct);
+                }
+
+                model.addAttribute("ageLabelsJs", String.join(",", ageLabelsJs));
+                model.addAttribute("ageTotalsJs",
+                                ageTotals.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                model.addAttribute("ageMalignantJs",
+                                ageMalignant.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                model.addAttribute("ageBenignJs",
+                                ageBenign.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                model.addAttribute("ageInconclusiveJs",
+                                ageInconclusive.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                model.addAttribute("ageMalignantRateJs",
+                                ageMalignantRate.stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+                // -----------------------------
+                // AI vs Doctor Agreement (using aiPrediction)
+                // -----------------------------
+                long aiAgreeCount = 0;
+                long aiMismatchCount = 0;
+                long aiMissingCount = 0;
+                long aiNotComparableCount = 0;
+
+                for (Diagnosis d : all) {
+                        AiPrediction ai = d.getAiPrediction();
+                        FinalResult doctor = d.getFinalResult();
+
+                        if (ai == null) {
+                                aiMissingCount++;
+                                continue;
+                        }
+
+                        // Compare only when doctor finalized AND doctor is not inconclusive
+                        if (!isFinalized(d) || doctor == FinalResult.INCONCLUSIVE) {
+                                aiNotComparableCount++;
+                                continue;
+                        }
+
+                        FinalResult aiAsFinal = mapAiToFinal(ai);
+                        if (aiAsFinal == null) {
+                                aiNotComparableCount++;
+                                continue;
+                        }
+
+                        if (aiAsFinal == doctor)
+                                aiAgreeCount++;
+                        else
+                                aiMismatchCount++;
+                }
+
+                model.addAttribute("aiAgreeCount", aiAgreeCount);
+                model.addAttribute("aiMismatchCount", aiMismatchCount);
+                model.addAttribute("aiMissingCount", aiMissingCount);
+                model.addAttribute("aiNotComparableCount", aiNotComparableCount);
+
+                // -----------------------------
+                // BASIC KPIs
+                // -----------------------------
                 model.addAttribute("totalPatients", totalPatients);
                 model.addAttribute("totalUsers", totalUsers);
                 model.addAttribute("totalScreenings", totalScreenings);
@@ -108,16 +305,15 @@ public class AdminController {
                 model.addAttribute("completionRate", completionRate);
                 model.addAttribute("positiveRate", positiveRate);
 
-                long negativeCount = all.stream().filter(d -> "Negative".equalsIgnoreCase(d.getStatus())).count();
-                long positiveCount = all.stream().filter(d -> "Positive".equalsIgnoreCase(d.getStatus())).count();
-                long pendingCount = all.stream().filter(d -> !d.isReviewed()).count();
-                long inconclusiveCount = 0;
-
                 model.addAttribute("negativeCount", negativeCount);
                 model.addAttribute("positiveCount", positiveCount);
                 model.addAttribute("pendingCount", pendingCount);
                 model.addAttribute("inconclusiveCount", inconclusiveCount);
 
+                // -----------------------------
+                // TIMELINE (last 7 days)
+                // total vs completed(finalized)
+                // -----------------------------
                 LocalDate today = LocalDate.now();
                 LocalDate start = today.minusDays(6);
 
@@ -127,8 +323,9 @@ public class AdminController {
                                 .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
 
                 Map<LocalDate, Long> completedByDate = all.stream()
-                                .filter(d -> d.getDate() != null && d.isReviewed()
-                                                && !d.getDate().isBefore(start) && !d.getDate().isAfter(today))
+                                .filter(d -> d.getDate() != null)
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> !d.getDate().isBefore(start) && !d.getDate().isAfter(today))
                                 .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
 
                 DateTimeFormatter labelFmt = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH);
@@ -151,10 +348,6 @@ public class AdminController {
 
                 return "admin/admin-dashboard";
         }
-
-        // ---------------------------
-        // USERS CRUD (UNCHANGED)
-        // ---------------------------
 
         @GetMapping("/users")
         public String users(Model model) {
@@ -456,10 +649,7 @@ public class AdminController {
                                 return "admin/diagnosis-form";
                         }
 
-                        String email = null;
-                        if (patient.getUser() != null) {
-                                email = patient.getUser().getEmail();
-                        }
+                        String email = (patient.getUser() != null) ? patient.getUser().getEmail() : null;
 
                         if (email == null || email.isBlank()) {
                                 model.addAttribute("error",
@@ -543,39 +733,6 @@ public class AdminController {
                         return "admin/diagnosis-form";
                 }
         }
-
-        // private static String getBaseUrl(HttpServletRequest request) {
-        // String scheme = request.getScheme();
-        // String host = request.getServerName();
-        // int port = request.getServerPort();
-
-        // boolean isDefaultPort = (scheme.equals("http") && port == 80)
-        // || (scheme.equals("https") && port == 443);
-
-        // StringBuilder sb = new StringBuilder();
-        // sb.append(scheme).append("://").append(host);
-        // if (!isDefaultPort)
-        // sb.append(":").append(port);
-
-        // // include contextPath if you deploy under a subpath
-        // sb.append(request.getContextPath());
-
-        // return sb.toString();
-        // }
-
-        // private static boolean looksLikeDicom(MultipartFile file) {
-        // try (InputStream is = file.getInputStream()) {
-        // byte[] header = is.readNBytes(132);
-        // if (header.length < 132)
-        // return false;
-
-        // // Standard DICOM: "DICM" at offset 128
-        // return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' &&
-        // header[131] == 'M';
-        // } catch (Exception e) {
-        // return false;
-        // }
-        // }
 
         private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
                 Files.createDirectories(target.getParent());
