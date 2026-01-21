@@ -30,7 +30,7 @@ public class AiResultService {
 
     public AiResultService(DiagnosisRepository diagnosisRepository) throws IOException, ProcessingException {
         this.diagnosisRepository = diagnosisRepository;
-         InputStream schemaStream = getClass().getResourceAsStream("/ai-result-schema.json");
+        InputStream schemaStream = getClass().getResourceAsStream("/ai-result-schema.json");
         if (schemaStream == null) {
             throw new IllegalStateException("ai-result-schema.json couldn't be found");
         }
@@ -42,15 +42,13 @@ public class AiResultService {
 
     @Transactional
     public Diagnosis applyAiResult(Integer diagnosisId, AiResultRequest req) throws IOException, ProcessingException {
-
-        String json = gson.toJson(req);
-        JsonNode node = mapper.readTree(json);
+        
+        
+        JsonNode node = mapper.valueToTree(req);
 
         if (!ValidationUtils.isJsonValid(schema, node)) {
             throw new IllegalArgumentException("Invalid AI result JSON");
         }
-
-
 
         Diagnosis d = diagnosisRepository.findById(diagnosisId)
                 .orElseThrow(() -> new IllegalArgumentException("Diagnosis not found: " + diagnosisId));
