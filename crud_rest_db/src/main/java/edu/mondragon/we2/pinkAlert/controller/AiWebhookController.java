@@ -25,6 +25,7 @@ public class AiWebhookController {
             @RequestBody AiResultRequest request) {
 
         try {
+            System.out.println(request);
             aiResultService.applyAiResult(id, request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
