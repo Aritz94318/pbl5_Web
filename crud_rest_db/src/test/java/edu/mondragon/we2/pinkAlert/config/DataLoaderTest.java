@@ -1,89 +1,148 @@
-// package edu.mondragon.we2.pinkAlert.config;
+package edu.mondragon.we2.pinkAlert.config;
 
-// import edu.mondragon.we2.pinkAlert.model.*;
-// import edu.mondragon.we2.pinkAlert.repository.*;
-// import edu.mondragon.we2.pinkAlert.service.UserService;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-// import org.easymock.EasyMock;
-// import org.easymock.EasyMockSupport;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Optional;
 
-// import java.time.LocalDate;
-// import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.CommandLineRunner;
 
+import edu.mondragon.we2.pinkAlert.model.*;
+import edu.mondragon.we2.pinkAlert.repository.*;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 
-// class DataLoaderTest extends EasyMockSupport {
+@ExtendWith(MockitoExtension.class)
+class DataLoaderTest {
 
-//     private UserRepository userRepository;
-//     private DoctorRepository doctorRepository;
-//     private PatientRepository patientRepository;
-//     private DiagnosisRepository diagnosisRepository;
+    @Mock
+    private UserService userService;
+    
+    @Mock
+    private UserRepository userRepository;
+    
+    @Mock
+    private DoctorRepository doctorRepository;
+    
+    @Mock
+    private PatientRepository patientRepository;
+    
+    @Mock
+    private DiagnosisRepository diagnosisRepository;
+    
+    @InjectMocks
+    private DataLoader dataLoader;
+    
+    private Doctor mockDoctor;
+    private Patient mockPatient;
+    private User mockDoctorUser;
+    private User mockPatientUser;
+    private User mockAdminUser;
 
-//     private UserService userService;
+    @BeforeEach
+    void setUp() {
+        // Configurar mocks básicos
+        mockDoctor = new Doctor("688152046");
+        mockDoctor.setId(1);
+        
+        mockPatient = new Patient(LocalDate.of(1999, 2, 14), "625153475");
+        mockPatient.setId(1);
+        
+        mockDoctorUser = new User();
+        mockDoctorUser.setId(1);
+        mockDoctorUser.setEmail("javier.fuentes@pinkalert.com");
+        mockDoctorUser.setUsername("javier.fuentes");
+        mockDoctorUser.setFullName("Dr. Javier Fuentes");
+        mockDoctorUser.setRole(Role.DOCTOR);
+        mockDoctorUser.setDoctor(mockDoctor);
+        
+        mockPatientUser = new User();
+        mockPatientUser.setId(2);
+        mockPatientUser.setEmail("maria.agirre@gmail.com");
+        mockPatientUser.setUsername("maria.agirre");
+        mockPatientUser.setFullName("María Agirre");
+        mockPatientUser.setRole(Role.PATIENT);
+        mockPatientUser.setPatient(mockPatient);
+        
+        mockAdminUser = new User();
+        mockAdminUser.setId(3);
+        mockAdminUser.setEmail("admin@pinkalert.com");
+        mockAdminUser.setUsername("admin");
+        mockAdminUser.setFullName("System Administrator");
+        mockAdminUser.setRole(Role.ADMIN);
+    }
 
-//     private DataLoader dataLoader;
+    @Test
+    void testDataLoaderImplementsCommandLineRunner() {
+        // Arrange & Act
+        boolean implementsInterface = CommandLineRunner.class.isAssignableFrom(DataLoader.class);
+        
+        // Assert
+        assertTrue(implementsInterface, "DataLoader debe implementar CommandLineRunner");
+    }
 
-//     @BeforeEach
-//     void setUp() {
+    @Test
+    void testRun_WhenUsersExist_DoesNotCreateUsers() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenReturn(3L); // Ya existen usuarios
+        when(diagnosisRepository.count()).thenReturn(4L); // Ya existen diagnósticos
+        
+        // Act
+        dataLoader.run();
+        
+        // Assert
+        verify(userRepository, times(1)).count();
+        verify(doctorRepository, never()).save(any());
+        verify(patientRepository, never()).save(any());
+        verify(userService, never()).createUser(any(), any());
+        verify(diagnosisRepository, times(1)).count();
+    }
 
-//         userRepository = mock(UserRepository.class);
-//         doctorRepository = mock(DoctorRepository.class);
-//         patientRepository = mock(PatientRepository.class);
-//         diagnosisRepository = mock(DiagnosisRepository.class);
-//         userService = new UserService(userRepository);
+    @Test
+    void testConstructor_InjectsAllDependencies() {
+        // Arrange
+        DataLoader loader = new DataLoader(userService, userRepository, 
+            doctorRepository, patientRepository, diagnosisRepository);
+        
+        // Act & Assert - No debería lanzar excepción
+        assertNotNull(loader);
+        
+        // Podemos verificar que los campos se asignan correctamente usando reflection
+        try {
+            java.lang.reflect.Field userServiceField = DataLoader.class.getDeclaredField("userService");
+            userServiceField.setAccessible(true);
+            assertSame(userService, userServiceField.get(loader));
+        } catch (Exception e) {
+            fail("Error al acceder a campos por reflection: " + e.getMessage());
+        }
+    }
 
-//         dataLoader = new DataLoader(userService,userRepository,doctorRepository,patientRepository,diagnosisRepository);
-//     }
+    @Test
+    void testDataLoader_EmptyConstructorNotAvailable() {
+        // Verificar que no hay constructor por defecto
+        try {
+            DataLoader.class.getDeclaredConstructor();
+            fail("No debería tener constructor por defecto");
+        } catch (NoSuchMethodException e) {
+            // Esto es esperado
+            assertTrue(true);
+        }
+    }
 
-//     @Test
-//     void testRun_whenDatabaseEmpty_loadsInitialData() {
+    @Test
+    void testRun_ExceptionHandling() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenThrow(new RuntimeException("Database error"));
+        
+        // Act & Assert - Debería propagar la excepción
+        assertThrows(RuntimeException.class, () -> dataLoader.run());
+    }
 
-//         EasyMock.expect(userRepository.count()).andReturn(0L);
-
-//         Doctor doctor = new Doctor("Javier");
-//         doctor.setId(1);
-
-//         Patient patient = new Patient("Mikel", LocalDate.of(1999, 2, 1));
-//         patient.setId(1);
-
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.empty());
-//         EasyMock.expect(doctorRepository.save(EasyMock.anyObject(Doctor.class))).andReturn(doctor);
-
-//         EasyMock.expect(patientRepository.findById(1)).andReturn(Optional.empty());
-//         EasyMock.expect(patientRepository.save(EasyMock.anyObject(Patient.class))).andReturn(patient);
-
-//         EasyMock.expect(userRepository.save(EasyMock.anyObject(User.class))).andReturn(new User()).times(3);
-
-//         EasyMock.expect(diagnosisRepository.count()).andReturn(0L);
-
-//         Patient patient3 = new Patient("Ekaitz", LocalDate.of(2004, 10, 28));
-//         patient3.setId(3);
-
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
-
-//         EasyMock.expect(patientRepository.findById(3)).andReturn(Optional.empty());
-//         EasyMock.expect(patientRepository.save(EasyMock.anyObject(Patient.class))).andReturn(patient3);
-
-//         EasyMock.expect(diagnosisRepository.save(EasyMock.anyObject(Diagnosis.class))).andReturn(new Diagnosis());
-
-//         replayAll();
-
-//         dataLoader.run();
-
-//         verifyAll();
-//     }
-
-//     @Test
-//     void testRun_whenDatabaseNotEmpty_doesNothing() {
-
-//         EasyMock.expect(userRepository.count()).andReturn(5L);
-//         EasyMock.expect(diagnosisRepository.count()).andReturn(3L);
-
-//         replayAll();
-
-//         dataLoader.run();
-
-//         verifyAll();
-//     }
-// }
+}

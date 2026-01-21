@@ -35,9 +35,10 @@ public class SimulationService {
     private final JsonSchema modifyschema;
     private final JsonSchema simEventSchema;
     private final JsonSchema simTimeSchema;
+    private final RestTemplate rt;
 
-    public SimulationService() throws IOException, ProcessingException {
-
+    public SimulationService(RestTemplate rt) throws IOException, ProcessingException {
+        this.rt = rt;
         JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 
         this.modifyschema = factory.getJsonSchema(mapper.readTree(getSchema("/modify-sim-schema.json")));
@@ -46,6 +47,8 @@ public class SimulationService {
 
         this.simTimeSchema = factory.getJsonSchema(mapper.readTree(getSchema("/sim-time-schema.json")));
 
+    } public SimulationService() throws IOException, ProcessingException {
+        this(new RestTemplate());
     }
 
     public InputStream getSchema(String path) {
@@ -114,7 +117,6 @@ public class SimulationService {
 
     public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
 
-        RestTemplate rt = new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
                                                                                              // simulación
         GlobalUpdateRequest body;
@@ -144,7 +146,6 @@ public class SimulationService {
 
     public void start() {
 
-        RestTemplate rt = new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
                                                                                             // simulación
 
@@ -165,7 +166,7 @@ public class SimulationService {
 
         if (!ValidationUtils.isJsonValid(simEventSchema, node)) {
             throw new IllegalArgumentException("Invalid SimEvent JSON");
-        }else{
+        } else {
             System.out.println("Valid event");
         }
 
@@ -180,7 +181,7 @@ public class SimulationService {
 
         if (!ValidationUtils.isJsonValid(simTimeSchema, node)) {
             throw new IllegalArgumentException("Invalid SimTime JSON");
-        }else{
+        } else {
             System.out.println("Valid time");
         }
 
