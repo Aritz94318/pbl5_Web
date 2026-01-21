@@ -225,7 +225,7 @@
                                 <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
                                 Add User
                             </a>
-                            <a class="btn-admin" href="${pageContext.request.contextPath}/">
+                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/simulation">
                                 <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
                                 Simulation
                             </a>
