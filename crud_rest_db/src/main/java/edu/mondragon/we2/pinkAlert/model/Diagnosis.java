@@ -48,6 +48,14 @@ public class Diagnosis {
     @JoinColumn(name = "PatientID", nullable = false)
     private Patient patient;
 
+    @Column(name = "FinalResult", length = 20)
+    @Enumerated(EnumType.STRING)
+    private FinalResult finalResult;
+
+    @Column(name = "AiPrediction", length = 20)
+    @Enumerated(EnumType.STRING)
+    private AiPrediction aiPrediction;
+
     public Diagnosis() {
     }
 
@@ -64,6 +72,7 @@ public class Diagnosis {
     }
 
     // Getters & setters
+
     public Integer getId() {
         return id;
     }
@@ -208,6 +217,30 @@ public class Diagnosis {
     public String getStatus() {
         if (!reviewed)
             return "Pending Review";
-        return urgent ? "Malignant" : "Benignant";
+        if (finalResult == null)
+            return "Pending Result";
+        return switch (finalResult) {
+            case MALIGNANT -> "Malignant";
+            case BENIGN -> "Benign";
+            case INCONCLUSIVE -> "Inconclusive";
+            case PENDING -> "Pending";
+        };
     }
+
+    public FinalResult getFinalResult() {
+        return finalResult;
+    }
+
+    public void setFinalResult(FinalResult finalResult) {
+        this.finalResult = finalResult;
+    }
+
+    public AiPrediction getAiPrediction() {
+        return aiPrediction;
+    }
+
+    public void setAiPrediction(AiPrediction aiPrediction) {
+        this.aiPrediction = aiPrediction;
+    }
+
 }

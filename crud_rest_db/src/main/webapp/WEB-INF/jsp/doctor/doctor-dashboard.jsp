@@ -12,6 +12,7 @@
 
             <!-- Admin dashboard styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
 
             <!-- Bootstrap Icons (icons only) -->
             <link rel="stylesheet"
@@ -24,7 +25,7 @@
 
                 <div class="header-admin">
                     <div class="header-left-admin">
-                        
+
                         <div class="admin-shield">
                             <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
                         </div>
@@ -68,21 +69,81 @@
                             <div class="text-main">
                                 Screenings for ${selectedDate}
                             </div>
+
                             <div class="text-meta">
-                                ${totalCount} total screenings •
-                                <span>${urgentCount} urgent</span> •
-                                ${routineCount} routine
+                                ${totalCount} total
+
+                                •
+                                <c:choose>
+                                    <c:when test="${urgentCount > 0}">
+                                        <span>${urgentCount} urgent</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span>0 urgent</span>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                •
+                                <c:choose>
+                                    <c:when test="${malignantCount > 0}">
+                                        ${malignantCount} malignant
+                                    </c:when>
+                                    <c:otherwise>
+                                        0 malignant
+                                    </c:otherwise>
+                                </c:choose>
+
+                                •
+                                <c:choose>
+                                    <c:when test="${inconclusiveCount > 0}">
+                                        ${inconclusiveCount} inconclusive
+                                    </c:when>
+                                    <c:otherwise>
+                                        0 inconclusive
+                                    </c:otherwise>
+                                </c:choose>
+
+                                •
+                                <c:choose>
+                                    <c:when test="${benignCount > 0}">
+                                        ${benignCount} benign
+                                    </c:when>
+                                    <c:otherwise>
+                                        0 benign
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
 
                         <div class="legend">
-                            <div class="legend-item">
-                                <span class="legend-dot urgent"></span> Urgent
+                            <div class="legend-item legend-urgent">
+                                <span class="patient-icon patient-icon--small">◎</span>
+                                <span>Urgent</span>
                             </div>
+
+                            <div class="legend-item legend-completed">
+                                <span class="badge-pill badge-check">✔</span>
+                                <!-- <i class="bi bi-check-circle-fill legend-check"></i> -->
+                                <span>Completed</span>
+                            </div>
+
                             <div class="legend-item">
-                                <span class="legend-dot completed"></span> Completed
+                                <span class="legend-dot danger"></span>
+                                <span>Malignant</span>
+                            </div>
+
+                            <div class="legend-item">
+                                <span class="legend-dot success"></span>
+                                <span>Benign</span>
+                            </div>
+
+                            <div class="legend-item">
+                                <span class="legend-dot warning"></span>
+                                <span>Inconclusive</span>
                             </div>
                         </div>
+
+
                     </div>
 
                     <!-- LIST OF SCREENINGS -->
@@ -114,10 +175,6 @@
                                             <span class="patient-name">
                                                 ${d.patient.user.fullName}
                                             </span>
-
-                                            <!-- <c:if test="${d.urgent}">
-                                                <div class="patient-icon">◎</div>
-                                            </c:if> -->
 
                                             <c:if test="${d.reviewed}">
                                                 <span class="badge-pill badge-check">✔</span>
@@ -154,19 +211,34 @@
 
                                 <div class="patient-right">
                                     <c:choose>
+
                                         <c:when test="${not d.reviewed}">
-                                            <span class="status-chip">Pending Review</span>
+                                            <span class="status-chip bi bi-clock">Pending Review</span>
                                         </c:when>
 
-                                        <c:when test="${d.urgent}">
-                                            <span class="status-chip status-danger">Malignant</span>
+                                        <c:when test="${empty d.finalResult}">
+                                            <span class="status-chip bi bi-clock">Pending Result</span>
+                                        </c:when>
+
+                                        <c:when test="${d.finalResult == 'MALIGNANT'}">
+                                            <span class="status-chip status-danger bi bi-exclamation-triangle">Malignant</span>
+                                        </c:when>
+
+                                        <c:when test="${d.finalResult == 'BENIGN'}">
+                                            <span class="status-chip status-success bi bi-check-circle">Benign</span>
+                                        </c:when>
+
+                                        <c:when test="${d.finalResult == 'INCONCLUSIVE'}">
+                                            <span class="status-chip status-warning bi bi-exclamation-triangle">Inconclusive</span>
                                         </c:when>
 
                                         <c:otherwise>
-                                            <span class="status-chip status-success">Benignant</span>
+                                            <span class="status-chip">Unknown</span>
                                         </c:otherwise>
+
                                     </c:choose>
                                 </div>
+
 
                             </a>
 

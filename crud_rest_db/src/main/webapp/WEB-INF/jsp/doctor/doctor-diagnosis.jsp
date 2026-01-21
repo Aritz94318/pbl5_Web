@@ -11,6 +11,7 @@
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/doctor-diagnosis.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         </head>
@@ -48,7 +49,6 @@
                     <div class="content-grid">
 
                         <!-- LEFT COLUMN -->
-                        <!-- LEFT COLUMN -->
                         <div>
                             <div class="panel">
                                 <div class="panel-title">
@@ -68,7 +68,7 @@
 
                                 <div class="info-row">
                                     <div class="info-label">Age</div>
-                                    <div class="info-value">${patient.age} years</div>
+                                    <div class="info-value">${patient.age}</div>
                                 </div>
 
                                 <div class="info-row">
@@ -76,10 +76,15 @@
                                     <div class="info-value">${patient.user.email}</div>
                                 </div>
 
+                                <div class="info-row">
+                                    <div class="info-label">Phone number</div>
+                                    <div class="info-value">${patient.phone}</div>
+                                </div>
+
                                 <div class="info-row" style="margin-bottom:0;">
                                     <c:choose>
                                         <c:when test="${not empty previousScreenings}">
-                                            ${previousScreenings[d.patient.id]} total screenings
+                                            ${previousScreenings[patient.id]} total screenings
                                         </c:when>
                                         <c:otherwise>
                                             Total screenings unavailable
@@ -104,39 +109,101 @@
                                     <div class="info-value">${diagnosis.id}</div>
                                 </div>
 
-                                <div class="info-row">
+                                <div class="info-row" style="margin-bottom: 1px;">
                                     <div class="info-label">Status</div>
+                                    <div class="chip-row">
+                                        <c:if test="${diagnosis.urgent}">
+                                            <span class="chip urgent"><i class="bi bi-exclamation-triangle"></i>
+                                                Urgent</span>
+                                        </c:if>
+                                        <c:if test="${diagnosis.reviewed}">
+                                            <span class="chip reviewed"><i class="bi bi-check-circle"></i>
+                                                Reviewed</span>
+                                        </c:if>
+                                        <c:if test="${not diagnosis.reviewed}">
+                                            <span class="warn"><i class="bi bi-clock"></i> Pending Review</span>
+                                        </c:if>
+                                    </div>
+                                    <!-- <div class="info-value">
+                                        <div class="info-row" style="margin-top:12px; margin-bottom:0;"> -->
+
+                                    <div class="info-row" style="margin-top:15px">
+
+                                        <div class="info-label">Doctor's final diagnosis</div>
+                                        <div class="info-value">
+                                            <c:choose>
+                                                <c:when test="${diagnosis.finalResult == 'BENIGN'}">
+                                                    <span class="chip chip-benign bi bi-check-circle">Benign</span>
+                                                </c:when>
+                                                <c:when test="${diagnosis.finalResult == 'MALIGNANT'}">
+                                                    <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                </c:when>
+                                                <c:when test="${diagnosis.finalResult == 'INCONCLUSIVE'}">
+                                                    <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="chip chip-pending">Unknown</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                        <!-- </div>
+                                </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel" style="margin-top:14px;">
+                                <div class="panel-title">
+                                    <i class="bi bi-cpu"></i>
+                                    <span>AI’s prediction</span>
+                                </div>
+
+                                <div class="info-row">
+                                    <div class="info-label">Predicted result</div>
                                     <div class="info-value">
                                         <c:choose>
-                                            <c:when test="${not diagnosis.reviewed}">
-                                                <span class="warn">Pending Review</span>
-                                            </c:when>
-                                            <c:when test="${diagnosis.urgent}">
-                                                <span class="danger">Malignant</span>
+                                            <c:when test="${diagnosis.aiPrediction}">
+                                                <span class="chip chip-malignant">
+                                                    <i class="bi bi-exclamation-triangle"></i> Malignant
+                                                </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="ok">Benignant</span>
+                                                <span class="chip chip-benign">
+                                                    <i class="bi bi-check-circle"></i> Benign
+                                                </span>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
                                 </div>
 
-                                <div class="chip-row">
-                                    <c:if test="${diagnosis.urgent}">
-                                        <span class="chip urgent"><i class="bi bi-exclamation-triangle"></i>
-                                            Urgent</span>
-                                    </c:if>
-                                    <c:if test="${diagnosis.reviewed}">
-                                        <span class="chip reviewed"><i class="bi bi-check-circle"></i> Reviewed</span>
-                                    </c:if>
-                                </div>
-
-                                <div class="info-row" style="margin-top:14px; margin-bottom:0;">
-                                    <div class="info-label">Probability (malignant)</div>
+                                <div class="info-row" style="margin-bottom:0;">
+                                    <div class="info-label">Probability for the prediction to be correct</div>
                                     <div class="info-value">
                                         <c:out value="${diagnosis.probability}" default="—" />
                                     </div>
                                 </div>
+
+                                <!-- <c:if test="${diagnosis.reviewed and not empty diagnosis.finalResult}">
+                                    <div class="info-row" style="margin-top:12px; margin-bottom:0;">
+                                        <div class="info-label">Doctor final result</div>
+                                        <div class="info-value">
+                                            <c:choose>
+                                                <c:when test="${diagnosis.finalResult == 'BENIGN'}">
+                                                    <span class="chip chip-benign">Benign</span>
+                                                </c:when>
+                                                <c:when test="${diagnosis.finalResult == 'MALIGNANT'}">
+                                                    <span class="chip chip-malignant">Malignant</span>
+                                                </c:when>
+                                                <c:when test="${diagnosis.finalResult == 'INCONCLUSIVE'}">
+                                                    <span class="chip chip-inconclusive">Inconclusive</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="chip chip-pending">Unknown</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </c:if> -->
                             </div>
 
                             <!-- HISTORY TABLE (NOW ON THE LEFT, BELOW SCREENING DETAILS) -->
@@ -151,9 +218,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
-                                                <!-- <th>Reviewed</th>
-                                                <th>Urgent</th>
-                                                <th>Probability</th> -->
+                                                <th>Result</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -161,21 +226,29 @@
                                             <c:forEach var="h" items="${historyDiagnoses}">
                                                 <tr>
                                                     <td>${h.date}</td>
-                                                    <!-- <td>
-                                                        <c:choose>
-                                                            <c:when test="${h.reviewed}">Yes</c:when>
-                                                            <c:otherwise>No</c:otherwise>
-                                                        </c:choose>
-                                                    </td>
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${h.urgent}">Yes</c:when>
-                                                            <c:otherwise>No</c:otherwise>
+                                                            <c:when test="${empty h.finalResult}">
+                                                                <span class="chip chip-pending bi bi-clock">Pending</span>
+                                                            </c:when>
+
+                                                            <c:when test="${h.finalResult == 'BENIGN'}">
+                                                                <span class="chip chip-benign bi bi-check-circle">Benign</span>
+                                                            </c:when>
+
+                                                            <c:when test="${h.finalResult == 'MALIGNANT'}">
+                                                                <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                            </c:when>
+
+                                                            <c:when test="${h.finalResult == 'INCONCLUSIVE'}">
+                                                                <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                            </c:when>
+
+                                                            <c:otherwise>
+                                                                <span class="chip chip-pending">Unknown</span>
+                                                            </c:otherwise>
                                                         </c:choose>
                                                     </td>
-                                                    <td>
-                                                        <c:out value="${h.probability}" default="—" />
-                                                    </td> -->
                                                     <td>
                                                         <a class="btn-soft"
                                                             href="${pageContext.request.contextPath}/doctor/diagnosis/${h.id}">
@@ -220,16 +293,15 @@
                                         <div class="image-meta">
                                             <div class="image-actions">
                                                 <c:if test="${not empty diagnosis.previewPath}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.previewPath}"
                                                         download>
                                                         <i class="bi bi-download"></i> Download
                                                     </a>
                                                 </c:if>
 
-                                                <!-- Optional open PNG -->
                                                 <c:if test="${not empty diagnosis.previewPath}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.previewPath}"
                                                         target="_blank" rel="noopener">
                                                         <i class="bi bi-box-arrow-up-right"></i> Open
@@ -258,16 +330,15 @@
                                         <div class="image-meta">
                                             <div class="image-actions">
                                                 <c:if test="${not empty diagnosis.preview2Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview2Path}"
                                                         download>
                                                         <i class="bi bi-download"></i> Download
                                                     </a>
                                                 </c:if>
 
-                                                <!-- Optional open PNG -->
                                                 <c:if test="${not empty diagnosis.preview2Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview2Path}"
                                                         target="_blank" rel="noopener">
                                                         <i class="bi bi-box-arrow-up-right"></i> Open
@@ -296,16 +367,15 @@
                                         <div class="image-meta">
                                             <div class="image-actions">
                                                 <c:if test="${not empty diagnosis.preview3Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview3Path}"
                                                         download>
                                                         <i class="bi bi-download"></i> Download
                                                     </a>
                                                 </c:if>
 
-                                                <!-- Optional open PNG -->
                                                 <c:if test="${not empty diagnosis.preview3Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview3Path}"
                                                         target="_blank" rel="noopener">
                                                         <i class="bi bi-box-arrow-up-right"></i> Open
@@ -334,16 +404,15 @@
                                         <div class="image-meta">
                                             <div class="image-actions">
                                                 <c:if test="${not empty diagnosis.preview4Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview4Path}"
                                                         download>
                                                         <i class="bi bi-download"></i> Download
                                                     </a>
                                                 </c:if>
 
-                                                <!-- Optional open PNG -->
                                                 <c:if test="${not empty diagnosis.preview4Path}">
-                                                    <a class="btn-soft"
+                                                    <a class="btn-soft btn-secondary"
                                                         href="${pageContext.request.contextPath}/${diagnosis.preview4Path}"
                                                         target="_blank" rel="noopener">
                                                         <i class="bi bi-box-arrow-up-right"></i> Open
@@ -364,31 +433,81 @@
                                     <span>Screening Results</span>
                                 </div>
 
-                                <div class="info-label" style="margin-bottom:6px;">Result</div>
+                                <form method="post"
+                                    action="${pageContext.request.contextPath}/doctor/diagnosis/${diagnosis.id}/review"
+                                    id="reviewForm">
 
-                                <!-- display-only pills -->
-                                <div class="chip-row">
-                                    <span
-                                        class="chip <c:if test='${diagnosis.reviewed and not diagnosis.urgent}'>reviewed</c:if>">
-                                        Benignant
-                                    </span>
-                                    <span
-                                        class="chip <c:if test='${diagnosis.reviewed and diagnosis.urgent}'>urgent</c:if>">
-                                        Malignant
-                                    </span>
-                                    <span class="chip <c:if test='${not diagnosis.reviewed}'>urgent</c:if>">
-                                        Pending
-                                    </span>
-                                </div>
+                                    <!-- This is what the server will read -->
+                                    <input type="hidden" name="finalResult" id="finalResult"
+                                        value="${empty diagnosis.finalResult ? '' : diagnosis.finalResult}" />
 
-                                <div style="margin-top:14px;">
-                                    <div class="notes-label">Clinical Notes</div>
-                                    <div class="notes">
-                                        <c:out value="${diagnosis.description}" default="—" />
+                                    <div class="info-label" style="margin-bottom:6px;">Result</div>
+
+                                    <div class="chip-row">
+                                        <button type="button"
+                                            class="chip chip-btn chip-benign bi bi-check-circle${diagnosis.finalResult == 'BENIGN' ? 'selected' : ''}"
+                                            data-value="BENIGN" aria-pressed="${diagnosis.finalResult == 'BENIGN'}">
+                                            Benign
+                                        </button>
+
+                                        <button type="button"
+                                            class="chip chip-btn chip-malignant bi bi-exclamation-triangle ${diagnosis.finalResult == 'MALIGNANT' ? 'selected' : ''}"
+                                            data-value="MALIGNANT"
+                                            aria-pressed="${diagnosis.finalResult == 'MALIGNANT'}">
+                                            Malignant
+                                        </button>
+
+                                        <button type="button"
+                                            class="chip chip-btn chip-inconclusive bi bi-exclamation-triangle ${diagnosis.finalResult == 'INCONCLUSIVE' ? 'selected' : ''}"
+                                            data-value="INCONCLUSIVE"
+                                            aria-pressed="${diagnosis.finalResult == 'INCONCLUSIVE'}">
+                                            Inconclusive
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
 
+                                    <div style="margin-top:14px;">
+                                        <div class="notes-label">Clinical Notes</div>
+                                        <textarea class="notes-input" name="description" rows="5"
+                                            placeholder="Write relevant clinical notes here...">${diagnosis.description}</textarea>
+                                    </div>
+
+                                    <div style="margin-top:12px; display:flex; gap:10px;">
+                                        <button type="submit" class="btn-soft btn-primary">
+                                            <i class="bi bi-save"></i> Save results
+                                        </button>
+                                    </div>
+
+                                </form>
+
+                                <script>
+                                    (function () {
+                                        const hidden = document.getElementById('finalResult');
+                                        const buttons = document.querySelectorAll('.chip-btn');
+
+                                        function setSelected(value) {
+                                            hidden.value = value;
+
+                                            buttons.forEach(btn => {
+                                                const isSelected = btn.dataset.value === value;
+                                                btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+
+                                                // reset visual classes (keep base "chip chip-btn")
+                                                btn.classList.remove('selected');
+
+                                                if (isSelected) btn.classList.add('selected');
+                                            });
+                                        }
+
+                                        // initial highlight based on hidden input
+                                        setSelected(hidden.value || '');
+
+                                        buttons.forEach(btn => {
+                                            btn.addEventListener('click', () => setSelected(btn.dataset.value));
+                                        });
+                                    })();
+                                </script>
+
+                            </div>
                         </div>
                     </div>
                 </div>

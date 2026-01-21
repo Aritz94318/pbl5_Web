@@ -2,7 +2,7 @@
    ADMIN DASHBOARD STYLES
    =============================== */
 
-.btn-back-icon {
+/* .btn-back-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -20,7 +20,7 @@
 .btn-back-icon:hover i {
     transform: translateX(-2px);
     opacity: 1;
-}
+} */
 
 .bi {
     line-height: 1;
@@ -43,36 +43,6 @@
 
 .admin-shield .bi {
     font-size: 1.5rem;
-}
-
-.header-admin {
-    background: linear-gradient(90deg, hotpink, hotpink);
-    color: #fff;
-    border-radius: 16px;
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
-    max-width: 1200px;
-    margin: 0 auto;
-    margin-bottom: 18px;
-}
-
-.header-left-admin {
-    display: flex;
-    gap: 1rem;
-}
-
-.header-left-admin h1 {
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.header-left-admin p {
-    font-size: 13px;
-    opacity: 0.9;
-    margin-top: 4px;
 }
 
 .admin-topbar {
@@ -295,16 +265,6 @@
 
 .btn-admin:hover {
     background: #f8fafc;
-}
-
-.btn-primary {
-    background: hotpink;
-    color: #fff;
-    border: 0;
-}
-
-.btn-primary:hover {
-    background: rgba(255, 105, 180, 0.678);
 }
 
 /* CHARTS */

@@ -10,6 +10,8 @@
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
+
         </head>
 
         <body>
@@ -83,12 +85,34 @@
                                     style="width:100%; padding:10px;">
                             </label>
 
+                            <label id="doctorFields" style="display:none;">
+                                Doctor phone
+                                <input name="doctorPhone"
+                                    value="<c:out value='${user.doctor != null ? user.doctor.phone : ""}'/>"
+                                    style="width:100%; padding:10px;">
+                            </label>
+
+                            <div id="patientFields" style="display:none; display:grid; gap:10px;">
+                                <label>
+                                    Patient birth date
+                                    <input type="date" name="patientBirthDate"
+                                        value="<c:out value='${user.patient != null ? user.patient.birthDate : ""}'/>"
+                                        style="width:100%; padding:10px;">
+                                </label>
+
+                                <label>
+                                    Patient phone
+                                    <input name="patientPhone"
+                                        value="<c:out value='${user.patient != null ? user.patient.phone : ""}'/>"
+                                        style="width:100%; padding:10px;">
+                                </label>
+                            </div>
 
                             <div class="admin-tools">
                                 <button class="btn-admin btn-primary" type="submit">
                                     <i class="bi bi-check2-circle"></i> Save
                                 </button>
-                                <a class="btn-admin" href="${pageContext.request.contextPath}/admin/dashboard">
+                                <a class="btn-admin btn-secondary" href="${pageContext.request.contextPath}/admin/dashboard">
                                     <i class="bi bi-x-circle"></i> Cancel
                                 </a>
                             </div>
@@ -96,6 +120,22 @@
                     </form>
                 </div>
             </div>
+            <script>
+                (function () {
+                    const roleSel = document.querySelector("select[name='role']");
+                    const doctorFields = document.getElementById("doctorFields");
+                    const patientFields = document.getElementById("patientFields");
+
+                    function refresh() {
+                        const role = roleSel.value;
+                        doctorFields.style.display = (role === "DOCTOR") ? "block" : "none";
+                        patientFields.style.display = (role === "PATIENT") ? "grid" : "none";
+                    }
+
+                    roleSel.addEventListener("change", refresh);
+                    refresh(); // initial
+                })();
+            </script>
 
         </body>
 

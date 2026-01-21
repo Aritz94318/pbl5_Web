@@ -2,6 +2,7 @@ package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
@@ -41,6 +42,28 @@ public class DiagnosisService {
     public Diagnosis findById(Integer id) {
         return diagnosisRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Diagnosis not found with id " + id));
+    }
+
+    public void saveDoctorReview(Integer id, String finalResultRaw, String description) {
+        Diagnosis d = diagnosisRepository.findById(id).orElseThrow();
+
+        // notes
+        d.setDescription(description == null ? "" : description.trim());
+
+        // finalResult (allow pending/clear)
+        if (finalResultRaw == null || finalResultRaw.isBlank()) {
+            d.setFinalResult(null);
+            d.setReviewed(false); // optional
+        } else {
+            FinalResult fr = FinalResult.valueOf(finalResultRaw);
+            d.setFinalResult(fr);
+            d.setReviewed(true);
+
+            // urgent policy example:
+            d.setUrgent(fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE);
+        }
+
+        diagnosisRepository.save(d);
     }
 
     public Diagnosis create(Diagnosis diagnosis, Integer doctorId, Integer patientId) {

@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
@@ -111,6 +114,15 @@ public class DoctorController {
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
         return "doctor/doctor-diagnosis"; // -> /WEB-INF/jsp/doctor-diagnosis.jsp
+    }
+
+    @PostMapping("/diagnosis/{id}/review")
+    public String saveReview(
+            @PathVariable Integer id,
+            @RequestParam(value = "finalResult", required = false) String finalResultRaw,
+            @RequestParam(value = "description", required = false) String description) {
+        diagnosisService.saveDoctorReview(id, finalResultRaw, description);
+        return "redirect:/doctor/diagnosis/" + id;
     }
 
     // Helper DTO for date buttons

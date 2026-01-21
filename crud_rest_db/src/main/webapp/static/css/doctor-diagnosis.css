@@ -2,6 +2,125 @@
     background: linear-gradient(180deg, #eaf2ff 0%, #eaf2ff 20%, #e6f0ff 100%);
 }
 
+.chip-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    font: inherit;
+}
+
+.chip.chip-benign {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46
+}
+
+.chip.chip-malignant {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.chip.chip-inconclusive {
+    border-color: rgb(163 104 26 / 25%);
+    background: #fffbeb;
+    color: #78350f;
+}
+
+/* optional "selected" style (subtle outline) */
+.chip-btn.selected {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+
+/* Make chip buttons behave like chips, not default buttons */
+.chip-btn {
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chip-btn:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.chip-btn:focus {
+    outline: none;
+}
+
+/* Optional: small press feedback */
+.chip-btn:active {
+    transform: translateY(1px);
+}
+
+/* Notes textarea styling (simple, matches your UI) */
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* Make the label behave like a chip button */
+.chip-select {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Hide the radio but keep it accessible */
+.chip-select input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Optional: visually mark selected chip even if you don't add extra classes */
+.chip-select:has(input[type="radio"]:checked) {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* Notes textarea styling */
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.btn-soft:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.bi-box-arrow-up-right {
+    color: #d58aaa;
+}
+
 .page-wrap {
     max-width: 1280px;
     margin: 20px auto;
@@ -37,14 +156,14 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 800;
-    color: #1f3b77;
-    margin-bottom: 14px;
+    font-weight: 500;
+    color: #0f172a;
+    margin-bottom: 17px;
 }
 
 .panel-title i {
-    color: #1f5bd6;
-    font-size: 1.1rem;
+    color: #0f172a;
+    font-size: 1.35rem;
 }
 
 .info-row {
@@ -59,13 +178,13 @@
 
 .info-value {
     font-size: 1rem;
-    color: #10224d;
+    color: #2a2b2cd1;
     font-weight: 650;
 }
 
 .ok {
-    color: #0aa04f;
-    font-weight: 800;
+    color: #065f46;
+    font-weight: 650;
 }
 
 .warn {
@@ -74,13 +193,13 @@
 }
 
 .danger {
-    color: #d62a2a;
+    color: #7f1d1d;
     font-weight: 800;
 }
 
 .chip-row {
     display: flex;
-    gap: 10px;
+    gap: 13px;
     flex-wrap: wrap;
 }
 
@@ -89,7 +208,7 @@
     background: #fff;
     border-radius: 999px;
     padding: 8px 12px;
-    font-weight: 800;
+    font-weight: 600;
     color: #1c2f5f;
     display: inline-flex;
     align-items: center;
@@ -105,10 +224,9 @@
 .chip.reviewed {
     border-color: rgba(10, 160, 79, 0.25);
     background: rgba(10, 160, 79, 0.06);
-    color: #0a7a3c;
+    color: #065f46;
 }
 
-/* 4-image grid */
 .images-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -120,13 +238,6 @@
         grid-template-columns: 1fr;
     }
 }
-
-/* .image-card {
-                    border: 1px solid #e2e8f6;
-                    border-radius: 14px;
-                    background: #f7f9ff;
-                    overflow: hidden;
-                } */
 
 .image-tile {
     height: 320px;
@@ -170,8 +281,12 @@
     color: #1f3b77;
     border-radius: 12px;
     padding: 10px 12px;
-    font-weight: 800;
+    font-weight: 550;
     text-decoration: none;
+}
+
+.thead {
+    background-color: #d58aaa;
 }
 
 .btn-soft.primary {
@@ -181,9 +296,10 @@
 }
 
 .notes-label {
-    font-weight: 800;
-    color: #223a70;
-    margin-bottom: 8px;
+    font-weight: 500;
+    color: #0f172a;
+    margin-top: 25px;
+    margin-bottom: 12px;
 }
 
 .notes {
@@ -225,9 +341,9 @@ table.hist td {
 }
 
 table.hist th {
-    color: #1f3b77;
-    font-weight: 900;
-    background: #f7f9ff;
+    color: #fff;
+    font-weight: 700;
+    background: #d58aaa;
 }
 
 /* Fixed preview size */

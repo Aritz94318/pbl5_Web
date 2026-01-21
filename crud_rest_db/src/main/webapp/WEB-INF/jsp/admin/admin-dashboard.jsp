@@ -13,6 +13,7 @@
 
             <!-- Admin dashboard styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
 
             <!-- Bootstrap Icons (icons only) -->
             <link rel="stylesheet"
