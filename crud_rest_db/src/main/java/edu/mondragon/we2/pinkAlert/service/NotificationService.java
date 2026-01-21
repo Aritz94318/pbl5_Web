@@ -49,7 +49,7 @@ public class NotificationService {
             HttpEntity<String> request = new HttpEntity<>(json, headers);
 
             restTemplate.exchange(
-                    "http://localhost:1880/email",
+                    "https://node-red-591094411846.europe-west1.run.app/email",
                     HttpMethod.POST,
                     request,
                     Void.class);
