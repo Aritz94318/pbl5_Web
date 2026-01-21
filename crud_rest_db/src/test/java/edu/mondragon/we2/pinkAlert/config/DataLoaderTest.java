@@ -1,23 +1,20 @@
 package edu.mondragon.we2.pinkAlert.config;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.CommandLineRunner;
-
 import edu.mondragon.we2.pinkAlert.model.*;
 import edu.mondragon.we2.pinkAlert.repository.*;
 import edu.mondragon.we2.pinkAlert.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DataLoaderTest {
@@ -37,112 +34,148 @@ class DataLoaderTest {
     @Mock
     private DiagnosisRepository diagnosisRepository;
     
-    @InjectMocks
     private DataLoader dataLoader;
-    
-    private Doctor mockDoctor;
-    private Patient mockPatient;
-    private User mockDoctorUser;
-    private User mockPatientUser;
-    private User mockAdminUser;
 
     @BeforeEach
     void setUp() {
-        // Configurar mocks básicos
-        mockDoctor = new Doctor("688152046");
-        mockDoctor.setId(1);
-        
-        mockPatient = new Patient(LocalDate.of(1999, 2, 14), "625153475");
-        mockPatient.setId(1);
-        
-        mockDoctorUser = new User();
-        mockDoctorUser.setId(1);
-        mockDoctorUser.setEmail("javier.fuentes@pinkalert.com");
-        mockDoctorUser.setUsername("javier.fuentes");
-        mockDoctorUser.setFullName("Dr. Javier Fuentes");
-        mockDoctorUser.setRole(Role.DOCTOR);
-        mockDoctorUser.setDoctor(mockDoctor);
-        
-        mockPatientUser = new User();
-        mockPatientUser.setId(2);
-        mockPatientUser.setEmail("maria.agirre@gmail.com");
-        mockPatientUser.setUsername("maria.agirre");
-        mockPatientUser.setFullName("María Agirre");
-        mockPatientUser.setRole(Role.PATIENT);
-        mockPatientUser.setPatient(mockPatient);
-        
-        mockAdminUser = new User();
-        mockAdminUser.setId(3);
-        mockAdminUser.setEmail("admin@pinkalert.com");
-        mockAdminUser.setUsername("admin");
-        mockAdminUser.setFullName("System Administrator");
-        mockAdminUser.setRole(Role.ADMIN);
+        dataLoader = new DataLoader(userService, userRepository, doctorRepository, 
+                                  patientRepository, diagnosisRepository);
     }
 
     @Test
-    void testDataLoaderImplementsCommandLineRunner() {
-        // Arrange & Act
-        boolean implementsInterface = CommandLineRunner.class.isAssignableFrom(DataLoader.class);
-        
-        // Assert
-        assertTrue(implementsInterface, "DataLoader debe implementar CommandLineRunner");
-    }
-
-    @Test
-    void testRun_WhenUsersExist_DoesNotCreateUsers() throws Exception {
+    void testRun_WhenNoUsersExist_CreatesAllUsers() throws Exception {
         // Arrange
-        when(userRepository.count()).thenReturn(3L); // Ya existen usuarios
-        when(diagnosisRepository.count()).thenReturn(4L); // Ya existen diagnósticos
-        
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L); // Para saltar la segunda parte
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
+
         // Act
         dataLoader.run();
-        
+
         // Assert
-        verify(userRepository, times(1)).count();
-        verify(doctorRepository, never()).save(any());
-        verify(patientRepository, never()).save(any());
-        verify(userService, never()).createUser(any(), any());
-        verify(diagnosisRepository, times(1)).count();
+        verify(doctorRepository).save(any(Doctor.class));
+        verify(patientRepository, atLeastOnce()).save(any(Patient.class));
+        verify(userService, times(3)).createUser(any(User.class), anyString());
     }
 
+ 
     @Test
-    void testConstructor_InjectsAllDependencies() {
+    void testRun_WhenNoDiagnosesExist_CreatesDiagnosisPatient() throws Exception {
         // Arrange
-        DataLoader loader = new DataLoader(userService, userRepository, 
-            doctorRepository, patientRepository, diagnosisRepository);
+        when(userRepository.count()).thenReturn(1L); // Para saltar primera parte
+        when(diagnosisRepository.count()).thenReturn(0L);
         
-        // Act & Assert - No debería lanzar excepción
-        assertNotNull(loader);
+        Doctor mockDoctor = new Doctor("688152046");
+        when(doctorRepository.findAll()).thenReturn(Collections.singletonList(mockDoctor));
         
-        // Podemos verificar que los campos se asignan correctamente usando reflection
-        try {
-            java.lang.reflect.Field userServiceField = DataLoader.class.getDeclaredField("userService");
-            userServiceField.setAccessible(true);
-            assertSame(userService, userServiceField.get(loader));
-        } catch (Exception e) {
-            fail("Error al acceder a campos por reflection: " + e.getMessage());
-        }
+        Patient mockPatient = new Patient(LocalDate.of(1975, 10, 28), "691457821");
+        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(patientRepository).save(any(Patient.class));
+        verify(userService).createUser(any(User.class), eq("123"));
     }
 
     @Test
-    void testDataLoader_EmptyConstructorNotAvailable() {
-        // Verificar que no hay constructor por defecto
-        try {
-            DataLoader.class.getDeclaredConstructor();
-            fail("No debería tener constructor por defecto");
-        } catch (NoSuchMethodException e) {
-            // Esto es esperado
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    void testRun_ExceptionHandling() throws Exception {
+    void testRun_WhenDiagnosesExist_SkipsDiagnosisCreation() throws Exception {
         // Arrange
-        when(userRepository.count()).thenThrow(new RuntimeException("Database error"));
-        
-        // Act & Assert - Debería propagar la excepción
-        assertThrows(RuntimeException.class, () -> dataLoader.run());
+        when(userRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(doctorRepository, never()).findAll();
+        verify(patientRepository, never()).save(any(Patient.class));
+        verify(userService, never()).createUser(any(User.class), eq("123"));
     }
 
+    @Test
+    void testRun_CreatesDoctorUserWithCorrectRole() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        Doctor mockDoctor = new Doctor("688152046");
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.DOCTOR && 
+            user.getEmail().equals("javier.fuentes@pinkalert.com")
+        ), eq("123"));
+    }
+
+    @Test
+    void testRun_CreatesPatientUserWithCorrectRole() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        Patient mockPatient = new Patient(LocalDate.of(1999, 2, 14), "625153475");
+        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.PATIENT && 
+            user.getEmail().equals("maria.agirre@gmail.com")
+        ), eq("123"));
+    }
+
+    @Test
+    void testRun_CreatesAdminUserWithCorrectRole() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.ADMIN && 
+            user.getEmail().equals("admin@pinkalert.com")
+        ), eq("admin123"));
+    }
+
+    @Test
+    void testRun_CreatesSecondPatientForDiagnosis() throws Exception {
+        // Arrange
+        when(userRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.count()).thenReturn(0L);
+        
+        Doctor mockDoctor = new Doctor("688152046");
+        when(doctorRepository.findAll()).thenReturn(Collections.singletonList(mockDoctor));
+        
+        Patient mockPatient = new Patient(LocalDate.of(1975, 10, 28), "691457821");
+        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
+
+        // Act
+        dataLoader.run();
+
+        // Assert
+        verify(userService).createUser(argThat(user -> 
+            user.getEmail().equals("maitediaz75@pinkalert.com") &&
+            user.getPatient() != null
+        ), eq("123"));
+    }
 }
