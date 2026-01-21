@@ -23,6 +23,12 @@
     color: #b11212;
 }
 
+.chip.chip-pending {
+    border-color: #80808052;
+    background: #d3d3d36e;
+    color: #494949;
+}
+
 .chip.chip-inconclusive {
     border-color: rgb(163 104 26 / 25%);
     background: #fffbeb;
@@ -173,7 +179,7 @@
 .info-label {
     font-size: 0.82rem;
     color: #6a7aa6;
-    margin-bottom: 4px;
+    margin-bottom: 9px;
 }
 
 .info-value {
@@ -225,6 +231,12 @@
     border-color: rgba(10, 160, 79, 0.25);
     background: rgba(10, 160, 79, 0.06);
     color: #065f46;
+}
+
+.chip.pending {
+    border-color: #8080809e;
+    background: #d3d3d36e;
+    color: gray;
 }
 
 .images-grid {
