@@ -15,16 +15,11 @@
             "type": "number",
             "minimum": 0,
             "maximum": 1
-        },
-        "diagnosis_id": {
-            "type": "integer",
-            "minimum": 0
         }
     },
     "required": [
         "prediction",
-        "prob_malignant",
-        "diagnosis_id"
+        "prob_malignant"
     ],
     "additionalProperties": false
 }
