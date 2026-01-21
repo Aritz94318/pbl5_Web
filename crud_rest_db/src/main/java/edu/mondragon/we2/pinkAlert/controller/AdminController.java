@@ -494,10 +494,11 @@ public class AdminController {
                         diag = diagnosisRepository.saveAndFlush(diag);
 
                         String previewsDir = "previews";
-                        Path previewsPath = Paths.get("/tmp/previews" + previewsDir);
+                        Path previewsPath = Paths.get("/tmp/previews");
                         Files.createDirectories(previewsPath);
 
-                        Path tmpDicomPath = Paths.get("tmp/dicom");
+                       Path tmpDicomPath = Paths.get("/tmp/dicom");
+
                         Files.createDirectories(tmpDicomPath);
 
                         List<String> urls = dicomUrls;
@@ -508,6 +509,9 @@ public class AdminController {
                                 downloadToFile(u, dicomFile);
 
                                 File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
+                                System.out.println("DICOM exists: " + Files.exists(dicomFile));
+System.out.println("DICOM size: " + Files.size(dicomFile));
+
                                 edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
                                                 outPng);
 
