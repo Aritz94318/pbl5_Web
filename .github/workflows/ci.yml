@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -14,9 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Setup JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -24,66 +23,76 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
+      # SonarCloud branch analysis (análisis completo de la branch)
       - name: SonarCloud Branch Analysis
         env:
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         run: |
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
           mvn -f ./crud_rest_db/pom.xml clean verify sonar:sonar \
-                  -Dsonar.projectKey=Aritz94318_pbl5_Web \
-                 -Dsonar.organization=aritz94318 \
-                  -Dsonar.host.url=https://sonarcloud.io \
-           -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.projectKey=Aritz94318_pbl5_Web \
+            -Dsonar.organization=aritz94318 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.branch.name=${{ github.head_ref }}
 
-
-
+      # Wait for SonarCloud to process the analysis
       - name: Wait for SonarCloud processing
         run: sleep 40
 
+      # Install jq for parsing JSON
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
+      # Enforce coverage threshold (CI "quality gate")
       - name: Enforce coverage from SonarCloud
         env:
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           MIN_COVERAGE=75
 
-           RESPONSE=$(curl -s -u $SONAR_TOKEN: \
-           "https://sonarcloud.io/api/measures/component?component=Aritz94318_pbl5_Web&metricKeys=coverage&branch=${{ github.ref_name }}")
+          RESPONSE=$(curl -s -u $SONAR_TOKEN: \
+            "https://sonarcloud.io/api/measures/component?component=Aritz94318_pbl5_Web&metricKeys=coverage&branch=${{ github.head_ref }}")
 
-             COVERAGE=$(echo "$RESPONSE" | jq -r '.component.measures[0].value')
+          COVERAGE=$(echo "$RESPONSE" | jq -r '.component.measures[0].value')
+          echo "📊 SonarCloud coverage (branch): $COVERAGE%"
 
-            echo "📊 SonarCloud coverage (branch): $COVERAGE%"
+          COVERAGE_INT=${COVERAGE%.*}
 
-              COVERAGE_INT=${COVERAGE%.*}
+          if [ "$COVERAGE_INT" -lt "$MIN_COVERAGE" ]; then
+            echo "❌ Coverage below $MIN_COVERAGE%"
+            exit 1
+          fi
 
-            if [ "$COVERAGE_INT" -lt "$MIN_COVERAGE" ]; then
-              echo "❌ Coverage below $MIN_COVERAGE%"
-                exit 1
-            fi
-           echo "✅ Coverage OK"
+          echo "✅ Coverage OK"
 
+      # List target directory
       - name: List target directory
         run: ls -lh ./crud_rest_db/target
 
+      # Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # Configure Docker
       - name: Configure Docker
         run: gcloud auth configure-docker europe-docker.pkg.dev
 
+      # Build & Push Docker image
       - name: Build & Push Docker image
         run: |
           docker build -t europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db ./crud_rest_db
           docker push europe-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pinkalert/crud-rest-db
 
+      # Check GCP configuration
       - name: Check GCP configuration
         run: |
           gcloud config list
           gcloud auth list
           gcloud projects describe ${{ secrets.GCP_PROJECT_ID }}
 
+      # Deploy to Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy crud-rest-db \
