@@ -1,0 +1,97 @@
+#patientList,
+#doctorList,
+#machineList {
+    max-height: 420px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+}
+
+#patientList::-webkit-scrollbar,
+#doctorList::-webkit-scrollbar,
+#machineList::-webkit-scrollbar {
+    width: 10px;
+}
+
+#patientList::-webkit-scrollbar-thumb,
+#doctorList::-webkit-scrollbar-thumb,
+#machineList::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+#patientList::-webkit-scrollbar-track,
+#doctorList::-webkit-scrollbar-track,
+#machineList::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+#patientList,
+#doctorList,
+#machineList {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) rgba(0, 0, 0, 0.08);
+}
+
+.detail-label {
+    font-size: 16px;
+    color: #7a88a6;
+}
+
+.sim-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.sim-field {
+    display: grid;
+    grid-template-columns: 160px auto;
+    align-items: center;
+    column-gap: 12px;
+}
+
+.sim-field .detail-label {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.sim-field .sim-num {
+    width: 65px;
+    text-align: center;
+    padding: 3.5px;
+}
+
+.sim-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 6px;
+}
+
+/* NEW: one column stack for actions section */
+.admin-grid-1 {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+/* Chrome/Edge/Safari */
+.sim-num::-webkit-outer-spin-button,
+.sim-num::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.sim-num {
+    -moz-appearance: textfield;
+}
+
+.patient-card {
+    background-color: #fff;
+}
