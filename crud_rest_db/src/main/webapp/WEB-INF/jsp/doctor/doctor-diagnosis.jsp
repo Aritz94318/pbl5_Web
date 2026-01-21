@@ -162,7 +162,7 @@
                                     <div class="info-label">Predicted result</div>
                                     <div class="info-value">
                                         <c:choose>
-                                            <c:when test="${diagnosis.urgent}">
+                                            <c:when test="${diagnosis.aiPrediction}">
                                                 <span class="chip chip-malignant">
                                                     <i class="bi bi-exclamation-triangle"></i> Malignant
                                                 </span>
