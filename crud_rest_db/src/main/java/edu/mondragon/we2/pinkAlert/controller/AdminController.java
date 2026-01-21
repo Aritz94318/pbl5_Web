@@ -65,7 +65,7 @@ public class AdminController {
                         DoctorRepository doctorRepository,
                         AiClientService aiClientService, DiagnosisService diagnosisService,
                         DoctorService doctorService, SimulationService simulationService) {
-                 
+
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
                 this.userRepository = userRepository;
@@ -497,7 +497,7 @@ public class AdminController {
                         Path previewsPath = Paths.get("/tmp/previews");
                         Files.createDirectories(previewsPath);
 
-                       Path tmpDicomPath = Paths.get("/tmp/dicom");
+                        Path tmpDicomPath = Paths.get("/tmp/dicom");
 
                         Files.createDirectories(tmpDicomPath);
 
@@ -509,9 +509,11 @@ public class AdminController {
                                 downloadToFile(u, dicomFile);
 
                                 File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
+                                File f = dicomFile.toFile();
                                 System.out.println("DICOM exists: " + Files.exists(dicomFile));
-System.out.println("DICOM size: " + Files.size(dicomFile));
-
+                                System.out.println("DICOM size: " + Files.size(dicomFile));
+                                System.out.println("Ruta absoluta: " + f.getAbsolutePath());
+                                System.out.println("Ruta canonical (real): " + f.getCanonicalPath());
                                 edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
                                                 outPng);
 
@@ -543,35 +545,36 @@ System.out.println("DICOM size: " + Files.size(dicomFile));
         }
 
         // private static String getBaseUrl(HttpServletRequest request) {
-        //         String scheme = request.getScheme();
-        //         String host = request.getServerName();
-        //         int port = request.getServerPort();
+        // String scheme = request.getScheme();
+        // String host = request.getServerName();
+        // int port = request.getServerPort();
 
-        //         boolean isDefaultPort = (scheme.equals("http") && port == 80)
-        //                         || (scheme.equals("https") && port == 443);
+        // boolean isDefaultPort = (scheme.equals("http") && port == 80)
+        // || (scheme.equals("https") && port == 443);
 
-        //         StringBuilder sb = new StringBuilder();
-        //         sb.append(scheme).append("://").append(host);
-        //         if (!isDefaultPort)
-        //                 sb.append(":").append(port);
+        // StringBuilder sb = new StringBuilder();
+        // sb.append(scheme).append("://").append(host);
+        // if (!isDefaultPort)
+        // sb.append(":").append(port);
 
-        //         // include contextPath if you deploy under a subpath
-        //         sb.append(request.getContextPath());
+        // // include contextPath if you deploy under a subpath
+        // sb.append(request.getContextPath());
 
-        //         return sb.toString();
+        // return sb.toString();
         // }
 
         // private static boolean looksLikeDicom(MultipartFile file) {
-        //         try (InputStream is = file.getInputStream()) {
-        //                 byte[] header = is.readNBytes(132);
-        //                 if (header.length < 132)
-        //                         return false;
+        // try (InputStream is = file.getInputStream()) {
+        // byte[] header = is.readNBytes(132);
+        // if (header.length < 132)
+        // return false;
 
-        //                 // Standard DICOM: "DICM" at offset 128
-        //                 return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' && header[131] == 'M';
-        //         } catch (Exception e) {
-        //                 return false;
-        //         }
+        // // Standard DICOM: "DICM" at offset 128
+        // return header[128] == 'D' && header[129] == 'I' && header[130] == 'C' &&
+        // header[131] == 'M';
+        // } catch (Exception e) {
+        // return false;
+        // }
         // }
 
         private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
