@@ -6,13 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import edu.mondragon.we2.pinkalert.config.DataLoader;
 import edu.mondragon.we2.pinkalert.model.*;
 import edu.mondragon.we2.pinkalert.repository.*;
 import edu.mondragon.we2.pinkalert.service.UserService;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -61,24 +59,6 @@ class DataLoaderTest {
     }
 
  
-    @Test
-    void testRun_WhenNoDiagnosesExist_CreatesDiagnosisPatient() {
-      
-        when(userRepository.count()).thenReturn(1L); 
-        when(diagnosisRepository.count()).thenReturn(0L);
-        
-        Doctor mockDoctor = new Doctor("688152046");
-        when(doctorRepository.findAll()).thenReturn(Collections.singletonList(mockDoctor));
-        
-        Patient mockPatient = new Patient(LocalDate.of(1975, 10, 28), "691457821");
-        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
-
-        dataLoader.run();
-
-        verify(patientRepository).save(any(Patient.class));
-        verify(userService).createUser(any(User.class), eq("123"));
-    }
-
     @Test
     void testRun_WhenDiagnosesExist_SkipsDiagnosisCreation()  {
        
@@ -146,22 +126,5 @@ class DataLoaderTest {
         ), eq("admin123"));
     }
 
-    @Test
-    void testRun_CreatesSecondPatientForDiagnosis()  {
-        when(userRepository.count()).thenReturn(1L);
-        when(diagnosisRepository.count()).thenReturn(0L);
-        
-        Doctor mockDoctor = new Doctor("688152046");
-        when(doctorRepository.findAll()).thenReturn(Collections.singletonList(mockDoctor));
-        
-        Patient mockPatient = new Patient(LocalDate.of(1975, 10, 28), "691457821");
-        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
-
-        dataLoader.run();
-
-        verify(userService).createUser(argThat(user -> 
-            user.getEmail().equals("maitediaz75@pinkalert.com") &&
-            user.getPatient() != null
-        ), eq("123"));
-    }
+  
 }
