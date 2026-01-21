@@ -121,7 +121,7 @@
                                                 Reviewed</span>
                                         </c:if>
                                         <c:if test="${not diagnosis.reviewed}">
-                                            <span class="warn"><i class="bi bi-clock"></i> Pending Review</span>
+                                            <span class="status-chip"><i class="bi bi-clock"></i> Pending Review</span>
                                         </c:if>
                                     </div>
                                     <!-- <div class="info-value">
@@ -136,13 +136,15 @@
                                                     <span class="chip chip-benign bi bi-check-circle">Benign</span>
                                                 </c:when>
                                                 <c:when test="${diagnosis.finalResult == 'MALIGNANT'}">
-                                                    <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                    <span
+                                                        class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
                                                 </c:when>
                                                 <c:when test="${diagnosis.finalResult == 'INCONCLUSIVE'}">
-                                                    <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                    <span
+                                                        class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="chip chip-pending">Unknown</span>
+                                                    <span class="chip chip-pending bi bi-question-circle">Unknown</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </div>
@@ -162,14 +164,19 @@
                                     <div class="info-label">Predicted result</div>
                                     <div class="info-value">
                                         <c:choose>
-                                            <c:when test="${diagnosis.aiPrediction}">
+                                            <c:when test="${diagnosis.aiPrediction == 'BENIGN'}">
                                                 <span class="chip chip-malignant">
                                                     <i class="bi bi-exclamation-triangle"></i> Malignant
                                                 </span>
                                             </c:when>
-                                            <c:otherwise>
+                                            <c:when test="${diagnosis.aiPrediction == 'MALIGNANT'}">
                                                 <span class="chip chip-benign">
-                                                    <i class="bi bi-check-circle"></i> Benign
+                                                    <i class="bi bi-exclamation-triangle"></i> Benign
+                                                </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="chip chip-inconclusive">
+                                                    <i class="bi bi-check-circle"></i> Pending
                                                 </span>
                                             </c:otherwise>
                                         </c:choose>
@@ -229,23 +236,28 @@
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${empty h.finalResult}">
-                                                                <span class="chip chip-pending bi bi-clock">Pending</span>
+                                                                <span
+                                                                    class="chip chip-pending bi bi-clock">Pending</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'BENIGN'}">
-                                                                <span class="chip chip-benign bi bi-check-circle">Benign</span>
+                                                                <span
+                                                                    class="chip chip-benign bi bi-check-circle">Benign</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'MALIGNANT'}">
-                                                                <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                                <span
+                                                                    class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'INCONCLUSIVE'}">
-                                                                <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                                <span
+                                                                    class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
                                                             </c:when>
 
                                                             <c:otherwise>
-                                                                <span class="chip chip-pending">Unknown</span>
+                                                                <span
+                                                                    class="chip chip-pending bi bi-question-circle">Unknown</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>

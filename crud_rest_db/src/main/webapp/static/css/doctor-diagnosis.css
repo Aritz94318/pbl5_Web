@@ -23,19 +23,22 @@
     color: #b11212;
 }
 
+.chip.chip-pending {
+    border-color: #80808052;
+    background: #d3d3d36e;
+    color: #494949;
+}
+
 .chip.chip-inconclusive {
     border-color: rgb(163 104 26 / 25%);
     background: #fffbeb;
     color: #78350f;
 }
 
-/* optional "selected" style (subtle outline) */
 .chip-btn.selected {
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-
-/* Make chip buttons behave like chips, not default buttons */
 .chip-btn {
     border: none;
     cursor: pointer;
@@ -52,12 +55,10 @@
     outline: none;
 }
 
-/* Optional: small press feedback */
 .chip-btn:active {
     transform: translateY(1px);
 }
 
-/* Notes textarea styling (simple, matches your UI) */
 .notes-input {
     width: 100%;
     min-height: 110px;
@@ -75,25 +76,21 @@
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-/* Make the label behave like a chip button */
 .chip-select {
     cursor: pointer;
     user-select: none;
 }
 
-/* Hide the radio but keep it accessible */
 .chip-select input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-/* Optional: visually mark selected chip even if you don't add extra classes */
 .chip-select:has(input[type="radio"]:checked) {
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-/* Notes textarea styling */
 .notes-input {
     width: 100%;
     min-height: 110px;
@@ -173,7 +170,7 @@
 .info-label {
     font-size: 0.82rem;
     color: #6a7aa6;
-    margin-bottom: 4px;
+    margin-bottom: 9px;
 }
 
 .info-value {
@@ -227,6 +224,12 @@
     color: #065f46;
 }
 
+.chip.pending {
+    border-color: #8080809e;
+    background: #d3d3d36e;
+    color: gray;
+}
+
 .images-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -241,7 +244,6 @@
 
 .image-tile {
     height: 320px;
-    /* must match preview-img height */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -269,7 +271,6 @@
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    /* margin-top: 10px; */
 }
 
 .btn-soft {
@@ -346,13 +347,10 @@ table.hist th {
     background: #d58aaa;
 }
 
-/* Fixed preview size */
 .preview-img {
     width: 100%;
     height: 410px;
-    /* <- bigger image area (adjust) */
     object-fit: cover;
-    /* use contain if you don't want cropping */
     display: block;
     background: #f7f9ff;
 }
@@ -362,9 +360,7 @@ table.hist th {
     border-radius: 14px;
     background: #f7f9ff;
     overflow: hidden;
-
     display: flex;
     flex-direction: column;
     height: 470px;
-    /* <- fixed card height (adjust) */
 }
