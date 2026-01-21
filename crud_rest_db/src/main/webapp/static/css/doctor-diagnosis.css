@@ -1,0 +1,370 @@
+.body {
+    background: linear-gradient(180deg, #eaf2ff 0%, #eaf2ff 20%, #e6f0ff 100%);
+}
+
+.chip-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    font: inherit;
+}
+
+.chip.chip-benign {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46
+}
+
+.chip.chip-malignant {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.chip.chip-inconclusive {
+    border-color: rgb(163 104 26 / 25%);
+    background: #fffbeb;
+    color: #78350f;
+}
+
+/* optional "selected" style (subtle outline) */
+.chip-btn.selected {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+
+/* Make chip buttons behave like chips, not default buttons */
+.chip-btn {
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chip-btn:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.chip-btn:focus {
+    outline: none;
+}
+
+/* Optional: small press feedback */
+.chip-btn:active {
+    transform: translateY(1px);
+}
+
+/* Notes textarea styling (simple, matches your UI) */
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* Make the label behave like a chip button */
+.chip-select {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Hide the radio but keep it accessible */
+.chip-select input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Optional: visually mark selected chip even if you don't add extra classes */
+.chip-select:has(input[type="radio"]:checked) {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* Notes textarea styling */
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.btn-soft:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.bi-box-arrow-up-right {
+    color: #d58aaa;
+}
+
+.page-wrap {
+    max-width: 1280px;
+    margin: 20px auto;
+    padding: 0 16px 28px;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+@media (max-width: 980px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid rgba(35, 55, 90, 0.10);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(26, 45, 80, 0.08);
+    padding: 18px;
+}
+
+.panel+.panel {
+    margin-top: 14px;
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #0f172a;
+    margin-bottom: 17px;
+}
+
+.panel-title i {
+    color: #0f172a;
+    font-size: 1.35rem;
+}
+
+.info-row {
+    margin-bottom: 14px;
+}
+
+.info-label {
+    font-size: 0.82rem;
+    color: #6a7aa6;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #2a2b2cd1;
+    font-weight: 650;
+}
+
+.ok {
+    color: #065f46;
+    font-weight: 650;
+}
+
+.warn {
+    color: #c88300;
+    font-weight: 800;
+}
+
+.danger {
+    color: #7f1d1d;
+    font-weight: 800;
+}
+
+.chip-row {
+    display: flex;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chip.urgent {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.chip.reviewed {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46;
+}
+
+.images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 980px) {
+    .images-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.image-tile {
+    height: 320px;
+    /* must match preview-img height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7b8bb8;
+    font-weight: 650;
+    padding: 14px;
+    text-align: center;
+}
+
+.image-meta {
+    background: #fff;
+    border-top: 1px solid #e2e8f6;
+    padding: 8px;
+    margin-top: auto;
+}
+
+.image-title {
+    font-weight: 900;
+    color: #1f3b77;
+    margin-bottom: 10px;
+}
+
+.image-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* margin-top: 10px; */
+}
+
+.btn-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    color: #1f3b77;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 550;
+    text-decoration: none;
+}
+
+.thead {
+    background-color: #d58aaa;
+}
+
+.btn-soft.primary {
+    background: #1f5bd6;
+    border-color: transparent;
+    color: #fff;
+}
+
+.notes-label {
+    font-weight: 500;
+    color: #0f172a;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.notes {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid #d9e1f2;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fbfcff;
+    color: #10224d;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.history-wrap {
+    margin-top: 18px;
+}
+
+.table-wrap {
+    overflow: auto;
+    margin-top: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(35, 55, 90, 0.10);
+    background: #fff;
+}
+
+table.hist {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+}
+
+table.hist th,
+table.hist td {
+    padding: 12px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    color: #10224d;
+}
+
+table.hist th {
+    color: #fff;
+    font-weight: 700;
+    background: #d58aaa;
+}
+
+/* Fixed preview size */
+.preview-img {
+    width: 100%;
+    height: 410px;
+    /* <- bigger image area (adjust) */
+    object-fit: cover;
+    /* use contain if you don't want cropping */
+    display: block;
+    background: #f7f9ff;
+}
+
+.image-card {
+    border: 1px solid #e2e8f6;
+    border-radius: 14px;
+    background: #f7f9ff;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    height: 470px;
+    /* <- fixed card height (adjust) */
+}

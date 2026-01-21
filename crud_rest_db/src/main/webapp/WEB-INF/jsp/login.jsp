@@ -9,6 +9,7 @@
             <title>Pink Alert - Login</title>
 
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/login.css">
 
         </head>
 

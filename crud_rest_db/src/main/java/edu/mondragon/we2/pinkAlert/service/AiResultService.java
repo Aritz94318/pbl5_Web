@@ -1,6 +1,7 @@
 package edu.mondragon.we2.pinkAlert.service;
 
 import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
@@ -54,24 +55,36 @@ public class AiResultService {
         Diagnosis d = diagnosisRepository.findById(diagnosisId)
                 .orElseThrow(() -> new IllegalArgumentException("Diagnosis not found: " + diagnosisId));
 
-        boolean urgent = "MALIGNANT".equalsIgnoreCase(req.getPrediction().trim());
+        String pred = req.getPrediction().trim().toUpperCase();
 
-        BigDecimal prob = req.getProbMalignant()
-                .setScale(8, RoundingMode.HALF_UP);
+        // 1) Map prediction -> enum
+        AiPrediction aiPred;
+        try {
+            aiPred = AiPrediction.valueOf(pred);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(
+                    "Invalid prediction: " + req.getPrediction() + " (expected BENIGN or MALIGNANT)");
+        }
 
-        if (prob.compareTo(BigDecimal.ZERO) < 0) {
+        // 2) Normalize probability to DECIMAL(10,8)
+        BigDecimal prob = req.getProbMalignant().setScale(8, RoundingMode.HALF_UP);
+        if (prob.compareTo(BigDecimal.ZERO) < 0)
             prob = BigDecimal.ZERO;
-        }
-        if (prob.compareTo(BigDecimal.ONE) > 0) {
+        if (prob.compareTo(BigDecimal.ONE) > 0)
             prob = BigDecimal.ONE;
-        }
 
+        // 3) Keep your UI sorting behavior
+        boolean urgent = (aiPred == AiPrediction.MALIGNANT);
+
+        // 4) Persist
+        d.setAiPrediction(aiPred);
         d.setUrgent(urgent);
         d.setProbability(prob);
+
+        // AI result does NOT mean doctor reviewed
         d.setReviewed(false);
 
         return diagnosisRepository.save(d);
     }
 
-    
 }

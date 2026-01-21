@@ -22,7 +22,12 @@ public class Doctor {
     public Doctor() {
     }
 
-    // Getters & setters
+    public Doctor(String phone) {
+        this.phone = phone;
+    }
+
+    @Column(length = 30)
+    private String phone;
 
     public Integer getId() {
         return id;
@@ -38,5 +43,13 @@ public class Doctor {
 
     public void setDiagnoses(List<Diagnosis> diagnoses) {
         this.diagnoses = diagnoses;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

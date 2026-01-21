@@ -1,0 +1,82 @@
+.bg-gradient {
+    min-height: 100vh;
+
+    background-image: url("../img/login.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-top: 8vh;
+}
+
+
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-card {
+    animation: fadeUp 0.45s ease-out;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    padding: 28px 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 380px;
+
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.top-brand {
+    animation: fadeUp 0.45s ease-out;
+    text-align: center;
+    margin-bottom: 6rem;
+    color: #ffffff;
+}
+
+.brand-title {
+    margin: 8px 0 4px;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.brand-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #d58aaa;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-1px);
+    background: #d58aaaa8;
+}

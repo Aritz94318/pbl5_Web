@@ -18,8 +18,10 @@ public class Diagnosis {
 
     @Column(name = "Image2Path", nullable = false, length = 100)
     private String image2Path;
+
     @Column(name = "Image3Path", nullable = false, length = 100)
     private String image3Path;
+
     @Column(name = "Image4Path", nullable = false, length = 100)
     private String image4Path;
 
@@ -46,16 +48,20 @@ public class Diagnosis {
     @JoinColumn(name = "PatientID", nullable = false)
     private Patient patient;
 
+    @Column(name = "FinalResult", length = 20)
+    @Enumerated(EnumType.STRING)
+    private FinalResult finalResult;
+
+    @Column(name = "AiPrediction", length = 20)
+    @Enumerated(EnumType.STRING)
+    private AiPrediction aiPrediction;
+
     public Diagnosis() {
     }
 
-    public Diagnosis(String imagePath, String image2Path, String image3Path, String image4Path, LocalDate date,
-            String description,
+    public Diagnosis(String imagePath, LocalDate date, String description,
             boolean urgent, Doctor doctor, Patient patient) {
         this.imagePath = imagePath;
-        this.image2Path = image2Path;
-        this.image3Path = image3Path;
-        this.image4Path = image4Path;
         this.date = date;
         this.description = description;
         this.urgent = urgent;
@@ -64,6 +70,8 @@ public class Diagnosis {
         this.probability = BigDecimal.ZERO;
         this.reviewed = false;
     }
+
+    // Getters & setters
 
     public Integer getId() {
         return id;
@@ -87,6 +95,50 @@ public class Diagnosis {
 
     public void setImage2Path(String image2Path) {
         this.image2Path = image2Path;
+    }
+
+    @Column(name = "PreviewPath", length = 600)
+    private String previewPath;
+
+    @Column(name = "Preview2Path", length = 600)
+    private String preview2Path;
+
+    @Column(name = "Preview3Path", length = 600)
+    private String preview3Path;
+
+    @Column(name = "Preview4Path", length = 600)
+    private String preview4Path;
+
+    public String getPreviewPath() {
+        return previewPath;
+    }
+
+    public void setPreviewPath(String previewPath) {
+        this.previewPath = previewPath;
+    }
+
+    public String getPreview2Path() {
+        return preview2Path;
+    }
+
+    public void setPreview2Path(String preview2Path) {
+        this.preview2Path = preview2Path;
+    }
+
+    public String getPreview3Path() {
+        return preview3Path;
+    }
+
+    public void setPreview3Path(String preview3Path) {
+        this.preview3Path = preview3Path;
+    }
+
+    public String getPreview4Path() {
+        return preview4Path;
+    }
+
+    public void setPreview4Path(String preview4Path) {
+        this.preview4Path = preview4Path;
     }
 
     public String getImage3Path() {
@@ -165,6 +217,30 @@ public class Diagnosis {
     public String getStatus() {
         if (!reviewed)
             return "Pending Review";
-        return urgent ? "Malignant" : "Benignant";
+        if (finalResult == null)
+            return "Pending Result";
+        return switch (finalResult) {
+            case MALIGNANT -> "Malignant";
+            case BENIGN -> "Benign";
+            case INCONCLUSIVE -> "Inconclusive";
+            case PENDING -> "Pending";
+        };
     }
+
+    public FinalResult getFinalResult() {
+        return finalResult;
+    }
+
+    public void setFinalResult(FinalResult finalResult) {
+        this.finalResult = finalResult;
+    }
+
+    public AiPrediction getAiPrediction() {
+        return aiPrediction;
+    }
+
+    public void setAiPrediction(AiPrediction aiPrediction) {
+        this.aiPrediction = aiPrediction;
+    }
+
 }

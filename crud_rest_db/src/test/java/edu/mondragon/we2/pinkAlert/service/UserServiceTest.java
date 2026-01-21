@@ -1,15 +1,13 @@
 package edu.mondragon.we2.pinkAlert.service;
 
-import edu.mondragon.we2.pinkAlert.model.*;
-import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,198 +15,107 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest extends EasyMockSupport {
 
     private UserRepository userRepository;
-    private DoctorRepository doctorRepository;
-    private PatientRepository patientRepository;
     private UserService userService;
+
     private User user;
 
     @BeforeEach
     void setUp() {
-        userRepository = EasyMock.mock(UserRepository.class);
-        doctorRepository = EasyMock.mock(DoctorRepository.class);
-        patientRepository = EasyMock.mock(PatientRepository.class);
-        userService = new UserService(userRepository, doctorRepository, patientRepository);
-        
+        userRepository = mock(UserRepository.class);
+        userService = new UserService(userRepository);
+
         user = new User();
         user.setId(1);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
-        user.setFullName("Test User");
-        user.setPasswordHash("hashedpassword");
-        user.setRole(Role.PATIENT);
+        user.setUsername("john");
+        user.setEmail("john@test.com");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPasswordHash(encoder.encode("1234"));
     }
 
+
     @Test
-    void testFindByIdentifierByUsername() {
-        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("testuser", "testuser"))
-                .andReturn(Optional.of(user));
+    void testFindByIdentifierUsername() {
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("john", "john")).andReturn(Optional.of(user));
+
         EasyMock.replay(userRepository);
-        
-        Optional<User> result = userService.findByIdentifier("testuser");
-        
+
+        Optional<User> result = userService.findByIdentifier("john");
+
         assertTrue(result.isPresent());
-        assertEquals("testuser", result.get().getUsername());
+        assertEquals("john", result.get().getUsername());
+
         EasyMock.verify(userRepository);
     }
 
     @Test
-    void testFindByIdentifierByEmail() {
-        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("test@example.com", "test@example.com"))
-                .andReturn(Optional.of(user));
+    void testFindByIdentifierEmail() {
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("john@test.com", "john@test.com")).andReturn(Optional.of(user));
+
         EasyMock.replay(userRepository);
-        
-        Optional<User> result = userService.findByIdentifier("test@example.com");
-        
+
+        Optional<User> result = userService.findByIdentifier("john@test.com");
+
         assertTrue(result.isPresent());
-        assertEquals("test@example.com", result.get().getEmail());
+        assertEquals("john@test.com", result.get().getEmail());
+
         EasyMock.verify(userRepository);
     }
 
     @Test
-    void testFindAll() {
-        EasyMock.expect(userRepository.findAll()).andReturn(List.of(user));
+    void testFindByIdentifierTrimmed() {
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("john", "john")).andReturn(Optional.of(user));
+
         EasyMock.replay(userRepository);
-        
-        List<User> result = userService.findAll();
-        
-        assertEquals(1, result.size());
-        assertEquals(user, result.get(0));
+
+        Optional<User> result = userService.findByIdentifier("  john  ");
+
+        assertTrue(result.isPresent());
+
         EasyMock.verify(userRepository);
     }
 
     @Test
-    void testFindByRole() {
-        EasyMock.expect(userRepository.findByRole(Role.PATIENT)).andReturn(List.of(user));
+    void testFindByIdentifierNull() {
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("", "")).andReturn(Optional.empty());
+
         EasyMock.replay(userRepository);
-        
-        List<User> result = userService.findByRole(Role.PATIENT);
-        
-        assertEquals(1, result.size());
-        assertEquals(Role.PATIENT, result.get(0).getRole());
+
+        Optional<User> result = userService.findByIdentifier(null);
+
+        assertTrue(result.isEmpty());
+
         EasyMock.verify(userRepository);
     }
 
     @Test
-    void testGetUserFound() {
-        EasyMock.expect(userRepository.findById(1)).andReturn(Optional.of(user));
-        EasyMock.replay(userRepository);
-        
-        User result = userService.get(1);
-        
-        assertNotNull(result);
-        assertEquals(1, result.getId());
-        EasyMock.verify(userRepository);
+    void testPasswordMatches() {
+        boolean result = userService.matches(user, "1234");
+        assertTrue(result);
     }
 
     @Test
-    void testGetUserNotFound() {
-        EasyMock.expect(userRepository.findById(99)).andReturn(Optional.empty());
-        EasyMock.replay(userRepository);
-        
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-            () -> userService.get(99)
-        );
-        
-        assertTrue(ex.getMessage().contains("User not found"));
-        EasyMock.verify(userRepository);
+    void testPasswordDoesNotMatch() {
+        boolean result = userService.matches(user, "wrong");
+        assertFalse(result);
     }
 
     @Test
     void testCreateUser() {
-        User newUser = new User();
-        newUser.setUsername("newuser");
-        newUser.setEmail("new@example.com");
-        newUser.setFullName("New User");
-        newUser.setRole(Role.PATIENT);
-        
-        EasyMock.expect(userRepository.save(EasyMock.anyObject(User.class)))
-                .andAnswer(() -> {
+        EasyMock.expect(userRepository.save(EasyMock.anyObject(User.class))).andAnswer(() -> {
                     User u = (User) EasyMock.getCurrentArguments()[0];
-                    u.setId(2);
+                    u.setId(1);
                     return u;
                 });
-        EasyMock.replay(userRepository);
-        
-        User result = userService.createUser(newUser, "password123");
-        
-        assertNotNull(result.getId());
-        assertEquals(2, result.getId());
-        assertNotNull(result.getPasswordHash());
-        assertNotEquals("password123", result.getPasswordHash());
-        EasyMock.verify(userRepository);
-    }
 
-    @Test
-    void testSaveUser() {
-        EasyMock.expect(userRepository.saveAndFlush(user)).andReturn(user);
         EasyMock.replay(userRepository);
-        
-        User result = userService.save(user);
-        
+
+        User result = userService.createUser(new User(), "secret");
+
         assertNotNull(result);
-        assertEquals(user, result);
+        assertNotNull(result.getPasswordHash());
+        assertNotEquals("secret", result.getPasswordHash());
+        assertEquals(1, result.getId());
+
         EasyMock.verify(userRepository);
-    }
-
-    @Test
-    void testDeleteById() {
-        userRepository.deleteById(1);
-        EasyMock.expectLastCall().once();
-        EasyMock.replay(userRepository);
-        
-        userService.delete(1);
-        
-        EasyMock.verify(userRepository);
-    }
-
-    @Test
-    void testDeleteByEntity() {
-        userRepository.delete(user);
-        EasyMock.expectLastCall().once();
-        EasyMock.replay(userRepository);
-        
-        userService.delete(user);
-        
-        EasyMock.verify(userRepository);
-    }
-
-    @Test
-    void testDeleteUserCompletelyWithDoctorAndPatient() {
-        Doctor doctor = new Doctor();
-        doctor.setId(1);
-        Patient patient = new Patient();
-        patient.setId(1);
-        
-        user.setDoctor(doctor);
-        user.linkPatient(patient);
-        
-        EasyMock.expect(userRepository.findById(1)).andReturn(Optional.of(user));
-        EasyMock.expect(userRepository.save(user)).andReturn(user);
-        userRepository.delete(user);
-        EasyMock.expectLastCall().once();
-        doctorRepository.delete(doctor);
-        EasyMock.expectLastCall().once();
-        patientRepository.delete(patient);
-        EasyMock.expectLastCall().once();
-        
-        EasyMock.replay(userRepository, doctorRepository, patientRepository);
-        
-        userService.deleteUserCompletely(1);
-        
-        EasyMock.verify(userRepository, doctorRepository, patientRepository);
-    }
-
-    @Test
-    void testDeleteUserCompletelyWithoutDoctorAndPatient() {
-        EasyMock.expect(userRepository.findById(1)).andReturn(Optional.of(user));
-        EasyMock.expect(userRepository.save(user)).andReturn(user);
-        userRepository.delete(user);
-        EasyMock.expectLastCall().once();
-        
-        EasyMock.replay(userRepository, doctorRepository, patientRepository);
-        
-        userService.deleteUserCompletely(1);
-        
-        EasyMock.verify(userRepository, doctorRepository, patientRepository);
     }
 }
