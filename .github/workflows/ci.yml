@@ -36,6 +36,7 @@ jobs:
           -Dsonar.branch.name=${{ github.ref_name }}
 
 
+
       - name: Wait for SonarCloud processing
         run: sleep 40
 
