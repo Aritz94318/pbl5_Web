@@ -52,7 +52,7 @@ class DoctorControllerTest extends EasyMockSupport {
 
         EasyMock.replay(diagnosisRepository);
 
-        mockMvc.perform(get("/doctor/dashboard")).andExpect(status().isOk()).andExpect(view().name("doctor-dashboard")).andExpect(model().attributeExists("diagnoses","totalCount", "urgentCount","routineCount","previousScreenings","selectedDate","datePills"));
+        mockMvc.perform(get("/doctor/dashboard")).andExpect(status().isOk()).andExpect(view().name("doctor/doctor-dashboard")).andExpect(model().attributeExists("diagnoses","totalCount", "urgentCount","routineCount","previousScreenings","selectedDate","datePills"));
 
         EasyMock.verify(diagnosisRepository);
     }
