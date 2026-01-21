@@ -37,7 +37,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
+        /*
         // ========================
         // USERS
         // ========================
@@ -160,6 +160,6 @@ public class DataLoader implements CommandLineRunner {
             // diagnosisRepository.save(diag2);
             // diagnosisRepository.save(diag3);
             // diagnosisRepository.save(diag4);
-        }
+        } */
     }
 }
