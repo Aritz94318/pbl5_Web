@@ -71,7 +71,7 @@ public class AdminController {
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService,  SimulationService simulationService) {
+                        AiClientService aiClientService, SimulationService simulationService) {
 
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
@@ -311,7 +311,7 @@ public class AdminController {
                                 })
                                 .filter(item -> ((String) item.get("label")).toLowerCase().startsWith(query))
                                 .limit(10)
-                                .collect(Collectors.toList());
+                                .toList();
         }
 
         @PostMapping("/diagnoses")
@@ -327,7 +327,7 @@ public class AdminController {
                 try {
                         List<String> dicomUrls = List.of(dicomUrl, dicomUrl2, dicomUrl3, dicomUrl4);
 
-                        Patient patient = validateCreateDiagnosis(model, patientId, dicomUrls, description);
+                        Patient patient = validateCreateDiagnosis(model, patientId, dicomUrls);
                         if (patient == null) {
                                 model.addAttribute(ATTR_TODAY, LocalDate.now().toString());
                                 return ATTR_FORM;
@@ -593,8 +593,7 @@ public class AdminController {
 
         private Patient validateCreateDiagnosis(Model model,
                         Integer patientId,
-                        List<String> dicomUrls,
-                        String description) {
+                        List<String> dicomUrls) {
 
                 if (patientId == null) {
                         model.addAttribute(ATTR_ERROR, "You must select a patient.");
