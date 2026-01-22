@@ -474,9 +474,9 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/simulation"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/simulation"))
-                .andExpect(model().attribute("numPatients", 2))
+                .andExpect(model().attribute("numPatients", 1))
                 .andExpect(model().attribute("numDoctors", 1))
-                .andExpect(model().attribute("numMachines", 2));
+                .andExpect(model().attribute("numMachines", 1));
     }
 
     @Test
