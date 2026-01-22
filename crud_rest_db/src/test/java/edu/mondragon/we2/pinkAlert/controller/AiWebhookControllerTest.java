@@ -5,6 +5,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
 import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
 import edu.mondragon.we2.pinkAlert.service.AiResultService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -13,12 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 @Controller
@@ -172,7 +174,6 @@ public class DoctorController {
     public String diagnosisDetails(@PathVariable("id") Integer id, Model model) {
         Diagnosis diagnosis = diagnosisService.findById(id);
 
-        // Load patient's diagnosis history (optional but useful)
         List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
         historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
         long totalScreenings = diagnosisService.countByPatientId(diagnosis.getPatient().getId());
@@ -182,7 +183,7 @@ public class DoctorController {
         model.addAttribute("patient", diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
-        return "doctor/doctor-diagnosis"; // -> /WEB-INF/jsp/doctor-diagnosis.jsp
+        return "doctor/doctor-diagnosis"; 
     }
 
     @PostMapping("/diagnosis/{id}/review")
@@ -195,7 +196,6 @@ public class DoctorController {
         return "redirect:/doctor/diagnosis/" + id;
     }
 
-    // Helper DTO for date buttons
     public static class DatePill {
         private final String label;
         private final String display;

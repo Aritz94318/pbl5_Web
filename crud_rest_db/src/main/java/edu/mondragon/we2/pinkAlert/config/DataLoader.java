@@ -1,16 +1,16 @@
 package edu.mondragon.we2.pinkAlert.config;
 
+import java.time.LocalDate;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import edu.mondragon.we2.pinkAlert.model.*;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.UserService;
-
-import java.time.LocalDate;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -37,8 +37,33 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
+        // USERS
         if (userRepository.count() == 0) {
-            // --- Admin ---
+
+            Doctor doctor = doctorRepository.save(new Doctor("688152046"));
+
+            User doctorUser = new User();
+            doctorUser.setEmail("javier.fuentes@pinkalert.com");
+            doctorUser.setUsername("javier.fuentes");
+            doctorUser.setFullName("Dr. Javier Fuentes");
+            doctorUser.setRole(Role.DOCTOR);
+            doctorUser.setDoctor(doctor);
+            doctorUser.setPatient(null);
+            userService.createUser(doctorUser, "123");
+
+            Patient patient = patientRepository.save(
+                    new Patient(LocalDate.of(1999, 2, 14), "625153475"));
+
+            User patientUser = new User();
+            patientUser.setEmail("maria.agirre@gmail.com");
+            patientUser.setUsername("maria.agirre");
+            patientUser.setFullName("María Agirre");
+            patientUser.setRole(Role.PATIENT);
+            patientUser.setPatient(patient);
+            patientUser.setDoctor(null);
+            userService.createUser(patientUser, "123");
+
             User adminUser = new User();
             adminUser.setEmail("admin@pinkalert.com");
             adminUser.setUsername("admin");
@@ -47,6 +72,25 @@ public class DataLoader implements CommandLineRunner {
             adminUser.setDoctor(null);
             adminUser.setPatient(null);
             userService.createUser(adminUser, "admin123");
+        }
+
+        // DIAGNOSES
+        if (diagnosisRepository.count() == 0) {
+
+
+            Patient patient = patientRepository.save(
+                    new Patient(LocalDate.of(1975, 10, 28), "691457821"));
+
+            User patientUser2 = new User();
+            patientUser2.setEmail("maitediaz75@pinkalert.com");
+            patientUser2.setUsername("maite.diaz");
+            patientUser2.setFullName("Maite Díaz");
+            patientUser2.setRole(Role.PATIENT);
+            patientUser2.setDoctor(null);
+            patientUser2.linkPatient(patient);
+            userService.createUser(patientUser2, "123");
+
+    
         }
     }
 }

@@ -1,8 +1,5 @@
 package edu.mondragon.we2.pinkAlert.service;
 
-import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
-import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,6 +14,9 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.google.gson.Gson;
+
+import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
+import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
 
 @Service
 public class AiClientService {

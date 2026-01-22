@@ -18,7 +18,6 @@ import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller

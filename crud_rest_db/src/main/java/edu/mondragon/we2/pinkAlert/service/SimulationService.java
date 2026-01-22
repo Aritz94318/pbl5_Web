@@ -5,13 +5,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -35,9 +34,10 @@ public class SimulationService {
     private final JsonSchema modifyschema;
     private final JsonSchema simEventSchema;
     private final JsonSchema simTimeSchema;
-
+  
+    @Autowired
     public SimulationService() throws IOException, ProcessingException {
-
+   
         JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 
         this.modifyschema = factory.getJsonSchema(mapper.readTree(getSchema("/modify-sim-schema.json")));
@@ -47,6 +47,8 @@ public class SimulationService {
         this.simTimeSchema = factory.getJsonSchema(mapper.readTree(getSchema("/sim-time-schema.json")));
 
     }
+
+
 
     public InputStream getSchema(String path) {
         InputStream schemaStream = getClass().getResourceAsStream(path);
@@ -60,17 +62,13 @@ public class SimulationService {
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     public SseEmitter connect() {
-        // 0L = sin timeout (o pon por ejemplo 30 * 60 * 1000L)
         SseEmitter emitter = new SseEmitter(0L);
 
         emitters.add(emitter);
 
-        // Cuando el cliente se desconecta, limpiamos
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
         emitter.onError((ex) -> emitters.remove(emitter));
-
-        // (Opcional) evento inicial para probar que conecta
         try {
             emitter.send(SseEmitter.event().name("sim").data(
                     new SimEvent("SYSTEM", 0, "SSE conectado", System.currentTimeMillis())));
@@ -87,7 +85,6 @@ public class SimulationService {
             try {
                 emitter.send(SseEmitter.event().name("sim").data(event));
             } catch (Exception ex) {
-                // Si está cerrado o falló, lo quitamos
                 emitters.remove(emitter);
                 try {
                     emitter.complete();
@@ -102,7 +99,6 @@ public class SimulationService {
             try {
                 emitter.send(SseEmitter.event().name("sim-time").data(event));
             } catch (Exception ex) {
-                // Si está cerrado o falló, lo quitamos
                 emitters.remove(emitter);
                 try {
                     emitter.complete();
@@ -113,10 +109,8 @@ public class SimulationService {
     }
 
     public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
-
-        RestTemplate rt = new RestTemplate();
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; // tu servidor de
-                                                                                             // simulación
+  RestTemplate rt=new RestTemplate();
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify";
         GlobalUpdateRequest body;
         body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
         String json = gson.toJson(body);
@@ -143,10 +137,8 @@ public class SimulationService {
     }
 
     public void start() {
-
-        RestTemplate rt = new RestTemplate();
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; // tu servidor de
-                                                                                            // simulación
+    RestTemplate rt=new RestTemplate();
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
@@ -165,7 +157,7 @@ public class SimulationService {
 
         if (!ValidationUtils.isJsonValid(simEventSchema, node)) {
             throw new IllegalArgumentException("Invalid SimEvent JSON");
-        }else{
+        } else {
             System.out.println("Valid event");
         }
 
@@ -180,7 +172,7 @@ public class SimulationService {
 
         if (!ValidationUtils.isJsonValid(simTimeSchema, node)) {
             throw new IllegalArgumentException("Invalid SimTime JSON");
-        }else{
+        } else {
             System.out.println("Valid time");
         }
 

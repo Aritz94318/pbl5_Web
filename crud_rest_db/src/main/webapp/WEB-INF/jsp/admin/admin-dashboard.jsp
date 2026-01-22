@@ -389,7 +389,10 @@
                 </div>
 
                 <!-- Chart.js -->
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"
+                    integrity="sha384-oK2m4RcOHuB1QZRgDUO7hUdJb1o4Bz4CQ8/hp8f6EM5i0z82vgnKuV5HhBsYyXUa"
+                    crossorigin="anonymous">
+                    </script>
 
                 <script>
                     // ---------- Backlog ----------

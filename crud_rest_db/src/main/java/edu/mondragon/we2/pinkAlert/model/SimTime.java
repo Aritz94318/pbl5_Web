@@ -14,7 +14,6 @@ public class SimTime {
         this.seconds = seconds;
     }
 
-    // getters para que se serialice a JSON
     public long getTime() {
         return time;
     }

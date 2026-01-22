@@ -1,5 +1,15 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
+import jakarta.transaction.Transactional;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
@@ -15,17 +25,9 @@ import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.SimulationService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
-import jakarta.transaction.Transactional;
 import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +44,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 @RequestMapping("/admin")
@@ -53,9 +56,9 @@ public class AdminController {
         private final UserRepository userRepository;
         private final UserService userService;
         private final AiClientService aiClientService;
-        private final DiagnosisService diagnosisService;
-        private final DoctorService doctorService;
         private final SimulationService simulationService;
+        @Value("${pinkalert.storage.dir}")
+        private String storageDir;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
@@ -71,8 +74,6 @@ public class AdminController {
                 this.userService = userService;
                 this.doctorRepository = doctorRepository;
                 this.aiClientService = aiClientService;
-                this.diagnosisService = diagnosisService;
-                this.doctorService = doctorService;
                 this.simulationService = simulationService;
         }
 
@@ -363,13 +364,13 @@ public class AdminController {
 
         @PostMapping("/users")
         public String createUser(@ModelAttribute("user") User user,
-                        @RequestParam(name = "rawPassword", required = false) String rawPassword,
+                        @RequestParam(name = "rawPassword", required = false) String hash,
                         @RequestParam(name = "doctorPhone", required = false) String doctorPhone,
                         @RequestParam(name = "patientPhone", required = false) String patientPhone,
                         @RequestParam(name = "patientBirthDate", required = false) String patientBirthDate) {
 
-                if (rawPassword == null || rawPassword.isBlank())
-                        rawPassword = "123";
+                if (hash == null || hash.isBlank())
+                        hash = "123";
 
                 if (user.getRole() == Role.DOCTOR) {
                         Doctor doc = new Doctor();
@@ -397,7 +398,7 @@ public class AdminController {
                         user.unlinkPatient();
                 }
 
-                userService.createUser(user, rawPassword);
+                userService.createUser(user, hash);
                 return "redirect:/admin/users";
         }
 
@@ -428,7 +429,6 @@ public class AdminController {
 
                 User existing = userService.get(id);
 
-                // base fields
                 existing.setUsername(posted.getUsername());
                 existing.setEmail(posted.getEmail());
                 existing.setFullName(posted.getFullName());
@@ -440,9 +440,6 @@ public class AdminController {
                 Role oldRole = existing.getRole();
                 Role newRole = posted.getRole();
 
-                // =========================
-                // CASE 1: Role didn't change
-                // =========================
                 if (oldRole == newRole) {
 
                         if (newRole == Role.DOCTOR && existing.getDoctor() != null) {
@@ -461,12 +458,6 @@ public class AdminController {
                         userService.save(existing);
                         return "redirect:/admin/users";
                 }
-
-                // =========================
-                // CASE 2: Role DID change
-                // =========================
-
-                // reset links first (to satisfy triggers / FK constraints)
                 existing.setRole(Role.ADMIN);
                 existing.setDoctor(null);
                 existing.unlinkPatient();
@@ -553,12 +544,11 @@ public class AdminController {
                 return "admin/role-list";
         }
 
-        // Provisional
         @GetMapping("/simulation")
         public String simulationPage(Model model) {
-                model.addAttribute("numPatients", 2);
+                model.addAttribute("numPatients", 1);
                 model.addAttribute("numDoctors", 1);
-                model.addAttribute("numMachines", 2);
+                model.addAttribute("numMachines", 1);
                 return "admin/simulation";
         }
 
@@ -579,10 +569,6 @@ public class AdminController {
         private static double round1(double v) {
                 return Math.round(v * 10.0) / 10.0;
         }
-
-        // ---------------------------
-        // MACHINE SIMULATOR - NEW DIAGNOSIS
-        // ---------------------------
 
         @GetMapping("/diagnoses/new")
         public String newDiagnosisForm(Model model) {
@@ -627,7 +613,6 @@ public class AdminController {
                         @RequestParam("dicomUrl4") String dicomUrl4,
                         @RequestParam("date") String dateStr,
                         @RequestParam(name = "description", required = false) String description,
-                        // @RequestParam(name = "email", required = false) String email,
                         Model model) {
 
                 try {
@@ -694,10 +679,14 @@ public class AdminController {
                         diag = diagnosisRepository.saveAndFlush(diag);
 
                         String previewsDir = "previews";
-                        Path previewsPath = Paths.get("/tmp/previews");
-                        Files.createDirectories(previewsPath);
+                        Path baseDir = Paths.get(storageDir)
+                                        .toAbsolutePath()
+                                        .normalize();
 
-                        Path tmpDicomPath = Paths.get("/tmp/dicom");
+                        Files.createDirectories(baseDir);
+
+                        Path previewsPath = Files.createDirectories(baseDir.resolve("previews"));
+                        Path tmpDicomPath = Files.createDirectories(baseDir.resolve("dicom"));
 
                         Files.createDirectories(tmpDicomPath);
 
@@ -737,6 +726,11 @@ public class AdminController {
 
                         return "redirect:/admin/dashboard";
 
+                } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        model.addAttribute("error", "Operation was interrupted. Please try again.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
                 } catch (Exception e) {
                         model.addAttribute("error", "Failed to create diagnosis: " + e.getMessage());
                         model.addAttribute("today", LocalDate.now().toString());

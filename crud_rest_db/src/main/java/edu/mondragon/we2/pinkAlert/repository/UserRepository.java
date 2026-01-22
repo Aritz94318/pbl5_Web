@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.model.Role;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 

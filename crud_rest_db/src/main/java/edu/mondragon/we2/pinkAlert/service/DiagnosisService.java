@@ -1,13 +1,14 @@
 package edu.mondragon.we2.pinkAlert.service;
 
+import org.springframework.stereotype.Service;
+
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.FinalResult;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import org.springframework.stereotype.Service;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,7 +54,7 @@ public class DiagnosisService {
         // finalResult (allow pending/clear)
         if (finalResultRaw == null || finalResultRaw.isBlank()) {
             d.setFinalResult(null);
-            d.setReviewed(false); // optional
+            d.setReviewed(false); 
         } else {
             FinalResult fr = FinalResult.valueOf(finalResultRaw.trim().toUpperCase());
             d.setFinalResult(fr);
