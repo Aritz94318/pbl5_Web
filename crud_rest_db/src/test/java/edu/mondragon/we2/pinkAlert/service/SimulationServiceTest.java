@@ -53,7 +53,7 @@ void setUp() throws IOException, ProcessingException {
     // ------------------------------
     // modify() — mocks RestTemplate
     // ------------------------------
-
+  
     @Test
     void publishValidated_simEvent_valid() throws Exception {
         service.connect();
