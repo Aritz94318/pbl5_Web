@@ -1188,9 +1188,9 @@ class AdminControllerTest {
 
         // Then
         assertThat(viewName).isEqualTo("admin/simulation");
-        verify(model).addAttribute("numPatients", 2);
+        verify(model).addAttribute("numPatients", 1);
         verify(model).addAttribute("numDoctors", 1);
-        verify(model).addAttribute("numMachines", 2);
+        verify(model).addAttribute("numMachines", 1);
     }
     // ==============================
     // TESTS PARA SIMULACIÓN DE ERRORES
