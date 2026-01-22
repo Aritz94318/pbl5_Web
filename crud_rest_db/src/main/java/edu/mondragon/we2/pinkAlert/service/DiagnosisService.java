@@ -16,6 +16,9 @@ import java.util.List;
 @Service
 public class DiagnosisService {
 
+        static final String DOCTOR_NOT_FOUND = "Doctor not found with id ";
+        
+        static final String PATIENT_NOT_FOUND = "Patient not found with id ";
     private final DiagnosisRepository diagnosisRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
@@ -74,7 +77,7 @@ public class DiagnosisService {
 
     public Diagnosis create(Diagnosis diagnosis, Integer doctorId, Integer patientId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND+ doctorId));
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
 
@@ -89,9 +92,9 @@ public class DiagnosisService {
         Diagnosis existing = findById(id);
 
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND+ doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         existing.setImagePath(updated.getImagePath());
         existing.setDate(updated.getDate());
@@ -118,9 +121,9 @@ public class DiagnosisService {
             Integer doctorId,
             Integer patientId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND + doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         diagnosis.setId(null);
         diagnosis.setDoctor(doctor);

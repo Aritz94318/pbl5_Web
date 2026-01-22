@@ -94,8 +94,6 @@ class AdminControllerTest {
                 userService,
                 doctorRepository,
                 aiClientService,
-                diagnosisService,
-                doctorService,
                 simulationService);
 
         objectMapper = new ObjectMapper();
@@ -120,7 +118,7 @@ class AdminControllerTest {
         Model model = mock(Model.class);
         String viewName = adminController.dashboard(model);
 
-        assertThat(viewName).isEqualTo("dashboard");
+        assertThat(viewName).isEqualTo("admin/admin-dashboard");
         
         // Verificar que se añaden todos los atributos con valores por defecto
         verify(model).addAttribute("completedCount", 0L);
@@ -1099,7 +1097,7 @@ void testMapAiToFinal_CoverageTest() throws Exception {
 
         String viewName = adminController.dashboard(model);
 
-        assertThat(viewName).isEqualTo("dashboard");
+        assertThat(viewName).isEqualTo("admin/admin-dashboard");
         verify(model).addAttribute("completedCount", 1L);
         verify(model).addAttribute("pendingCount", 0L);
         verify(model).addAttribute("completionRate", 100.0);

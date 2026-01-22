@@ -21,8 +21,6 @@ import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.AiClientService;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.SimulationService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import edu.mondragon.we2.pinkAlert.model.AiPrediction;
@@ -73,8 +71,7 @@ public class AdminController {
                         UserRepository userRepository,
                         UserService userService,
                         DoctorRepository doctorRepository,
-                        AiClientService aiClientService, DiagnosisService diagnosisService,
-                        DoctorService doctorService, SimulationService simulationService) {
+                        AiClientService aiClientService,  SimulationService simulationService) {
 
                 this.patientRepository = patientRepository;
                 this.diagnosisRepository = diagnosisRepository;
@@ -418,7 +415,7 @@ public class AdminController {
                 addAiStats(model, all);
                 addDailyStats(model, all);
 
-                return "dashboard";
+                return "admin/admin-dashboard";
         }
 
         private void addBasicStats(Model model, List<Diagnosis> all, long totalScreenings) {
