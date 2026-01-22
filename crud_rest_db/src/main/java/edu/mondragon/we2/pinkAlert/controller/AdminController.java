@@ -468,10 +468,9 @@ public class AdminController {
                         diag = diagnosisRepository.saveAndFlush(diag);
 
                         String previewsDir = "previews";
-                        Path previewsPath = Paths.get("/tmp/previews");
-                        Files.createDirectories(previewsPath);
-
-                        Path tmpDicomPath = Paths.get("/tmp/dicom");
+                        Path baseTmpDir = Files.createTempDirectory("pinkalert-");
+                        Path previewsPath = Files.createDirectories(baseTmpDir.resolve("previews"));
+                        Path tmpDicomPath = Files.createDirectories(baseTmpDir.resolve("dicom"));
 
                         Files.createDirectories(tmpDicomPath);
 
