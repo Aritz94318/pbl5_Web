@@ -164,8 +164,8 @@ class AdminControllerTest {
         String viewName = adminController.users(null, model);
 
         assertThat(viewName).isEqualTo("admin/users");
-        verify(model).addAttribute("users", mockUsers);
-        verify(model).addAttribute("roles", Role.values());
+        verify(model).addAttribute(AdminController.ATTR_USERS, mockUsers);
+        verify(model).addAttribute(AdminController.ATTR_ROLES, Role.values());
     }
 
     @Test
@@ -181,9 +181,9 @@ class AdminControllerTest {
         String viewName = adminController.users(role, model);
 
         assertThat(viewName).isEqualTo("admin/users");
-        verify(model).addAttribute("users", mockDoctors);
+        verify(model).addAttribute(AdminController.ATTR_USERS, mockDoctors);
         verify(model).addAttribute("roleFilter", role);
-        verify(model).addAttribute("roles", Role.values());
+        verify(model).addAttribute(AdminController.ATTR_ROLES, Role.values());
     }
 
     @Test
