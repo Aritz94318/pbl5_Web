@@ -1,11 +1,11 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
-import edu.mondragon.we2.pinkalert.controller.AiWebhookController;
-import edu.mondragon.we2.pinkalert.dto.AiResultRequest;
-import edu.mondragon.we2.pinkalert.service.AiResultService;
+import edu.mondragon.we2.pinkAlert.controller.AiWebhookController;
+import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.service.AiResultService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

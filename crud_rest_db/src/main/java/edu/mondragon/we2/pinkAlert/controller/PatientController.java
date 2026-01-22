@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.model.Role;
-import edu.mondragon.we2.pinkalert.model.User;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
-import edu.mondragon.we2.pinkalert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.model.Role;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller

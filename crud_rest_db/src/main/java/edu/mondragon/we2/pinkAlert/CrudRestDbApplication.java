@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert;
+package edu.mondragon.we2.pinkAlert;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

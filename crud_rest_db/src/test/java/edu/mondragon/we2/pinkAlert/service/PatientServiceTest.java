@@ -1,12 +1,12 @@
- package edu.mondragon.we2.pinkalert.service;
+ package edu.mondragon.we2.pinkAlert.service;
  import org.easymock.EasyMock;
  import org.easymock.EasyMockSupport;
  import org.junit.jupiter.api.BeforeEach;
  import org.junit.jupiter.api.Test;
 
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
-import edu.mondragon.we2.pinkalert.service.PatientService;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import edu.mondragon.we2.pinkAlert.service.PatientService;itory;
 
 import java.time.LocalDate;
  import java.util.List;

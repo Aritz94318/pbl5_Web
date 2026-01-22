@@ -1,16 +1,16 @@
-package edu.mondragon.we2.pinkalert.service;
+package edu.mondragon.we2.pinkAlert.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.google.gson.Gson;
 
-import edu.mondragon.we2.pinkalert.dto.AiResultRequest;
-import edu.mondragon.we2.pinkalert.model.AiPrediction;
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.service.AiResultService;
-import edu.mondragon.we2.pinkalert.utils.ValidationUtils;
+import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.service.AiResultService;
+import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
+import edu.mondragon.we2.pinkalert.model.AiPrediction;e;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

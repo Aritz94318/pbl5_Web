@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.model;
+package edu.mondragon.we2.pinkAlert.model;
 
 public class GlobalUpdateRequest {
     private int numPatients;

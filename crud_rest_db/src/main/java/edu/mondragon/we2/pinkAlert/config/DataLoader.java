@@ -1,16 +1,16 @@
-package edu.mondragon.we2.pinkalert.config;
+package edu.mondragon.we2.pinkAlert.config;
 
 import java.time.LocalDate;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import edu.mondragon.we2.pinkalert.model.*;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
-import edu.mondragon.we2.pinkalert.repository.UserRepository;
-import edu.mondragon.we2.pinkalert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.*;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 
 @Component
 public class DataLoader implements CommandLineRunner {

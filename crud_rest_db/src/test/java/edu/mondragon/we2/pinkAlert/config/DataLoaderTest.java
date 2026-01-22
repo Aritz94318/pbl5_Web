@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.config;
+package edu.mondragon.we2.pinkAlert.config;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import edu.mondragon.we2.pinkAlert.model.*;
+import edu.mondragon.we2.pinkAlert.repository.*;
+import edu.mondragon.we2.pinkAlert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.repository.*;
+import edu.mondragon.we2.pinkAlert.service.UserService;
+import edu.mondragon.we2.pinkalert.config.DataLoader;
 import edu.mondragon.we2.pinkalert.model.*;
-import edu.mondragon.we2.pinkalert.repository.*;
-import edu.mondragon.we2.pinkalert.service.UserService;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert;
+package edu.mondragon.we2.pinkAlert;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 class CrudRestDbApplicationTests {
 
     @MockBean
-    private edu.mondragon.we2.pinkalert.config.DataLoader dataLoader;
+    private edu.mondragon.we2.pinkAlert.config.DataLoader dataLoader;
 
     @Test
     void contextLoads() {

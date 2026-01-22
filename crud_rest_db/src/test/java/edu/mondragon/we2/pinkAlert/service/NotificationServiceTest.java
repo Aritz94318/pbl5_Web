@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.service;
+package edu.mondragon.we2.pinkAlert.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -6,8 +6,8 @@ import org.springframework.http.MediaType;
 
 import com.google.gson.Gson;
 
-import edu.mondragon.we2.pinkalert.model.Notification;
-import edu.mondragon.we2.pinkalert.service.NotificationService;
+import edu.mondragon.we2.pinkAlert.model.Notification;
+import edu.mondragon.we2.pinkAlert.service.NotificationService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

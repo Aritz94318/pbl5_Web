@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
@@ -8,11 +8,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import edu.mondragon.we2.pinkalert.controller.DoctorController;
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.controller.DoctorController;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 
 import java.time.LocalDate;
 import java.util.List;

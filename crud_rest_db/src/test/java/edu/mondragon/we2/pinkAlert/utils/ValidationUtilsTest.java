@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.utils;
+package edu.mondragon.we2.pinkAlert.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.mondragon.we2.pinkalert.utils.ValidationUtils;
+import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
 
 import java.io.File;
 import java.io.IOException;

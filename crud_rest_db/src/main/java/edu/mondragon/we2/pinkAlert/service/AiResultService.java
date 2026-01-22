@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.service;
+package edu.mondragon.we2.pinkAlert.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -9,11 +9,11 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
-import edu.mondragon.we2.pinkalert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
 import edu.mondragon.we2.pinkalert.model.AiPrediction;
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.utils.ValidationUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

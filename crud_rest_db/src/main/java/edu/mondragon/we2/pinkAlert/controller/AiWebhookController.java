@@ -1,10 +1,10 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import edu.mondragon.we2.pinkalert.dto.AiResultRequest;
-import edu.mondragon.we2.pinkalert.service.AiResultService;
+import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
+import edu.mondragon.we2.pinkAlert.service.AiResultService;
 
 
 @RestController

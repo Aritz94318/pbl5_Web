@@ -1,14 +1,14 @@
-package edu.mondragon.we2.pinkalert.service;
+package edu.mondragon.we2.pinkAlert.service;
 
 import org.springframework.stereotype.Service;
 
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
 import edu.mondragon.we2.pinkalert.model.FinalResult;
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
 
 import java.time.LocalDate;
 import java.util.List;

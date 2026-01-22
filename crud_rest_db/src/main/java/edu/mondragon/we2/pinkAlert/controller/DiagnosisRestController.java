@@ -1,10 +1,10 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 
 import java.time.LocalDate;
 import java.util.List;

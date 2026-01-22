@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import jakarta.transaction.Transactional;
 
@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.*;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
-import edu.mondragon.we2.pinkalert.dto.AiPredictUrlRequest;
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.model.Doctor;
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.model.Role;
-import edu.mondragon.we2.pinkalert.model.User;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
-import edu.mondragon.we2.pinkalert.repository.UserRepository;
-import edu.mondragon.we2.pinkalert.service.AiClientService;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
-import edu.mondragon.we2.pinkalert.service.DoctorService;
-import edu.mondragon.we2.pinkalert.service.SimulationService;
-import edu.mondragon.we2.pinkalert.service.UserService;
+import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.model.Role;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+import edu.mondragon.we2.pinkAlert.service.AiClientService;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.service.DoctorService;
+import edu.mondragon.we2.pinkAlert.service.SimulationService;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -491,7 +491,7 @@ public class AdminController {
                                 System.out.println("DICOM size: " + Files.size(dicomFile));
                                 System.out.println("Ruta absoluta: " + f.getAbsolutePath());
                                 System.out.println("Ruta canonical (real): " + f.getCanonicalPath());
-                                edu.mondragon.we2.pinkalert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
+                                edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
                                                 outPng);
 
                                 String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";

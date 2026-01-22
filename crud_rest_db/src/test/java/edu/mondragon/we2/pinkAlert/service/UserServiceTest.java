@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.service;
+package edu.mondragon.we2.pinkAlert.service;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
@@ -6,10 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import edu.mondragon.we2.pinkalert.model.Role;
-import edu.mondragon.we2.pinkalert.model.User;
-import edu.mondragon.we2.pinkalert.repository.UserRepository;
-import edu.mondragon.we2.pinkalert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+import edu.mondragon.we2.pinkAlert.service.UserService;
+import edu.mondragon.we2.pinkalert.model.Role;itory;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,15 +1,15 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.mondragon.we2.pinkalert.controller.DiagnosisRestController;
-import edu.mondragon.we2.pinkalert.model.Diagnosis;
-import edu.mondragon.we2.pinkalert.model.Doctor;
-import edu.mondragon.we2.pinkalert.model.Patient;
-import edu.mondragon.we2.pinkalert.repository.DiagnosisRepository;
-import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.controller.DiagnosisRestController;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
+import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
+import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;

@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.utils;
+package edu.mondragon.we2.pinkAlert.utils;
 
 import java.io.File;
 import java.io.IOException;

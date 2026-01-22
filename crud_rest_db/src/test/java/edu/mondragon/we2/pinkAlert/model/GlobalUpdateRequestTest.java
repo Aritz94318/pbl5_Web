@@ -1,8 +1,8 @@
-package edu.mondragon.we2.pinkalert.model;
+package edu.mondragon.we2.pinkAlert.model;
 
 import org.junit.jupiter.api.Test;
 
-import edu.mondragon.we2.pinkalert.model.GlobalUpdateRequest;
+import edu.mondragon.we2.pinkAlert.model.GlobalUpdateRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 

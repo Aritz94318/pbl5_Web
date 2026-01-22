@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import java.io.IOException;
 
@@ -8,9 +8,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
-import edu.mondragon.we2.pinkalert.model.SimEvent;
-import edu.mondragon.we2.pinkalert.model.SimTime;
-import edu.mondragon.we2.pinkalert.service.SimulationService;
+import edu.mondragon.we2.pinkAlert.model.SimEvent;
+import edu.mondragon.we2.pinkAlert.model.SimTime;
+import edu.mondragon.we2.pinkAlert.service.SimulationService;
 
 @RestController
 public class SimController {

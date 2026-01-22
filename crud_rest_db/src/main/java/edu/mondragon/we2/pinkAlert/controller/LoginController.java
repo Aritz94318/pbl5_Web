@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import edu.mondragon.we2.pinkalert.model.Role;
-import edu.mondragon.we2.pinkalert.model.User;
-import edu.mondragon.we2.pinkalert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.Role;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 
 import java.util.Optional;
 

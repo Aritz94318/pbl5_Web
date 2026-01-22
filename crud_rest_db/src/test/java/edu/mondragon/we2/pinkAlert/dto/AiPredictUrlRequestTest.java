@@ -1,8 +1,10 @@
-package edu.mondragon.we2.pinkalert.dto;
+package edu.mondragon.we2.pinkAlert.dto;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 
 
 class AiPredictUrlRequestTest {

@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkalert.controller;
+package edu.mondragon.we2.pinkAlert.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +16,10 @@ import java.io.IOException;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
-import edu.mondragon.we2.pinkalert.controller.SimController;
-import edu.mondragon.we2.pinkalert.model.SimEvent;
-import edu.mondragon.we2.pinkalert.model.SimTime;
-import edu.mondragon.we2.pinkalert.service.SimulationService;
+import edu.mondragon.we2.pinkAlert.controller.SimController;
+import edu.mondragon.we2.pinkAlert.model.SimEvent;
+import edu.mondragon.we2.pinkAlert.model.SimTime;
+import edu.mondragon.we2.pinkAlert.service.SimulationService;
 
 @ExtendWith(MockitoExtension.class)
 class SimControllerTest {
