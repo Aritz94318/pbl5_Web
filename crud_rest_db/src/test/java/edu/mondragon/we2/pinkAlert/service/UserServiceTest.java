@@ -190,17 +190,14 @@ void testGetUserNotFound() {
 
 @Test
 void testSaveUser() {
-    // Arrange
     User newUser = new User();
     newUser.setUsername("newUser");
     
     EasyMock.expect(userRepository.save(newUser)).andReturn(newUser);
     EasyMock.replay(userRepository);
 
-    // Act
     User result = userService.save(newUser);
 
-    // Assert
     assertNotNull(result);
     assertEquals("newUser", result.getUsername());
     EasyMock.verify(userRepository);
@@ -208,30 +205,22 @@ void testSaveUser() {
 
 @Test
 void testDeleteUser() {
-    // Arrange
     Integer userId = 1;
     userRepository.deleteById(userId);
     EasyMock.expectLastCall();
     EasyMock.replay(userRepository);
 
-    // Act
     userService.delete(userId);
-
-    // Assert - No exception should be thrown
     EasyMock.verify(userRepository);
 }
 
 @Test
 void testSetPassword() {
-    // Arrange
     User testUser = new User();
     testUser.setUsername("test");
     String originalHash = testUser.getPasswordHash();
 
-    // Act
     userService.setPassword(testUser, "newPassword123");
-
-    // Assert
     assertNotNull(testUser.getPasswordHash());
     assertNotEquals(originalHash, testUser.getPasswordHash());
     assertTrue(new BCryptPasswordEncoder().matches("newPassword123", testUser.getPasswordHash()));
@@ -239,19 +228,14 @@ void testSetPassword() {
 
 @Test
 void testConstructor() {
-    // Arrange & Act
     UserService service = new UserService(userRepository);
-
-    // Assert
     assertNotNull(service);
 }
 
 @Test
 void testPasswordMatchesWithNullUser() {
-    // Arrange
     User nullUser = null;
 
-    // Act & Assert
     assertThrows(NullPointerException.class, () -> {
         userService.matches(nullUser, "password");
     });
@@ -260,48 +244,41 @@ void testPasswordMatchesWithNullUser() {
 
 @Test
 void testCreateUserWithEmptyPassword() {
-    // Arrange
     User newUser = new User();
     newUser.setUsername("test");
     
     EasyMock.expect(userRepository.save(EasyMock.anyObject(User.class))).andReturn(newUser);
     EasyMock.replay(userRepository);
 
-    // Act
     User result = userService.createUser(newUser, "");
 
-    // Assert
     assertNotNull(result);
-    assertNotNull(result.getPasswordHash()); // Should encode empty string
+    assertNotNull(result.getPasswordHash()); 
     EasyMock.verify(userRepository);
 }
 
 @Test
 void testFindByIdentifierEmptyString() {
-    // Arrange
+
     EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("", ""))
             .andReturn(Optional.empty());
     EasyMock.replay(userRepository);
 
-    // Act
     Optional<User> result = userService.findByIdentifier("");
 
-    // Assert
     assertTrue(result.isEmpty());
     EasyMock.verify(userRepository);
 }
 
 @Test
 void testFindByIdentifierWithSpacesOnly() {
-    // Arrange
+ 
     EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("", ""))
             .andReturn(Optional.empty());
     EasyMock.replay(userRepository);
 
-    // Act
     Optional<User> result = userService.findByIdentifier("   ");
 
-    // Assert
     assertTrue(result.isEmpty());
     EasyMock.verify(userRepository);
 }

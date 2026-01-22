@@ -31,26 +31,21 @@ class SimControllerTest {
 
     @Test
     void testPushEventWithTimestamp() throws IOException, ProcessingException {
-        // Given
+       
         SimEvent event = new SimEvent("PATIENT", 1, "Patient arrived", 1234567890L);
         
-        // When
         ResponseEntity<Void> response = simController.push(event);
         
-        // Then
         assertEquals(ResponseEntity.ok().build(), response);
         verify(simulationService, times(1)).publishValidated(any(SimEvent.class));
     }
 
     @Test
     void testPushEventWithZeroTimestamp() throws IOException, ProcessingException {
-        // Given
+
         SimEvent event = new SimEvent("DOCTOR", 2, "Doctor assigned", 0);
-        
-        // When
         ResponseEntity<Void> response = simController.push(event);
-        
-        // Then
+
         assertEquals(ResponseEntity.ok().build(), response);
         verify(simulationService, times(1)).publishValidated(any(SimEvent.class));
     }
@@ -58,40 +53,34 @@ class SimControllerTest {
  
     @Test
     void testReceiveFinalTime() throws IOException, ProcessingException {
-        // Given
+      
         SimTime time = new SimTime(1000000000L, 1, 30, 45);
         
-        // When
         ResponseEntity<Void> response = simController.receiveFinalTime(time);
         
-        // Then
         assertEquals(ResponseEntity.ok().build(), response);
         verify(simulationService, times(1)).publishValidated(time);
     }
 
     @Test
     void testReceiveFinalTimeWithZeroValues() throws IOException, ProcessingException {
-        // Given
+       
         SimTime time = new SimTime(0, 0, 0, 0);
         
-        // When
         ResponseEntity<Void> response = simController.receiveFinalTime(time);
         
-        // Then
         assertEquals(ResponseEntity.ok().build(), response);
         verify(simulationService, times(1)).publishValidated(time);
     }
 
     @Test
     void testStream() {
-        // Given
+        
         SseEmitter mockEmitter = new SseEmitter();
         when(simulationService.connect()).thenReturn(mockEmitter);
-        
-        // When
+
         SseEmitter result = simController.stream();
         
-        // Then
         assertNotNull(result);
         assertEquals(mockEmitter, result);
         verify(simulationService, times(1)).connect();
@@ -99,7 +88,7 @@ class SimControllerTest {
 
     @Test
     void testPushEventWithDifferentActors() throws IOException, ProcessingException {
-        // Test all actor types
+       
         SimEvent[] events = {
             new SimEvent("PATIENT", 1, "Event 1", 1000L),
             new SimEvent("DOCTOR", 2, "Event 2", 2000L),
@@ -116,34 +105,29 @@ class SimControllerTest {
 
     @Test
     void testPushEventExceptionHandling() throws IOException, ProcessingException {
-        // Given
+     
         SimEvent event = new SimEvent("PATIENT", 1, "Test", 1000L);
         doThrow(new IOException("Test exception")).when(simulationService).publishValidated(any(SimEvent.class));
-        
-        // When & Then
+
         assertThrows(IOException.class, () -> simController.push(event));
     }
 
     @Test
     void testReceiveFinalTimeExceptionHandling() throws IOException, ProcessingException {
-        // Given
+
         SimTime time = new SimTime(1000L, 0, 0, 10);
         doThrow(new ProcessingException("Test exception")).when(simulationService).publishValidated(any(SimTime.class));
-        
-        // When & Then
         assertThrows(ProcessingException.class, () -> simController.receiveFinalTime(time));
     }
 
     @Test
     void testConstructorInjection() {
-        // Test that controller is properly constructed with service
         assertNotNull(simController);
         assertNotNull(simulationService);
     }
 
     @Test
     void testControllerAnnotations() {
-        // Verify controller has correct annotations
         RestController annotation = SimController.class.getAnnotation(RestController.class);
         assertNotNull(annotation, "SimController should have @RestController annotation");
     }

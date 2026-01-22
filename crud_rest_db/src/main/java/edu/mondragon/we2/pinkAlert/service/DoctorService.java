@@ -32,7 +32,6 @@ public class DoctorService {
 
     public Doctor update(Integer id, Doctor updated) {
         Doctor existing = findById(id);
-        //existing.setName(updated.getName());
         return doctorRepository.save(existing);
     }
 

@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.google.gson.Gson;
 
 import edu.mondragon.we2.pinkAlert.model.Notification;
 import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
@@ -25,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 public class NotificationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final Gson gson = new Gson();
     private final ObjectMapper mapper = new ObjectMapper();
     private final JsonSchema schema;
 
@@ -39,30 +37,21 @@ public class NotificationService {
         this.schema = factory.getJsonSchema(schemaNode);
     }
 
-    public void sendEmail(Notification n) throws IOException, ProcessingException {
-        // Basic guard (prevents sending empty recipient)
+    public void sendEmail(Notification n) throws ProcessingException {
+
         if (n.getEmail() == null || n.getEmail().isBlank()) {
             throw new IllegalArgumentException("Notification.email is null/blank");
         }
-
-        // Build JSON that matches BOTH:
-        // - your schema (email/topic/message/date)
-        // - Node-RED email conventions (to/topic/payload/subject/text)
         ObjectNode body = mapper.createObjectNode();
         body.put("email", n.getEmail());
         body.put("topic", n.getTopic());
         body.put("message", n.getMessage());
         body.put("date", n.getDate());
 
-        // Alias fields for Node-RED / nodemailer style
         body.put("to", n.getEmail());
         body.put("subject", n.getTopic());
-        body.put("payload", n.getMessage()); // Node-RED email node often uses msg.payload as body
-        body.put("text", n.getMessage()); // Some flows use text/html
-        // (optional) if your message might contain HTML:
-        // body.put("html", n.getMessage());
-
-        // Validate against your schema (still passes because extra props are allowed)
+        body.put("payload", n.getMessage());
+        body.put("text", n.getMessage()); 
         if (!ValidationUtils.isJsonValid(schema, body)) {
             System.out.println("NOT valid!");
             System.out.println(body.toPrettyString());

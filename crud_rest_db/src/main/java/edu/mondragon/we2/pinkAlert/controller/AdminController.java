@@ -108,9 +108,6 @@ public class AdminController {
 
                 List<Diagnosis> all = diagnosisRepository.findAll();
 
-                // -----------------------------
-                // COMPLETION + FINAL RESULTS
-                // -----------------------------
                 long completed = all.stream().filter(AdminController::isFinalized).count();
 
                 double completionRate = (totalScreenings == 0)
@@ -132,8 +129,6 @@ public class AdminController {
                                 .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
                                 .count();
 
-                // Pending = anything not finalized (includes not reviewed, finalResult null, or
-                // finalResult=PENDING)
                 long pendingCount = all.stream()
                                 .filter(d -> !isFinalized(d))
                                 .count();
@@ -142,9 +137,6 @@ public class AdminController {
                                 ? 0.0
                                 : round1((positiveCount * 100.0) / completed);
 
-                // -----------------------------
-                // REVIEW BACKLOG (pending only)
-                // -----------------------------
                 long backlogUrgent = all.stream()
                                 .filter(d -> !isFinalized(d))
                                 .filter(Diagnosis::isUrgent)
@@ -158,9 +150,6 @@ public class AdminController {
                 model.addAttribute("backlogUrgent", backlogUrgent);
                 model.addAttribute("backlogRoutine", backlogRoutine);
 
-                // -----------------------------
-                // AGE-BASED ANALYTICS (finalized only)
-                // -----------------------------
                 LocalDate now = LocalDate.now();
 
                 java.util.function.Function<Diagnosis, Integer> ageOf = diag -> {
@@ -189,7 +178,6 @@ public class AdminController {
                         return "70+";
                 };
 
-                // IMPORTANT: Use the exact same strings as bucketOf()
                 List<String> ageBuckets = List.of("<40", "40-49", "50-59", "60-69", "70+", "Unknown");
 
                 List<Diagnosis> finalized = all.stream()
@@ -215,7 +203,6 @@ public class AdminController {
                                 .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
                                                 Collectors.counting()));
 
-                // Build JS arrays
                 List<String> ageLabelsJs = ageBuckets.stream().map(s -> "'" + s + "'").toList();
 
                 List<Long> ageTotals = ageBuckets.stream().map(b -> totalByAgeBucket.getOrDefault(b, 0L)).toList();
@@ -245,9 +232,6 @@ public class AdminController {
                 model.addAttribute("ageMalignantRateJs",
                                 ageMalignantRate.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-                // -----------------------------
-                // AI vs Doctor Agreement (using aiPrediction)
-                // -----------------------------
                 long aiAgreeCount = 0;
                 long aiMismatchCount = 0;
                 long aiMissingCount = 0;
@@ -262,7 +246,6 @@ public class AdminController {
                                 continue;
                         }
 
-                        // Compare only when doctor finalized AND doctor is not inconclusive
                         if (!isFinalized(d) || doctor == FinalResult.INCONCLUSIVE) {
                                 aiNotComparableCount++;
                                 continue;
@@ -285,9 +268,6 @@ public class AdminController {
                 model.addAttribute("aiMissingCount", aiMissingCount);
                 model.addAttribute("aiNotComparableCount", aiNotComparableCount);
 
-                // -----------------------------
-                // BASIC KPIs
-                // -----------------------------
                 model.addAttribute("totalPatients", totalPatients);
                 model.addAttribute("totalUsers", totalUsers);
                 model.addAttribute("totalScreenings", totalScreenings);
@@ -300,10 +280,6 @@ public class AdminController {
                 model.addAttribute("pendingCount", pendingCount);
                 model.addAttribute("inconclusiveCount", inconclusiveCount);
 
-                // -----------------------------
-                // TIMELINE (last 7 days)
-                // total vs completed(finalized)
-                // -----------------------------
                 LocalDate today = LocalDate.now();
                 LocalDate start = today.minusDays(6);
 
@@ -349,8 +325,8 @@ public class AdminController {
                                 : userService.findByRole(role);
 
                 model.addAttribute("users", users);
-                model.addAttribute("roleFilter", role); // currently selected role
-                model.addAttribute("roles", Role.values()); // for dropdown options
+                model.addAttribute("roleFilter", role); 
+                model.addAttribute("roles", Role.values()); 
 
                 return "admin/users";
         }
@@ -411,7 +387,6 @@ public class AdminController {
                 model.addAttribute("user", userService.get(id));
                 model.addAttribute("roles", Role.values());
 
-                // keep the filter so the form can send it back on save/cancel
                 model.addAttribute("roleFilter", role);
 
                 return "admin/user-form";
@@ -604,7 +579,6 @@ public class AdminController {
         }
 
         @PostMapping("/diagnoses")
-        // @Transactional
         public String createDiagnosis(
                         @RequestParam("patientId") Integer patientId,
                         @RequestParam("dicomUrl") String dicomUrl,
@@ -667,7 +641,6 @@ public class AdminController {
                         diag.setPatient(patient);
                         diag.setDoctor(doctor);
                         diag.setReviewed(false);
-                        // diag.setUrgent(false);
                         diag.setDescription(description);
                         diag.setDate(date);
 

@@ -2,7 +2,7 @@ package edu.mondragon.we2.pinkAlert.model;
 
 public class SimTime {
 
-    private long time; // nanosegundos reales
+    private long time;
     private int hours;
     private int minutes;
     private int seconds;

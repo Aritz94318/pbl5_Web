@@ -22,13 +22,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.NotificationService;
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 import edu.mondragon.we2.pinkAlert.model.Notification;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/doctor")
@@ -62,11 +59,8 @@ public class DoctorController {
 
         final LocalDate finalSelectedDate = selectedDate;
 
-        // 1) Fetch diagnoses for selected date
         List<Diagnosis> diagnosesAll = diagnosisService.findByDateSortedByUrgency(finalSelectedDate);
 
-        // --- counts based on ALL diagnoses of that date (keep your header accurate)
-        // ---
         int total = diagnosesAll.size();
         long urgent = diagnosesAll.stream().filter(Diagnosis::isUrgent).count();
         long routine = total - urgent;
@@ -86,19 +80,14 @@ public class DoctorController {
                 .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
                 .count();
 
-        // 2) Apply filters to list
         List<Diagnosis> diagnosesFiltered = diagnosesAll.stream()
                 .filter(d -> matchesStatus(d, status))
                 .filter(d -> matchesResult(d, result))
                 .collect(Collectors.toList());
 
-        // 3) Previous screenings per patient (for the *filtered list* or all list?)
-        // Usually you want it to reflect ALL history, but at minimum keep it
-        // consistent:
         Map<Integer, Long> previousScreenings = diagnosesAll.stream()
                 .collect(Collectors.groupingBy(d -> d.getPatient().getId(), Collectors.counting()));
 
-        // model (header counts = all; list = filtered)
         model.addAttribute("diagnoses", diagnosesFiltered);
 
         model.addAttribute("totalCount", total);
@@ -108,22 +97,15 @@ public class DoctorController {
         model.addAttribute("malignantCount", malignantCount);
         model.addAttribute("benignCount", benignCount);
         model.addAttribute("inconclusiveCount", inconclusiveCount);
-
-        // extra info to show "X shown"
         model.addAttribute("filteredCount", diagnosesFiltered.size());
 
         model.addAttribute("previousScreenings", previousScreenings);
         model.addAttribute("selectedDate", finalSelectedDate);
         model.addAttribute("selectedDateIso", finalSelectedDate.toString());
 
-        // keep current filters so JSP can highlight the active chip
         model.addAttribute("statusFilter", status);
         model.addAttribute("resultFilter", result);
 
-        // -----------------------------------------
-        // DATE PILLS (5 days before selectedDate + selectedDate)
-        // (IMPORTANT: preserve filters in the pill links via query string in JSP)
-        // -----------------------------------------
         DateTimeFormatter monthDayFmt = DateTimeFormatter.ofPattern("MMM dd");
         DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -155,7 +137,6 @@ public class DoctorController {
         return "doctor/doctor-dashboard";
     }
 
-    // --- helpers ---
     private static boolean matchesStatus(Diagnosis d, String statusRaw) {
         String status = (statusRaw == null) ? "ALL" : statusRaw.toUpperCase();
 
@@ -164,10 +145,10 @@ public class DoctorController {
 
         return switch (status) {
             case "ALL" -> true;
-            case "PENDING" -> !reviewed || !hasFinal; // not reviewed OR no final result
-            case "REVIEWED" -> reviewed; // reviewed flag true
-            case "PENDING_REVIEW" -> !reviewed; // specifically pending review
-            case "PENDING_RESULT" -> reviewed && !hasFinal; // reviewed but no final result
+            case "PENDING" -> !reviewed || !hasFinal; 
+            case "REVIEWED" -> reviewed;
+            case "PENDING_REVIEW" -> !reviewed; 
+            case "PENDING_RESULT" -> reviewed && !hasFinal; 
             default -> true;
         };
     }
@@ -177,7 +158,6 @@ public class DoctorController {
         if ("ALL".equals(result))
             return true;
 
-        // Only match if finalResult exists
         if (d.getFinalResult() == null)
             return false;
 
@@ -189,7 +169,7 @@ public class DoctorController {
         Diagnosis diagnosis = diagnosisService.findById(id);
 
         List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
-        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
+        historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); 
         long totalScreenings = diagnosisService.countByPatientId(diagnosis.getPatient().getId());
         model.addAttribute("totalScreenings", totalScreenings);
 
@@ -233,29 +213,17 @@ public class DoctorController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "patientNotified", required = false, defaultValue = "false") boolean patientNotified) {
 
-        // 1) Load current state BEFORE saving (to detect transitions)
         Diagnosis before = diagnosisService.findById(id);
         boolean wasNotified = Boolean.TRUE.equals(before.getPatientNotified());
-        boolean hadFinalResultBefore = before.getFinalResult() != null; // or before.isReviewed()
-
-        // 2) Save review (this updates
-        // reviewed/finalResult/description/patientNotified)
+        boolean hadFinalResultBefore = before.getFinalResult() != null;
         diagnosisService.saveDoctorReview(id, finalResultRaw, description, patientNotified);
 
-        // 3) Load AFTER saving (optional, but safer)
         Diagnosis after = diagnosisService.findById(id);
-
-        // Data needed for email
         String email = after.getPatient().getUser().getEmail();
         String fullName = after.getPatient().getUser().getFullName();
-
-        // 4) Trigger emails ONLY on transitions
-
-        // A) "Results ready" -> when doctor sets finalResult the first time (or first
-        // time reviewed)
-        boolean hasFinalResultNow = after.getFinalResult() != null; // or after.isReviewed()
+        boolean hasFinalResultNow = after.getFinalResult() != null;
         if (!hadFinalResultBefore && hasFinalResultNow) {
-            System.out.println("Patient email is: " + email);
+            log.info("Patient email is: {}", email);
             Notification n = new Notification(
                     email,
                     "Pink Alert - Results ready",

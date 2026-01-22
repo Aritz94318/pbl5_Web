@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class AiResultRequest {
 
     @JsonProperty("prediction")
-    private String prediction; // "MALIGNANT" or "BENIGN"
+    private String prediction; 
 
     @JsonProperty("prob_malignant")
     private BigDecimal probMalignant;

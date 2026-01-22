@@ -9,16 +9,13 @@ class SimTimeTest {
 
     @Test
     void testSimTimeCreation() {
-        // Given
-        long time = 1000000000L; // 1 second in nanoseconds
+        long time = 1000000000L; 
         int hours = 1;
         int minutes = 30;
         int seconds = 45;
 
-        // When
         SimTime simTime = new SimTime(time, hours, minutes, seconds);
 
-        // Then
         assertEquals(time, simTime.getTime());
         assertEquals(hours, simTime.getHours());
         assertEquals(minutes, simTime.getMinutes());
@@ -37,7 +34,7 @@ class SimTimeTest {
 
     @Test
     void testSimTimeWithNegativeValues() {
-        // Testing boundary values
+    
         SimTime simTime = new SimTime(-1, -1, -1, -1);
         
         assertEquals(-1, simTime.getTime());
@@ -48,7 +45,6 @@ class SimTimeTest {
 
     @Test
     void testSimTimeWithMaximumValues() {
-        // Testing with maximum reasonable values
         SimTime simTime = new SimTime(Long.MAX_VALUE, 23, 59, 59);
         
         assertEquals(Long.MAX_VALUE, simTime.getTime());
@@ -59,7 +55,7 @@ class SimTimeTest {
 
     @Test
     void testSimTimeSerialization() throws Exception {
-        // Test JSON serialization
+     
         ObjectMapper mapper = new ObjectMapper();
         SimTime simTime = new SimTime(123456789L, 2, 15, 30);
         

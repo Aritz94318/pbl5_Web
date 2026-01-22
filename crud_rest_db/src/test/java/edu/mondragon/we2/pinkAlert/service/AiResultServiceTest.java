@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
-import java.io.IOException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,25 +20,21 @@ class AiResultServiceTest {
     @Test
     void testConstructorCoverage() {
         try {
-            // Mock del repository
             DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
             
-            // Intentar crear servicio - puede fallar por archivo no encontrado
             new AiResultService(mockRepo);
             assertTrue(true);
         } catch (Exception e) {
-            // Cualquier excepción es coverage
             assertNotNull(e);
         }
     }
 
     @Test
     void testApplyAiResult_DiagnosisNotFound() throws Exception {
-        // Mock del repository
+      
         DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
         when(mockRepo.findById(anyInt())).thenReturn(Optional.empty());
         
-        // Mockear el servicio con reflection para evitar problemas de constructor
         AiResultService service = Mockito.spy(new AiResultService(mockRepo));
         
         AiResultRequest request = new AiResultRequest();
@@ -88,7 +83,7 @@ class AiResultServiceTest {
         when(mockRepo.save(any(Diagnosis.class))).thenAnswer(invocation -> {
             Diagnosis saved = invocation.getArgument(0);
             assertEquals(AiPrediction.MALIGNANT, saved.getAiPrediction());
-            assertTrue(saved.isUrgent()); // MALIGNANT should be urgent
+            assertTrue(saved.isUrgent()); 
             assertEquals(new BigDecimal("0.87654321"), saved.getProbability());
             assertFalse(saved.isReviewed());
             return saved;
@@ -108,14 +103,14 @@ class AiResultServiceTest {
     void testApplyAiResult_BenignPrediction() throws Exception {
         Diagnosis diagnosis = new Diagnosis();
         diagnosis.setId(1);
-        diagnosis.setUrgent(true); // Inicialmente urgent
+        diagnosis.setUrgent(true); 
         
         DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
         when(mockRepo.findById(anyInt())).thenReturn(Optional.of(diagnosis));
         when(mockRepo.save(any(Diagnosis.class))).thenAnswer(invocation -> {
             Diagnosis saved = invocation.getArgument(0);
             assertEquals(AiPrediction.BENIGN, saved.getAiPrediction());
-            assertFalse(saved.isUrgent()); // BENIGN should not be urgent
+            assertFalse(saved.isUrgent()); 
             return saved;
         });
         
@@ -138,7 +133,7 @@ class AiResultServiceTest {
         when(mockRepo.findById(anyInt())).thenReturn(Optional.of(diagnosis));
         when(mockRepo.save(any(Diagnosis.class))).thenAnswer(invocation -> {
             Diagnosis saved = invocation.getArgument(0);
-            assertEquals(8, saved.getProbability().scale()); // Should have scale 8
+            assertEquals(8, saved.getProbability().scale()); 
             return saved;
         });
         
@@ -146,7 +141,7 @@ class AiResultServiceTest {
         
         AiResultRequest request = new AiResultRequest();
         request.setPrediction("MALIGNANT");
-        request.setProbMalignant(new BigDecimal("0.123456789")); // 9 decimal places
+        request.setProbMalignant(new BigDecimal("0.123456789")); 
         
         service.applyAiResult(1, request);
     }
@@ -163,7 +158,7 @@ class AiResultServiceTest {
         AiResultService service = new AiResultService(mockRepo);
         
         AiResultRequest request = new AiResultRequest();
-        request.setPrediction(""); // empty
+        request.setPrediction(""); 
         request.setProbMalignant(new BigDecimal("0.5"));
         
         try {
@@ -182,24 +177,22 @@ class AiResultServiceTest {
         try {
             service.applyAiResult(1, null);
             fail("Should have thrown exception");
-        } catch (NullPointerException e) {
-            assertNotNull(e);
         } catch (Exception e) {
             assertNotNull(e);
-        }
+        } 
     }
 
     @Test
     void testReviewedFlagReset() throws Exception {
         Diagnosis diagnosis = new Diagnosis();
         diagnosis.setId(1);
-        diagnosis.setReviewed(true); // Initially reviewed
+        diagnosis.setReviewed(true); 
         
         DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
         when(mockRepo.findById(anyInt())).thenReturn(Optional.of(diagnosis));
         when(mockRepo.save(any(Diagnosis.class))).thenAnswer(invocation -> {
             Diagnosis saved = invocation.getArgument(0);
-            assertFalse(saved.isReviewed()); // Should be reset to false
+            assertFalse(saved.isReviewed());
             return saved;
         });
         
@@ -237,39 +230,29 @@ class AiResultServiceTest {
 
     @Test
     void testInvalidJsonValidation() throws Exception {
-        // This would require mocking the JsonSchema validation
-        // For coverage, we'll just call the method
         Diagnosis diagnosis = new Diagnosis();
         diagnosis.setId(1);
         
         DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
-        when(mockRepo.findById(anyInt())).thenReturn(Optional.of(diagnosis));
-        
+        when(mockRepo.findById(anyInt())).thenReturn(Optional.of(diagnosis));   
         AiResultService service = new AiResultService(mockRepo);
-        
-        // Try with valid request - should work if validation passes
         AiResultRequest request = new AiResultRequest();
         request.setPrediction("MALIGNANT");
         request.setProbMalignant(new BigDecimal("0.5"));
         
         try {
             service.applyAiResult(1, request);
-            // If it passes, that's coverage
         } catch (IllegalArgumentException e) {
-            // If it fails due to JSON validation, that's also coverage
             assertTrue(e.getMessage().contains("Invalid AI result JSON"));
         }
     }
 
     @Test
     void testConstructorIOException() {
-        // Test constructor when schema file causes IOException
-        // This is hard to test without PowerMock, but we can at least cover the try-catch
         try {
             DiagnosisRepository mockRepo = mock(DiagnosisRepository.class);
             new AiResultService(mockRepo);
         } catch (Exception e) {
-            // Coverage for any constructor exception
             assertNotNull(e);
         }
     }
@@ -285,7 +268,6 @@ class AiResultServiceTest {
         
         AiResultService service = new AiResultService(mockRepo);
         
-        // Test all case variants
         String[] variants = {"MALIGNANT", "malignant", "Malignant", "MaLiGnAnT", "BENIGN", "benign", "Benign"};
         
         for (String variant : variants) {
@@ -295,9 +277,7 @@ class AiResultServiceTest {
             
             try {
                 service.applyAiResult(1, request);
-                // Coverage for successful call
             } catch (Exception e) {
-                // Coverage for exception (invalid variants like "MaLiGnAnT")
                 assertNotNull(e);
             }
         }

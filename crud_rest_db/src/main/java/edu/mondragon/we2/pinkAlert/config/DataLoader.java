@@ -38,7 +38,6 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // USERS
         if (userRepository.count() == 0) {
 
             Doctor doctor = doctorRepository.save(new Doctor("688152046"));
@@ -74,7 +73,6 @@ public class DataLoader implements CommandLineRunner {
             userService.createUser(adminUser, "admin123");
         }
 
-        // DIAGNOSES
         if (diagnosisRepository.count() == 0) {
 
 

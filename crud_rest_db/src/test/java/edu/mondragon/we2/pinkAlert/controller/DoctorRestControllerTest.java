@@ -52,7 +52,7 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetAllDoctors() throws Exception {
-        // Given
+
         Doctor doctor1 = new Doctor();
         doctor1.setId(1);
         doctor1.setPhone("111111111");
@@ -65,7 +65,6 @@ class DoctorRestControllerTest {
         
         when(doctorService.findAll()).thenReturn(doctors);
 
-        // When & Then
         mockMvc.perform(get("/doctors")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -78,14 +77,13 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetDoctorById_Found() throws Exception {
-        // Given
+
         Doctor doctor = new Doctor();
         doctor.setId(1);
         doctor.setPhone("111111111");
         
         when(doctorService.findById(1)).thenReturn(doctor);
 
-        // When & Then
         mockMvc.perform(get("/doctors/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -96,10 +94,9 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetDoctorById_NotFound() throws Exception {
-        // Given
+    
         when(doctorService.findById(999)).thenReturn(null);
 
-        // When & Then
         mockMvc.perform(get("/doctors/999")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -111,10 +108,9 @@ class DoctorRestControllerTest {
 
     @Test
     void testDeleteDoctor() throws Exception {
-        // Given
+    
         doNothing().when(doctorService).delete(1);
 
-        // When & Then
         mockMvc.perform(delete("/doctors/1"))
                 .andExpect(status().isNoContent());
         
@@ -123,7 +119,7 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetDiagnosesByDoctor() throws Exception {
-        // Given
+ 
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
@@ -138,7 +134,6 @@ class DoctorRestControllerTest {
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-        // When & Then
         mockMvc.perform(get("/doctors/1/diagnoses")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -152,14 +147,12 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetDiagnosesByDoctor_NoDiagnoses() throws Exception {
-        // Given
+   
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(Collections.emptyList());
-
-        // When & Then
         mockMvc.perform(get("/doctors/1/diagnoses")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -171,7 +164,6 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetPatientsOfDoctor() throws Exception {
-        // Given
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
@@ -189,20 +181,18 @@ class DoctorRestControllerTest {
         Diagnosis diagnosis2 = new Diagnosis();
         diagnosis2.setPatient(patient2);
         
-        // Para evitar duplicados
         Diagnosis diagnosis3 = new Diagnosis();
-        diagnosis3.setPatient(patient1); // Mismo paciente que diagnosis1
+        diagnosis3.setPatient(patient1); 
         
         List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2, diagnosis3);
         
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-        // When & Then
         mockMvc.perform(get("/doctors/1/patients")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2)) // Duplicados eliminados
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].id").value(2));
         
@@ -212,14 +202,13 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetPatientsOfDoctor_NoPatients() throws Exception {
-        // Given
+      
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(Collections.emptyList());
 
-        // When & Then
         mockMvc.perform(get("/doctors/1/patients")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -231,7 +220,7 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetPatientsOfDoctor_WithNullPatient() throws Exception {
-        // Given
+
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
@@ -242,35 +231,28 @@ class DoctorRestControllerTest {
         diagnosis1.setPatient(patient);
         
         Diagnosis diagnosis2 = new Diagnosis();
-        diagnosis2.setPatient(null); // Diagnóstico sin paciente
-        
+        diagnosis2.setPatient(null); 
         List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2);
         
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-        // When & Then
         mockMvc.perform(get("/doctors/1/patients")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2)) // Solo el paciente no null
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1));
         
         verify(doctorService).findById(1);
         verify(diagnosisService).findByDoctor(1);
     }
 
-    // Tests adicionales para coverage máximo
-
     @Test
     void testUpdateDoctor_NotFound() throws Exception {
-        // Given
         Doctor doctorUpdates = new Doctor();
         doctorUpdates.setPhone("999999999");
         
         when(doctorService.update(eq(999), any(Doctor.class))).thenReturn(null);
-
-        // When & Then
         mockMvc.perform(put("/doctors/999")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(doctorUpdates)))
@@ -283,10 +265,8 @@ class DoctorRestControllerTest {
 
     @Test
     void testGetAllDoctors_EmptyList() throws Exception {
-        // Given
+   
         when(doctorService.findAll()).thenReturn(Collections.emptyList());
-
-        // When & Then
         mockMvc.perform(get("/doctors")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -298,7 +278,6 @@ class DoctorRestControllerTest {
   
     @Test
     void testGetPatientsOfDoctor_DuplicatePatients() throws Exception {
-        // Given
         Doctor doctor = new Doctor();
         doctor.setId(1);
         
@@ -312,22 +291,20 @@ class DoctorRestControllerTest {
         
         Diagnosis diagnosis2 = new Diagnosis();
         diagnosis2.setId(2);
-        diagnosis2.setPatient(patient); // Mismo paciente
+        diagnosis2.setPatient(patient); 
         
         Diagnosis diagnosis3 = new Diagnosis();
         diagnosis3.setId(3);
-        diagnosis3.setPatient(patient); // Mismo paciente otra vez
+        diagnosis3.setPatient(patient);
         
         List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2, diagnosis3);
         
         when(doctorService.findById(1)).thenReturn(doctor);
         when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
-
-        // When & Then
         mockMvc.perform(get("/doctors/1/patients")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1)) // Solo un paciente (sin duplicados)
+                .andExpect(jsonPath("$.length()").value(1)) 
                 .andExpect(jsonPath("$[0].id").value(1));
         
         verify(doctorService).findById(1);
@@ -336,7 +313,6 @@ class DoctorRestControllerTest {
 
     @Test
     void testRestController_ConstructorInjection() {
-        // Test para cobertura del constructor
         DoctorRestController controller = new DoctorRestController(doctorService, diagnosisService);
         assertThat(controller).isNotNull();
     }

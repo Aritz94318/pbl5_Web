@@ -22,7 +22,7 @@ public class SimController {
     }
 
     @PostMapping("/api/sim/events")
-    @ResponseBody
+ 
     public ResponseEntity<Void> push(@RequestBody SimEvent event) throws IOException, ProcessingException {
         long ts = event.ts() == 0 ? System.currentTimeMillis() : event.ts();
         hub.publishValidated(new SimEvent(event.actor(), event.actorId(), event.text(), ts));
@@ -39,7 +39,7 @@ public class SimController {
     }
 
     @GetMapping("/admin/sim/stream")
-    @ResponseBody
+    
 
     public SseEmitter stream() {
         return hub.connect();

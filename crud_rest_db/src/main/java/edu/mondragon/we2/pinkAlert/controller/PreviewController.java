@@ -25,7 +25,7 @@ public class PreviewController {
     private String storageDir;
 
     @GetMapping("/{filename:.+}")
-    @ResponseBody
+   
     public ResponseEntity<Resource> getPreview(@PathVariable String filename) throws IOException {
 
         Path file = Paths.get(storageDir)

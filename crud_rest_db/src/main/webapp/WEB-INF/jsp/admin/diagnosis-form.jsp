@@ -74,7 +74,7 @@
                                 <input type="date" name="date" value="${today}" required>
                             </div>
                         </div>
-                        <!-- DICOM FILE -->
+                  
 
                         <div class="field pictures">
                             <label>Mammography pictures</label>

@@ -19,16 +19,14 @@ class NotificationTest {
 
     @Test
     void testParameterizedConstructor() {
-        // Given
+      
         String email = "test@example.com";
         String topic = "Appointment Reminder";
         String message = "Your appointment is tomorrow";
         String date = "2024-01-15";
 
-        // When
         Notification notification = new Notification(email, topic, message, date);
 
-        // Then
         assertEquals(email, notification.getEmail());
         assertEquals(topic, notification.getTopic());
         assertEquals(message, notification.getMessage());
@@ -37,16 +35,12 @@ class NotificationTest {
 
     @Test
     void testSettersAndGetters() {
-        // Given
-        Notification notification = new Notification();
 
-        // When
+        Notification notification = new Notification();
         notification.setEmail("doctor@hospital.com");
         notification.setTopic("Test Results");
         notification.setMessage("Your test results are ready");
         notification.setDate("2024-01-16");
-
-        // Then
         assertEquals("doctor@hospital.com", notification.getEmail());
         assertEquals("Test Results", notification.getTopic());
         assertEquals("Your test results are ready", notification.getMessage());
@@ -105,7 +99,6 @@ class NotificationTest {
     void testMultipleSetOperations() {
         Notification notification = new Notification();
         
-        // Set values multiple times
         notification.setEmail("first@test.com");
         notification.setEmail("second@test.com");
         assertEquals("second@test.com", notification.getEmail());

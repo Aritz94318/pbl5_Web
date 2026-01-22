@@ -51,7 +51,6 @@ public class DiagnosisService {
 
         d.setDescription(description == null ? "" : description.trim());
         d.setPatientNotified(patientNotified);
-        // finalResult (allow pending/clear)
         if (finalResultRaw == null || finalResultRaw.isBlank()) {
             d.setFinalResult(null);
             d.setReviewed(false); 
@@ -60,7 +59,6 @@ public class DiagnosisService {
             d.setFinalResult(fr);
             d.setReviewed(true);
 
-            // urgent policy example:
             if (fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE)
                 d.setUrgent(true);
             else

@@ -40,7 +40,7 @@ public class AiResultService {
     }
 
     @Transactional
-    public Diagnosis applyAiResult(Integer diagnosisId, AiResultRequest req) throws IOException, ProcessingException {
+    public Diagnosis applyAiResult(Integer diagnosisId, AiResultRequest req) throws ProcessingException {
         
         
         JsonNode node = mapper.valueToTree(req);

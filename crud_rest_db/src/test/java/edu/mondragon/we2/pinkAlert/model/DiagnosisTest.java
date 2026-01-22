@@ -17,7 +17,6 @@ class DiagnosisTest {
 
     @BeforeEach
     void setUp() {
-        // Crear objetos necesarios para las pruebas
         doctor = new Doctor("12345678A");
         doctor.setId(1);
         
@@ -25,12 +24,9 @@ class DiagnosisTest {
         patient.setId(1);
         
         testDate = LocalDate.of(2024, 1, 15);
-        
-        // Crear un diagnóstico de prueba
         diagnosis = new Diagnosis();
     }
 
-    // ===== CONSTRUCTORES =====
     
     @Test
     void testDefaultConstructor() {
@@ -63,7 +59,6 @@ class DiagnosisTest {
         assertFalse(d.isReviewed());
     }
 
-    // ===== GETTERS Y SETTERS BÁSICOS =====
     
     @Test
     void testIdGetterAndSetter() {
@@ -149,26 +144,20 @@ class DiagnosisTest {
 
     @Test
     void testProbabilityGetterAndSetter() {
-        // Test con valor normal
         BigDecimal probability = new BigDecimal("0.87654321");
         diagnosis.setProbability(probability);
         assertEquals(probability, diagnosis.getProbability());
         
-        // Test con null (debería asignar BigDecimal.ZERO)
         diagnosis.setProbability(null);
         assertEquals(BigDecimal.ZERO, diagnosis.getProbability());
         
-        // Test con BigDecimal.ZERO
         diagnosis.setProbability(BigDecimal.ZERO);
         assertEquals(BigDecimal.ZERO, diagnosis.getProbability());
         
-        // Test con valor negativo
         diagnosis.setProbability(new BigDecimal("-0.5"));
         assertEquals(new BigDecimal("-0.5"), diagnosis.getProbability());
     }
 
-    // ===== GETTERS Y SETTERS DE RELACIONES =====
-    
     @Test
     void testDoctorGetterAndSetter() {
         diagnosis.setDoctor(doctor);
@@ -187,7 +176,6 @@ class DiagnosisTest {
         assertNull(diagnosis.getPatient());
     }
 
-    // ===== ENUMS =====
     
     @Test
     void testFinalResultGetterAndSetter() {
@@ -218,8 +206,6 @@ class DiagnosisTest {
         diagnosis.setAiPrediction(null);
         assertNull(diagnosis.getAiPrediction());
     }
-
-    // ===== CAMPOS PREVIEW =====
     
     @Test
     void testPreviewPathGetterAndSetter() {
@@ -257,8 +243,6 @@ class DiagnosisTest {
         assertNull(diagnosis.getPreview4Path());
     }
 
-    // ===== MÉTODO getStatus() =====
-    
     @Test
     void testGetStatus_NotReviewed() {
         diagnosis.setReviewed(false);
@@ -300,11 +284,9 @@ class DiagnosisTest {
         assertEquals("Pending", diagnosis.getStatus());
     }
 
-    // ===== PRUEBAS DE COMBINACIÓN =====
     
     @Test
     void testAllFieldsTogether() {
-        // Configurar todos los campos
         diagnosis.setId(999);
         diagnosis.setImagePath("img1.jpg");
         diagnosis.setImage2Path("img2.jpg");
@@ -324,7 +306,6 @@ class DiagnosisTest {
         diagnosis.setFinalResult(FinalResult.INCONCLUSIVE);
         diagnosis.setAiPrediction(AiPrediction.MALIGNANT);
         
-        // Verificar todos los campos
         assertEquals(999, diagnosis.getId());
         assertEquals("img1.jpg", diagnosis.getImagePath());
         assertEquals("img2.jpg", diagnosis.getImage2Path());
@@ -348,29 +329,21 @@ class DiagnosisTest {
 
     @Test
     void testEdgeCases() {
-        // Strings muy largos
         String longString = "A".repeat(600);
         diagnosis.setPreviewPath(longString);
         assertEquals(longString, diagnosis.getPreviewPath());
-        
-        // Probability en límites
-        diagnosis.setProbability(new BigDecimal("1.00000000")); // Máximo
+        diagnosis.setProbability(new BigDecimal("1.00000000")); 
         assertEquals(new BigDecimal("1.00000000"), diagnosis.getProbability());
-        
-        diagnosis.setProbability(new BigDecimal("0.00000001")); // Mínimo positivo
+        diagnosis.setProbability(new BigDecimal("0.00000001")); 
         assertEquals(new BigDecimal("0.00000001"), diagnosis.getProbability());
-        
-        // Fecha límite
         diagnosis.setDate(LocalDate.MIN);
         assertEquals(LocalDate.MIN, diagnosis.getDate());
-        
         diagnosis.setDate(LocalDate.MAX);
         assertEquals(LocalDate.MAX, diagnosis.getDate());
     }
 
     @Test
     void testTransientAnnotationOnGetStatus() throws Exception {
-        // Verificar que @Transient está en getStatus()
         var method = Diagnosis.class.getMethod("getStatus");
         var annotations = method.getAnnotations();
         
@@ -386,7 +359,6 @@ class DiagnosisTest {
 
     @Test
     void testEntityAndTableAnnotations() {
-        // Verificar anotaciones de clase
         var classAnnotations = Diagnosis.class.getAnnotations();
         
         boolean hasEntity = false;
@@ -409,7 +381,6 @@ class DiagnosisTest {
 
     @Test
     void testColumnAnnotations() throws Exception {
-        // Verificar algunas anotaciones @Column importantes
         var probabilityField = Diagnosis.class.getDeclaredField("probability");
         var columnAnnotation = probabilityField.getAnnotation(jakarta.persistence.Column.class);
         
@@ -417,20 +388,15 @@ class DiagnosisTest {
         assertEquals(10, columnAnnotation.precision());
         assertEquals(8, columnAnnotation.scale());
         assertFalse(columnAnnotation.nullable());
-        
-        // Verificar anotación @Id
         var idField = Diagnosis.class.getDeclaredField("id");
         var idAnnotation = idField.getAnnotation(jakarta.persistence.Id.class);
         assertNotNull(idAnnotation);
-        
-        // Verificar @GeneratedValue
         var generatedValueAnnotation = idField.getAnnotation(jakarta.persistence.GeneratedValue.class);
         assertNotNull(generatedValueAnnotation);
     }
 
     @Test
     void testManyToOneAnnotations() throws Exception {
-        // Verificar anotaciones @ManyToOne
         var doctorField = Diagnosis.class.getDeclaredField("doctor");
         var manyToOneAnnotation = doctorField.getAnnotation(jakarta.persistence.ManyToOne.class);
         assertNotNull(manyToOneAnnotation);
@@ -444,30 +410,27 @@ class DiagnosisTest {
 
     @Test
     void testJoinColumnAnnotations() throws Exception {
-        // Verificar anotaciones @JoinColumn
         var doctorField = Diagnosis.class.getDeclaredField("doctor");
         var joinColumnAnnotation = doctorField.getAnnotation(jakarta.persistence.JoinColumn.class);
         assertNotNull(joinColumnAnnotation);
         assertEquals("DoctorID", joinColumnAnnotation.name());
-        assertTrue(joinColumnAnnotation.nullable()); // nullable = true
+        assertTrue(joinColumnAnnotation.nullable()); 
         
         var patientField = Diagnosis.class.getDeclaredField("patient");
         var patientJoinColumn = patientField.getAnnotation(jakarta.persistence.JoinColumn.class);
         assertNotNull(patientJoinColumn);
         assertEquals("PatientID", patientJoinColumn.name());
-        assertFalse(patientJoinColumn.nullable()); // nullable = false
+        assertFalse(patientJoinColumn.nullable()); 
     }
 
     @Test
     void testEnumAnnotations() throws Exception {
-        // Verificar anotaciones @Enumerated
         var finalResultField = Diagnosis.class.getDeclaredField("finalResult");
         var enumeratedAnnotation = finalResultField.getAnnotation(jakarta.persistence.Enumerated.class);
         assertNotNull(enumeratedAnnotation);
         assertEquals(jakarta.persistence.EnumType.STRING, enumeratedAnnotation.value());
     }
 
-    // ===== PRUEBAS DE IGUALDAD Y HASHCODE (si existen) =====
     
     @Test
     void testEqualsAndHashCode() {
@@ -480,30 +443,22 @@ class DiagnosisTest {
         Diagnosis d3 = new Diagnosis();
         d3.setId(2);
         
-        // Si la clase no sobrescribe equals(), usa Object.equals()
-        // Por defecto, dos objetos diferentes no son iguales aunque tengan el mismo ID
-        assertNotEquals(d1, d2); // Diferentes instancias
-        assertNotEquals(d1, d3); // Diferentes IDs
-        
-        // Hashcodes también deberían ser diferentes
+        assertNotEquals(d1, d2); 
+        assertNotEquals(d1, d3); 
         assertNotEquals(d1.hashCode(), d2.hashCode());
         assertNotEquals(d1.hashCode(), d3.hashCode());
     }
 
     @Test
     void testToString() {
-        // El método toString() por defecto de Object
         String toString = diagnosis.toString();
         assertNotNull(toString);
         assertTrue(toString.contains("Diagnosis"));
         assertTrue(toString.contains("@"));
     }
-
-    // ===== PRUEBAS DE MUTACIÓN =====
     
     @Test
     void testMutateAllFields() {
-        // Estado inicial
         assertNull(diagnosis.getId());
         assertNull(diagnosis.getImagePath());
         assertNull(diagnosis.getDate());
@@ -516,7 +471,6 @@ class DiagnosisTest {
         assertNull(diagnosis.getFinalResult());
         assertNull(diagnosis.getAiPrediction());
         
-        // Mutar todos los campos
         diagnosis.setId(100);
         diagnosis.setImagePath("new.jpg");
         diagnosis.setImage2Path("new2.jpg");
@@ -536,7 +490,6 @@ class DiagnosisTest {
         diagnosis.setFinalResult(FinalResult.BENIGN);
         diagnosis.setAiPrediction(AiPrediction.BENIGN);
         
-        // Verificar mutación
         assertEquals(100, diagnosis.getId());
         assertEquals("new.jpg", diagnosis.getImagePath());
         assertEquals("new2.jpg", diagnosis.getImage2Path());
@@ -556,7 +509,6 @@ class DiagnosisTest {
         assertEquals(FinalResult.BENIGN, diagnosis.getFinalResult());
         assertEquals(AiPrediction.BENIGN, diagnosis.getAiPrediction());
         
-        // Mutar de nuevo
         diagnosis.setUrgent(false);
         diagnosis.setReviewed(false);
         diagnosis.setFinalResult(null);
@@ -568,47 +520,36 @@ class DiagnosisTest {
         assertNull(diagnosis.getAiPrediction());
     }
 
-    // ===== PRUEBAS DE NULL SAFETY =====
-    
     @Test
     void testNullSafetyInProbabilitySetter() {
-        // Verificar que setProbability maneja null correctamente
         diagnosis.setProbability(new BigDecimal("0.75"));
         assertEquals(new BigDecimal("0.75"), diagnosis.getProbability());
         
         diagnosis.setProbability(null);
         assertEquals(BigDecimal.ZERO, diagnosis.getProbability());
         
-        // Verificar que no lanza NullPointerException
         assertDoesNotThrow(() -> diagnosis.setProbability(null));
     }
 
-    // ===== PRUEBAS DE VALORES POR DEFECTO =====
     
     @Test
     void testDefaultValues() {
         Diagnosis d = new Diagnosis();
         
-        // Valores por defecto del constructor
         assertEquals(BigDecimal.ZERO, d.getProbability());
         assertFalse(d.isReviewed());
-        
-        // Verificar que los campos numéricos tienen valores por defecto
-        // (los wrappers como Integer son null por defecto)
         assertNull(d.getId());
     }
 
-    // ===== PRUEBAS DE BORDE DE ENUMS =====
     
     @Test
     void testAllEnumValues() {
-        // Probar que todos los valores de FinalResult son accesibles
         for (FinalResult result : FinalResult.values()) {
             diagnosis.setFinalResult(result);
             assertEquals(result, diagnosis.getFinalResult());
         }
         
-        // Probar que todos los valores de AiPrediction son accesibles
+
         for (AiPrediction prediction : AiPrediction.values()) {
             diagnosis.setAiPrediction(prediction);
             assertEquals(prediction, diagnosis.getAiPrediction());

@@ -1,6 +1,4 @@
-// ===============================
-// User.java (FULL FILE)
-// ===============================
+
 package edu.mondragon.we2.pinkAlert.model;
 
 import java.io.Serializable;

@@ -418,7 +418,6 @@
                 </script>
 
                 <script>
-                    // ---------- Age charts ----------
                     const ageLabels = [<c:out value="${ageLabelsSafeJs}" escapeXml="false" />];
 
                     const ageTotals = [<c:out value="${ageTotalsSafeJs}" escapeXml="false" />];
@@ -474,7 +473,6 @@
                 </script>
 
                 <script>
-                    // ---------- AI agreement ----------
                     const aiAgree = Number("<c:out value='${aiAgreeSafe}'/>");
                     const aiMismatch = Number("<c:out value='${aiMismatchSafe}'/>");
                     const aiMissing = Number("<c:out value='${aiMissingSafe}'/>");
@@ -501,7 +499,6 @@
                 </script>
 
                 <script>
-                    // ---------- Results distribution ----------
                     const resultsData = {
                         negative: Number("<c:out value='${negativeSafe}'/>"),
                         positive: Number("<c:out value='${positiveSafe}'/>"),
@@ -528,7 +525,6 @@
                         });
                     }
 
-                    // ---------- Timeline ----------
                     const labels = [<c:out value="${labelsJs}" escapeXml="false" />];
                     const total = [<c:out value="${totalJs}" escapeXml="false" />];
                     const completed = [<c:out value="${completedJs}" escapeXml="false" />];

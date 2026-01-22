@@ -19,28 +19,20 @@ class AiResultRequestTest {
 
     @Test
     void testParameterizedConstructor() {
-        // Given
-        String prediction = "MALIGNANT";
+         String prediction = "MALIGNANT";
         BigDecimal probability = new BigDecimal("0.85");
-
-        // When
         AiResultRequest request = new AiResultRequest(prediction, probability);
 
-        // Then
         assertEquals(prediction, request.getPrediction());
         assertEquals(probability, request.getProbMalignant());
     }
 
     @Test
     void testSettersAndGetters() {
-        // Given
+      
         AiResultRequest request = new AiResultRequest();
-
-        // When
         request.setPrediction("BENIGN");
         request.setProbMalignant(new BigDecimal("0.15"));
-
-        // Then
         assertEquals("BENIGN", request.getPrediction());
         assertEquals(new BigDecimal("0.15"), request.getProbMalignant());
     }
@@ -63,7 +55,6 @@ class AiResultRequestTest {
 
     @Test
     void testEdgeCaseProbabilities() {
-        // Test boundary probabilities
         AiResultRequest zeroProb = new AiResultRequest("BENIGN", BigDecimal.ZERO);
         AiResultRequest maxProb = new AiResultRequest("MALIGNANT", BigDecimal.ONE);
         AiResultRequest middleProb = new AiResultRequest("MALIGNANT", new BigDecimal("0.5"));
@@ -76,8 +67,6 @@ class AiResultRequestTest {
     @Test
     void testInvalidPredictionValues() {
         AiResultRequest request = new AiResultRequest();
-        
-        // Test with non-standard prediction values
         request.setPrediction("UNCERTAIN");
         request.setProbMalignant(new BigDecimal("0.5"));
         
@@ -106,7 +95,6 @@ class AiResultRequestTest {
 
     @Test
     void testPrecisionHandling() {
-        // Test with high precision decimals
         BigDecimal highPrecision = new BigDecimal("0.12345678901234567890");
         AiResultRequest request = new AiResultRequest("MALIGNANT", highPrecision);
         
@@ -115,7 +103,6 @@ class AiResultRequestTest {
 
     @Test
     void testProbabilityRange() {
-        // Test probabilities outside 0-1 range
         AiResultRequest negativeProb = new AiResultRequest();
         negativeProb.setProbMalignant(new BigDecimal("-0.1"));
         

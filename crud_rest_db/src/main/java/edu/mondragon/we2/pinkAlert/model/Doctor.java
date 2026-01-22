@@ -16,7 +16,7 @@ public class Doctor {
     private Integer id;
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // avoid infinite JSON recursion
+    @JsonIgnore
     private List<Diagnosis> diagnoses;
 
     public Doctor() {
