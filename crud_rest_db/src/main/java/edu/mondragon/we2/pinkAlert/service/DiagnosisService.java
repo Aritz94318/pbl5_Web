@@ -79,7 +79,7 @@ public class DiagnosisService {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND+ doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         diagnosis.setId(null);
         diagnosis.setDoctor(doctor);

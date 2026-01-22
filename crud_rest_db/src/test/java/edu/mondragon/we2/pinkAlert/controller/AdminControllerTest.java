@@ -120,7 +120,6 @@ class AdminControllerTest {
 
         assertThat(viewName).isEqualTo("admin/admin-dashboard");
         
-        // Verificar que se añaden todos los atributos con valores por defecto
         verify(model).addAttribute("completedCount", 0L);
         verify(model).addAttribute("pendingCount", 0L);
         verify(model).addAttribute("completionRate", 0.0);

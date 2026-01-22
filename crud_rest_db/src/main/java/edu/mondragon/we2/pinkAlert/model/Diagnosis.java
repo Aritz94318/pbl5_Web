@@ -2,11 +2,12 @@ package edu.mondragon.we2.pinkAlert.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Diagnosis")
-public class Diagnosis {
+public class Diagnosis implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

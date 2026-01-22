@@ -26,7 +26,9 @@ public class PatientController {
 
     private final UserService userService;
     private final DiagnosisService diagnosisService;
+    static final String REDIRECT_LOGIN = "redirect:/login";
 
+    static final String PATIENT = "patient";
     public PatientController(UserService userService, DiagnosisService diagnosisService) {
         this.userService = userService;
         this.diagnosisService = diagnosisService;
@@ -37,11 +39,11 @@ public class PatientController {
 
         Object logged = session.getAttribute("loggedUser");
         if (!(logged instanceof User))
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
 
         User sessionUser = (User) logged;
         if (sessionUser.getRole() != Role.PATIENT)
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
 
         User user = userService.get(sessionUser.getId());
         Patient patient = user.getPatient();
@@ -108,7 +110,7 @@ public class PatientController {
         model.addAttribute("pendingCount", pending);
 
         model.addAttribute("user", user);
-        model.addAttribute("patient", patient);
+        model.addAttribute("PATIENT", patient);
 
         return "patient/patient-dashboard";
     }
@@ -121,7 +123,7 @@ public class PatientController {
         historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate()));
 
         model.addAttribute("diagnosis", diagnosis);
-        model.addAttribute("patient", diagnosis.getPatient());
+        model.addAttribute("PATIENT", diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
         return "patient/patient-diagnosis";
@@ -132,11 +134,11 @@ public class PatientController {
 
         Object logged = session.getAttribute("loggedUser");
         if (!(logged instanceof User))
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
 
         User sessionUser = (User) logged;
         if (sessionUser.getRole() != Role.PATIENT)
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
 
         User user = userService.get(sessionUser.getId());
         Patient patient = user.getPatient();
@@ -147,7 +149,7 @@ public class PatientController {
         }
 
         model.addAttribute("user", user);
-        model.addAttribute("patient", patient);
+        model.addAttribute("PATIENT", patient);
 
         return "patient/patient-profile";
     }
