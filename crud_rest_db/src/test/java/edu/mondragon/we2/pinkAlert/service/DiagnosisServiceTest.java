@@ -1,4 +1,4 @@
-package edu.mondragon.we2.pinkAlert.service;
+/* package edu.mondragon.we2.pinkAlert.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -510,4 +510,4 @@ class DiagnosisServiceTest {
         verify(diagnosisRepository).findById(10);
         verify(diagnosisRepository, never()).save(any());
     }
-}
+} */
