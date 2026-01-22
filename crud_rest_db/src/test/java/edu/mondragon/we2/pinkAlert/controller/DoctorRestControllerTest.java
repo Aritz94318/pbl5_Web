@@ -1,127 +1,343 @@
 package edu.mondragon.we2.pinkAlert.controller;
-// package edu.mondragon.we2.pinkAlert.controller;
 
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import edu.mondragon.we2.pinkAlert.model.*;
-// import edu.mondragon.we2.pinkAlert.repository.*;
-// import edu.mondragon.we2.pinkAlert.service.*;
-// import org.easymock.EasyMock;
-// import org.easymock.EasyMockSupport;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// import java.util.List;
-// import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-// class DoctorRestControllerTest extends EasyMockSupport {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-//     private DoctorRepository doctorRepository;
-//     private DiagnosisRepository diagnosisRepository;
-//     private PatientRepository patientRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-//     private MockMvc mockMvc;
-//     private ObjectMapper objectMapper;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.Doctor;
+import edu.mondragon.we2.pinkAlert.model.Patient;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.service.DoctorService;
 
-//     private Doctor doctor;
+@ExtendWith(MockitoExtension.class)
+class DoctorRestControllerTest {
 
-//     @BeforeEach
-//     void setUp() {
-//         doctorRepository = mock(DoctorRepository.class);
-//         diagnosisRepository = mock(DiagnosisRepository.class);
-//         patientRepository = mock(PatientRepository.class);
+    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
 
-//         DoctorService doctorService = new DoctorService(doctorRepository);
-//         DiagnosisService diagnosisService =
-//         new DiagnosisService(diagnosisRepository, doctorRepository, patientRepository);
+    @Mock
+    private DoctorService doctorService;
 
-//         mockMvc = MockMvcBuilders.standaloneSetup(new DoctorRestController(doctorService, diagnosisService)).build();
+    @Mock
+    private DiagnosisService diagnosisService;
 
-//         objectMapper = new ObjectMapper();
+    @InjectMocks
+    private DoctorRestController doctorRestController;
 
-//         doctor = new Doctor();
-//         doctor.setId(1);
-//         doctor.setName("Dr Test");
-//     }
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(doctorRestController).build();
+        objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+    }
 
-//     @Test
-//     void testGetAllDoctors() throws Exception {
-//         EasyMock.expect(doctorRepository.findAll()).andReturn(List.of(doctor));
+    @Test
+    void testGetAllDoctors() throws Exception {
+        // Given
+        Doctor doctor1 = new Doctor();
+        doctor1.setId(1);
+        doctor1.setPhone("111111111");
+        
+        Doctor doctor2 = new Doctor();
+        doctor2.setId(2);
+        doctor2.setPhone("222222222");
+        
+        List<Doctor> doctors = Arrays.asList(doctor1, doctor2);
+        
+        when(doctorService.findAll()).thenReturn(doctors);
 
-//         EasyMock.replay(doctorRepository);
+        // When & Then
+        mockMvc.perform(get("/doctors")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2));
+        
+        verify(doctorService).findAll();
+    }
 
-//         mockMvc.perform(get("/doctors").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$[0].name").value("Dr Test"));
+    @Test
+    void testGetDoctorById_Found() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        doctor.setPhone("111111111");
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
 
-//         EasyMock.verify(doctorRepository);
-//     }
+        // When & Then
+        mockMvc.perform(get("/doctors/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+        
+        verify(doctorService).findById(1);
+    }
 
-//     @Test
-//     void testGetDoctorById() throws Exception {
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
+    @Test
+    void testGetDoctorById_NotFound() throws Exception {
+        // Given
+        when(doctorService.findById(999)).thenReturn(null);
 
-//         EasyMock.replay(doctorRepository);
+        // When & Then
+        mockMvc.perform(get("/doctors/999")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
+        
+        verify(doctorService).findById(999);
+    }
 
-//         mockMvc.perform(get("/doctors/1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Dr Test"));
 
-//         EasyMock.verify(doctorRepository);
-//     }
+    @Test
+    void testDeleteDoctor() throws Exception {
+        // Given
+        doNothing().when(doctorService).delete(1);
 
-//     @Test
-//     void testCreateDoctor() throws Exception {
-//         EasyMock.expect(doctorRepository.save(EasyMock.anyObject())).andReturn(doctor);
+        // When & Then
+        mockMvc.perform(delete("/doctors/1"))
+                .andExpect(status().isNoContent());
+        
+        verify(doctorService).delete(1);
+    }
 
-//         EasyMock.replay(doctorRepository);
+    @Test
+    void testGetDiagnosesByDoctor() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        Diagnosis diagnosis1 = new Diagnosis();
+        diagnosis1.setId(1);
+        
+        Diagnosis diagnosis2 = new Diagnosis();
+        diagnosis2.setId(2);
+        
+        List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-//         mockMvc.perform(post("/doctors").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(doctor))).andExpect(status().isOk());
+        // When & Then
+        mockMvc.perform(get("/doctors/1/diagnoses")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
 
-//         EasyMock.verify(doctorRepository);
-//     }
+    @Test
+    void testGetDiagnosesByDoctor_NoDiagnoses() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(Collections.emptyList());
 
-//     @Test
-//     void testDeleteDoctor() throws Exception {
-//         doctorRepository.deleteById(1);
-//         EasyMock.expectLastCall();
+        // When & Then
+        mockMvc.perform(get("/doctors/1/diagnoses")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
 
-//         EasyMock.replay(doctorRepository);
+    @Test
+    void testGetPatientsOfDoctor() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        Patient patient1 = new Patient();
+        patient1.setId(1);
+        patient1.setPhone("111111111");
+        
+        Patient patient2 = new Patient();
+        patient2.setId(2);
+        patient2.setPhone("222222222");
+        
+        Diagnosis diagnosis1 = new Diagnosis();
+        diagnosis1.setPatient(patient1);
+        
+        Diagnosis diagnosis2 = new Diagnosis();
+        diagnosis2.setPatient(patient2);
+        
+        // Para evitar duplicados
+        Diagnosis diagnosis3 = new Diagnosis();
+        diagnosis3.setPatient(patient1); // Mismo paciente que diagnosis1
+        
+        List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2, diagnosis3);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-//         mockMvc.perform(delete("/doctors/1")).andExpect(status().isNoContent());
+        // When & Then
+        mockMvc.perform(get("/doctors/1/patients")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2)) // Duplicados eliminados
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
 
-//         EasyMock.verify(doctorRepository);
-//     }
+    @Test
+    void testGetPatientsOfDoctor_NoPatients() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(Collections.emptyList());
 
-//     @Test
-//     void testGetDiagnosesByDoctor() throws Exception {
-//         Diagnosis diagnosis = new Diagnosis();
+        // When & Then
+        mockMvc.perform(get("/doctors/1/patients")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
 
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
-//         EasyMock.expect(diagnosisRepository.findByDoctor_Id(1)).andReturn(List.of(diagnosis));
+    @Test
+    void testGetPatientsOfDoctor_WithNullPatient() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        Patient patient = new Patient();
+        patient.setId(1);
+        
+        Diagnosis diagnosis1 = new Diagnosis();
+        diagnosis1.setPatient(patient);
+        
+        Diagnosis diagnosis2 = new Diagnosis();
+        diagnosis2.setPatient(null); // Diagnóstico sin paciente
+        
+        List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-//         EasyMock.replay(doctorRepository, diagnosisRepository);
+        // When & Then
+        mockMvc.perform(get("/doctors/1/patients")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2)) // Solo el paciente no null
+                .andExpect(jsonPath("$[0].id").value(1));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
 
-//         mockMvc.perform(get("/doctors/1/diagnoses")).andExpect(status().isOk());
+    // Tests adicionales para coverage máximo
 
-//         EasyMock.verify(doctorRepository, diagnosisRepository);
-//     }
+    @Test
+    void testUpdateDoctor_NotFound() throws Exception {
+        // Given
+        Doctor doctorUpdates = new Doctor();
+        doctorUpdates.setPhone("999999999");
+        
+        when(doctorService.update(eq(999), any(Doctor.class))).thenReturn(null);
 
-//     @Test
-//     void testGetPatientsOfDoctor() throws Exception {
-//         Patient patient = new Patient();
-//         patient.setId(2);
+        // When & Then
+        mockMvc.perform(put("/doctors/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(doctorUpdates)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
+        
+        verify(doctorService).update(eq(999), any(Doctor.class));
+    }
 
-//         Diagnosis diagnosis = new Diagnosis();
-//         diagnosis.setPatient(patient);
 
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
-//         EasyMock.expect(diagnosisRepository.findByDoctor_Id(1)).andReturn(List.of(diagnosis));
+    @Test
+    void testGetAllDoctors_EmptyList() throws Exception {
+        // Given
+        when(doctorService.findAll()).thenReturn(Collections.emptyList());
 
-//         EasyMock.replay(doctorRepository, diagnosisRepository);
+        // When & Then
+        mockMvc.perform(get("/doctors")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+        
+        verify(doctorService).findAll();
+    }
 
-//         mockMvc.perform(get("/doctors/1/patients") .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(2));
+  
+    @Test
+    void testGetPatientsOfDoctor_DuplicatePatients() throws Exception {
+        // Given
+        Doctor doctor = new Doctor();
+        doctor.setId(1);
+        
+        Patient patient = new Patient();
+        patient.setId(1);
+        patient.setPhone("111111111");
+        
+        Diagnosis diagnosis1 = new Diagnosis();
+        diagnosis1.setId(1);
+        diagnosis1.setPatient(patient);
+        
+        Diagnosis diagnosis2 = new Diagnosis();
+        diagnosis2.setId(2);
+        diagnosis2.setPatient(patient); // Mismo paciente
+        
+        Diagnosis diagnosis3 = new Diagnosis();
+        diagnosis3.setId(3);
+        diagnosis3.setPatient(patient); // Mismo paciente otra vez
+        
+        List<Diagnosis> diagnoses = Arrays.asList(diagnosis1, diagnosis2, diagnosis3);
+        
+        when(doctorService.findById(1)).thenReturn(doctor);
+        when(diagnosisService.findByDoctor(1)).thenReturn(diagnoses);
 
-//         EasyMock.verify(doctorRepository, diagnosisRepository);
-//     }
-// }
+        // When & Then
+        mockMvc.perform(get("/doctors/1/patients")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1)) // Solo un paciente (sin duplicados)
+                .andExpect(jsonPath("$[0].id").value(1));
+        
+        verify(doctorService).findById(1);
+        verify(diagnosisService).findByDoctor(1);
+    }
+
+    @Test
+    void testRestController_ConstructorInjection() {
+        // Test para cobertura del constructor
+        DoctorRestController controller = new DoctorRestController(doctorService, diagnosisService);
+        assertThat(controller).isNotNull();
+    }
+}

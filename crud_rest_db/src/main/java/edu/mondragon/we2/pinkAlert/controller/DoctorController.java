@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +27,14 @@ import edu.mondragon.we2.pinkAlert.service.NotificationService;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 import edu.mondragon.we2.pinkAlert.model.Notification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/doctor")
 public class DoctorController {
 
+    private static final Logger log = LoggerFactory.getLogger(DoctorController.class);
     private final DiagnosisService diagnosisService;
     private final NotificationService notificationService;
 
@@ -193,7 +197,7 @@ public class DoctorController {
         model.addAttribute("patient", diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
-        return "doctor/doctor-diagnosis"; 
+        return "doctor/doctor-diagnosis";
     }
 
     private String resultsReadyMessage(String fullName) {
@@ -260,11 +264,10 @@ public class DoctorController {
             try {
                 notificationService.sendEmail(n);
             } catch (Exception e) {
-                e.printStackTrace(); // or log
+                log.error("Error enviando notificación para paciente: {}", fullName, e);
+       
             }
         }
-
-        // B) "Results visible" -> when checkbox changes false -> true
         boolean isNotifiedNow = Boolean.TRUE.equals(after.getPatientNotified());
         if (!wasNotified && isNotifiedNow) {
             Notification n = new Notification(
@@ -274,9 +277,10 @@ public class DoctorController {
                     java.time.LocalDateTime.now().toString());
             try {
                 notificationService.sendEmail(n);
-            } catch (Exception e) {
-                e.printStackTrace(); // or log
-            }
+            }catch (Exception e) {
+    log.error("Error enviando notificación para paciente: {}", fullName, e);
+
+}
         }
 
         return "redirect:/doctor/diagnosis/" + id;
