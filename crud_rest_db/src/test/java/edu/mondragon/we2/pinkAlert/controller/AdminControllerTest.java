@@ -1,7 +1,7 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -499,6 +499,527 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$[1].label").value("Johanna Smith"));
     }
 
+    @Test
+void testAgeBuckets_Coverage() {
+    // Preparar datos para cubrir todas las ramas del código de ageOf y bucketOf
+    LocalDate now = LocalDate.now();
+    
+    // Crear pacientes de diferentes edades
+    Patient patient1 = new Patient(); // Sin fecha de nacimiento (age = null)
+    Patient patient2 = new Patient();
+    patient2.setBirthDate(now.minusYears(25)); // < 40
+    
+    Patient patient3 = new Patient();
+    patient3.setBirthDate(now.minusYears(45)); // 40-49
+    
+    Patient patient4 = new Patient();
+    patient4.setBirthDate(now.minusYears(55)); // 50-59
+    
+    Patient patient5 = new Patient();
+    patient5.setBirthDate(now.minusYears(65)); // 60-69
+    
+    Patient patient6 = new Patient();
+    patient6.setBirthDate(now.minusYears(75)); // 70+
+    
+    Patient patient7 = new Patient(); // Sin usuario
+    patient7.setBirthDate(now.minusYears(30));
+    
+    // Crear diagnósticos
+    Diagnosis diagnosis1 = new Diagnosis(); // Sin paciente
+    diagnosis1.setReviewed(true);
+    diagnosis1.setFinalResult(FinalResult.MALIGNANT);
+    
+    Diagnosis diagnosis2 = new Diagnosis(); // Paciente sin fecha
+    diagnosis2.setPatient(patient1);
+    diagnosis2.setReviewed(true);
+    diagnosis2.setFinalResult(FinalResult.BENIGN);
+    
+    Diagnosis diagnosis3 = new Diagnosis(); // <40
+    diagnosis3.setPatient(patient2);
+    diagnosis3.setReviewed(true);
+    diagnosis3.setFinalResult(FinalResult.MALIGNANT);
+    
+    Diagnosis diagnosis4 = new Diagnosis(); // 40-49
+    diagnosis4.setPatient(patient3);
+    diagnosis4.setReviewed(true);
+    diagnosis4.setFinalResult(FinalResult.BENIGN);
+    
+    Diagnosis diagnosis5 = new Diagnosis(); // 50-59
+    diagnosis5.setPatient(patient4);
+    diagnosis5.setReviewed(true);
+    diagnosis5.setFinalResult(FinalResult.MALIGNANT);
+    
+    Diagnosis diagnosis6 = new Diagnosis(); // 60-69
+    diagnosis6.setPatient(patient5);
+    diagnosis6.setReviewed(true);
+    diagnosis6.setFinalResult(FinalResult.BENIGN);
+    
+    Diagnosis diagnosis7 = new Diagnosis(); // 70+
+    diagnosis7.setPatient(patient6);
+    diagnosis7.setReviewed(true);
+    diagnosis7.setFinalResult(FinalResult.MALIGNANT);
+    
+    // Paciente con excepción (simulando error en Period.between)
+    // Para cubrir el catch block, podríamos mockear LocalDate.now() pero es complejo
+    // En su lugar, podemos confiar en que los casos anteriores cubren la mayoría
+    
+    List<Diagnosis> diagnoses = Arrays.asList(
+        diagnosis1, diagnosis2, diagnosis3, diagnosis4, 
+        diagnosis5, diagnosis6, diagnosis7
+    );
+    
+    // Configurar mocks
+    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
+    when(patientRepository.count()).thenReturn(7L);
+    when(userRepository.count()).thenReturn(7L);
+    when(diagnosisRepository.count()).thenReturn(7L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(3L);
+    
+    Model model = mock(Model.class);
+    
+    // Ejecutar dashboard
+    adminController.dashboard(model);
+    
+    // Verificar que se agregaron los atributos de age buckets
+    verify(model).addAttribute(eq("ageLabelsJs"), anyString());
+    verify(model).addAttribute(eq("ageTotalsJs"), anyString());
+    verify(model).addAttribute(eq("ageMalignantJs"), anyString());
+    verify(model).addAttribute(eq("ageBenignJs"), anyString());
+    verify(model).addAttribute(eq("ageInconclusiveJs"), anyString());
+    verify(model).addAttribute(eq("ageMalignantRateJs"), anyString());
+}
+
+@Test
+void testAgeCalculation_ExceptionCoverage() {
+    // Crear un paciente que causará una excepción en Period.between
+    Patient problematicPatient = mock(Patient.class);
+    when(problematicPatient.getBirthDate()).thenThrow(new RuntimeException("Simulated error"));
+    
+    Diagnosis diagnosis = new Diagnosis();
+    diagnosis.setPatient(problematicPatient);
+    diagnosis.setReviewed(true);
+    diagnosis.setFinalResult(FinalResult.BENIGN);
+    
+    List<Diagnosis> diagnoses = Collections.singletonList(diagnosis);
+    
+    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    
+    // Este no debería lanzar excepción porque el catch block maneja el error
+    adminController.dashboard(model);
+    
+    // Verificar que el dashboard se ejecutó sin problemas
+    verify(model).addAttribute(eq("ageLabelsJs"), anyString());
+}
+
+@Test
+void testAiAgreement_AiMissing() {
+    // Caso: AI prediction = null
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(null);
+    d.setReviewed(true);
+    d.setFinalResult(FinalResult.MALIGNANT);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiMissingCount", 1L);
+    verify(model).addAttribute("aiAgreeCount", 0L);
+    verify(model).addAttribute("aiMismatchCount", 0L);
+    verify(model).addAttribute("aiNotComparableCount", 0L);
+}
+
+@Test
+void testAiAgreement_NotFinalized() {
+    // Caso: No revisado
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(AiPrediction.MALIGNANT);
+    d.setReviewed(false);
+    d.setFinalResult(null);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiNotComparableCount", 1L);
+}
+
+@Test
+void testAiAgreement_DoctorInconclusive() {
+    // Caso: Doctor inconclusive
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(AiPrediction.MALIGNANT);
+    d.setReviewed(true);
+    d.setFinalResult(FinalResult.INCONCLUSIVE);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiNotComparableCount", 1L);
+}
+@Test
+void testUpdateUser_PatientRole_ExistingPatient_UpdatesPatientInfo() {
+    // Given: Usuario con rol PATIENT que ya tiene un paciente asociado
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    // Crear usuario existente con rol PATIENT
+    User existingUser = createUser(userId, "patientuser", Role.PATIENT);
+    
+    // Crear paciente existente asociado
+    Patient existingPatient = new Patient();
+    existingPatient.setId(1);
+    existingPatient.setBirthDate(LocalDate.of(1980, 1, 1));
+    existingPatient.setPhone("111111111");
+    existingUser.linkPatient(existingPatient);
+    
+    // Nuevos datos del usuario (mismo rol)
+    User postedUser = new User();
+    postedUser.setUsername("updatedpatient");
+    postedUser.setEmail("updated@test.com");
+    postedUser.setFullName("Updated Patient");
+    postedUser.setRole(Role.PATIENT); // Mismo rol
+    
+    String newPhone = "999999999";
+    String newBirthDate = "1990-05-15";
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    
+    // When: Actualizar usuario manteniendo rol PATIENT
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, null, null, newPhone, newBirthDate);
+    
+    // Then: Debería actualizar la información del paciente existente
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    // Verificar que se actualizaron los datos del paciente
+    verify(patientRepository).save(argThat(patient -> 
+        "999999999".equals(patient.getPhone()) &&
+        LocalDate.parse("1990-05-15").equals(patient.getBirthDate())
+    ));
+    
+    // Verificar que se guardó el usuario (no saveAndFlush porque el rol no cambió)
+    verify(userService).save(argThat(user -> 
+        "updatedpatient".equals(user.getUsername()) &&
+        "updated@test.com".equals(user.getEmail()) &&
+        "Updated Patient".equals(user.getFullName()) &&
+        Role.PATIENT == user.getRole()
+    ));
+    
+    // No debería llamar a saveAndFlush porque el rol no cambió
+    verify(userRepository, never()).saveAndFlush(any(User.class));
+}
+@Test
+void testUpdateUser_PatientRole_ExistingPatient_NullBirthDate() {
+    // Given: Usuario con rol PATIENT, actualizar solo el teléfono
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    User existingUser = createUser(userId, "patientuser", Role.PATIENT);
+    Patient existingPatient = new Patient();
+    existingPatient.setId(1);
+    existingPatient.setBirthDate(LocalDate.of(1980, 1, 1));
+    existingPatient.setPhone("111111111");
+    existingUser.linkPatient(existingPatient);
+    
+    User postedUser = new User();
+    postedUser.setUsername("patientuser");
+    postedUser.setEmail("patient@test.com");
+    postedUser.setFullName("Patient User");
+    postedUser.setRole(Role.PATIENT);
+    
+    String newPhone = "999999999";
+    String nullBirthDate = null; // birthDate null
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    
+    // When: Actualizar con birthDate null
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, null, null, newPhone, nullBirthDate);
+    
+    // Then: Debería mantener la fecha de nacimiento existente
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    verify(patientRepository).save(argThat(patient -> 
+        "999999999".equals(patient.getPhone()) &&
+        LocalDate.of(1980, 1, 1).equals(patient.getBirthDate()) // Mantiene la fecha original
+    ));
+}
+@Test
+void testUpdateUser_ChangeToAdminRole_FromDoctor() {
+    // Given: Usuario DOCTOR cambiando a ADMIN
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    User existingUser = createUser(userId, "doctoruser", Role.DOCTOR);
+    Doctor doctor = new Doctor();
+    doctor.setId(1);
+    doctor.setPhone("111111111");
+    existingUser.setDoctor(doctor);
+    
+    User postedUser = new User();
+    postedUser.setUsername("adminuser");
+    postedUser.setEmail("admin@test.com");
+    postedUser.setFullName("Admin User");
+    postedUser.setRole(Role.ADMIN); // Cambiando a ADMIN
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    when(userRepository.saveAndFlush(any(User.class))).thenReturn(existingUser);
+    
+    // When: Cambiar rol a ADMIN
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, "password123", null, null, null);
+    
+    // Then: Debería configurar rol ADMIN y desvincular doctor/patient
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    // Verificar que se llamó a saveAndFlush con las configuraciones correctas
+    verify(userRepository, atLeastOnce()).saveAndFlush(argThat(user -> 
+        Role.ADMIN == user.getRole() &&
+        user.getDoctor() == null && // Doctor desvinculado
+        user.getPatient() == null   // Patient desvinculado
+    ));
+    
+    // Verificar que el doctor NO se elimina, solo se desvincula
+    verify(doctorRepository, never()).delete(any(Doctor.class));
+}
+
+@Test
+void testUpdateUser_ChangeToAdminRole_FromPatient() {
+    // Given: Usuario PATIENT cambiando a ADMIN
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    User existingUser = createUser(userId, "patientuser", Role.PATIENT);
+    Patient patient = new Patient();
+    patient.setId(1);
+    patient.setBirthDate(LocalDate.of(1990, 1, 1));
+    patient.setPhone("111111111");
+    existingUser.linkPatient(patient);
+    
+    User postedUser = new User();
+    postedUser.setUsername("adminuser");
+    postedUser.setEmail("admin@test.com");
+    postedUser.setFullName("Admin User");
+    postedUser.setRole(Role.ADMIN); // Cambiando a ADMIN
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    when(userRepository.saveAndFlush(any(User.class))).thenReturn(existingUser);
+    
+    // When: Cambiar rol a ADMIN
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, "password123", null, null, null);
+    
+    // Then: Debería configurar rol ADMIN y desvincular doctor/patient
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    // Verificar que se llamó a saveAndFlush con las configuraciones correctas
+    verify(userRepository, atLeastOnce()).saveAndFlush(argThat(user -> 
+        Role.ADMIN == user.getRole() &&
+        user.getDoctor() == null && // Doctor desvinculado
+        user.getPatient() == null   // Patient desvinculado
+    ));
+    
+    // Verificar que el patient NO se elimina, solo se desvincula
+    verify(patientRepository, never()).delete(any(Patient.class));
+}
+
+@Test
+void testUpdateUser_ChangeToAdminRole_FromAdmin() {
+    // Given: Usuario ADMIN manteniéndose como ADMIN
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    User existingUser = createUser(userId, "adminuser", Role.ADMIN);
+    // ADMIN no tiene doctor ni patient asociados
+    
+    User postedUser = new User();
+    postedUser.setUsername("newadmin");
+    postedUser.setEmail("newadmin@test.com");
+    postedUser.setFullName("New Admin");
+    postedUser.setRole(Role.ADMIN); // Mismo rol
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    
+    // When: Mantener rol ADMIN
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, "password123", null, null, null);
+    
+    // Then: No debería usar saveAndFlush porque el rol no cambió
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    // Verificar que se usó save() normal (no saveAndFlush)
+    verify(userService).save(argThat(user -> 
+        Role.ADMIN == user.getRole() &&
+        "newadmin".equals(user.getUsername())
+    ));
+    
+    // No debería llamar a saveAndFlush porque el rol no cambió
+    verify(userRepository, never()).saveAndFlush(any(User.class));
+}
+
+@Test
+void testUpdateUser_PatientRole_ExistingPatient_BlankBirthDate() {
+    // Given: Usuario con rol PATIENT, birthDate en blanco
+    Integer userId = 1;
+    Role roleFilter = null;
+    
+    User existingUser = createUser(userId, "patientuser", Role.PATIENT);
+    Patient existingPatient = new Patient();
+    existingPatient.setId(1);
+    existingPatient.setBirthDate(LocalDate.of(1980, 1, 1));
+    existingPatient.setPhone("111111111");
+    existingUser.linkPatient(existingPatient);
+    
+    User postedUser = new User();
+    postedUser.setUsername("patientuser");
+    postedUser.setEmail("patient@test.com");
+    postedUser.setFullName("Patient User");
+    postedUser.setRole(Role.PATIENT);
+    
+    String newPhone = "999999999";
+    String blankBirthDate = "   "; // birthDate en blanco
+    
+    when(userService.get(userId)).thenReturn(existingUser);
+    
+    // When: Actualizar con birthDate en blanco
+    String result = adminController.updateUser(
+            userId, postedUser, roleFilter, null, null, newPhone, blankBirthDate);
+    
+    // Then: Debería mantener la fecha de nacimiento existente
+    assertThat(result).isEqualTo("redirect:/admin/users");
+    
+    verify(patientRepository).save(argThat(patient -> 
+        "999999999".equals(patient.getPhone()) &&
+        LocalDate.of(1980, 1, 1).equals(patient.getBirthDate()) // Mantiene la fecha original
+    ));
+}
+@Test
+void testAiAgreement_AiPending() {
+    // Caso: AI prediction = PENDING (aiAsFinal = null)
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(AiPrediction.PENDING);
+    d.setReviewed(true);
+    d.setFinalResult(FinalResult.MALIGNANT);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiNotComparableCount", 1L);
+}
+
+@Test
+void testAiAgreement_Agree() {
+    // Caso: AI y doctor coinciden (MALIGNANT)
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(AiPrediction.MALIGNANT);
+    d.setReviewed(true);
+    d.setFinalResult(FinalResult.MALIGNANT);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiAgreeCount", 1L);
+    verify(model).addAttribute("aiMismatchCount", 0L);
+}
+
+@Test
+void testAiAgreement_Mismatch() {
+    // Caso: AI y doctor no coinciden
+    Diagnosis d = new Diagnosis();
+    d.setAiPrediction(AiPrediction.BENIGN);
+    d.setReviewed(true);
+    d.setFinalResult(FinalResult.MALIGNANT);
+    
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    adminController.dashboard(model);
+    
+    verify(model).addAttribute("aiAgreeCount", 0L);
+    verify(model).addAttribute("aiMismatchCount", 1L);
+}
+@Test
+void testAgeBuckets_NullPatientCoverage() {
+    // Diagnóstico sin paciente asignado
+    Diagnosis diagnosis = new Diagnosis();
+    diagnosis.setPatient(null); // Explicitamente null
+    diagnosis.setReviewed(true);
+    diagnosis.setFinalResult(FinalResult.MALIGNANT);
+    
+    List<Diagnosis> diagnoses = Collections.singletonList(diagnosis);
+    
+    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
+    when(patientRepository.count()).thenReturn(1L);
+    when(userRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.count()).thenReturn(1L);
+    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    
+    Model model = mock(Model.class);
+    
+    adminController.dashboard(model);
+    
+    // Verificar que la etiqueta "Unknown" está presente
+    verify(model).addAttribute(eq("ageLabelsJs"), argThat(s -> ((String)s).contains("'Unknown'")));
+}
+@Test
+void testMapAiToFinal_CoverageTest() throws Exception {
+    // Obtener el método privado usando reflexión
+    Method mapAiToFinalMethod = AdminController.class.getDeclaredMethod("mapAiToFinal", AiPrediction.class);
+    mapAiToFinalMethod.setAccessible(true);
+    
+    // Test null case
+    assertThat(mapAiToFinalMethod.invoke(null, (Object) null)).isNull();
+    
+    // Test MALIGNANT case
+    assertThat(mapAiToFinalMethod.invoke(null, AiPrediction.MALIGNANT))
+        .isEqualTo(FinalResult.MALIGNANT);
+    
+    // Test BENIGN case  
+    assertThat(mapAiToFinalMethod.invoke(null, AiPrediction.BENIGN))
+        .isEqualTo(FinalResult.BENIGN);
+    
+    // Test default case (PENDING)
+    assertThat(mapAiToFinalMethod.invoke(null, AiPrediction.PENDING)).isNull();
+}
     @Test
     void testCreateDiagnosis_NoPatientSelected_ReturnsError() throws Exception {
         // Cuando patientId es null/empty, Spring puede lanzar 400 antes de llegar al
