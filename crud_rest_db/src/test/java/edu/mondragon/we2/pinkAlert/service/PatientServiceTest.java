@@ -6,7 +6,6 @@
 
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import edu.mondragon.we2.pinkAlert.service.PatientService;itory;
 
 import java.time.LocalDate;
  import java.util.List;

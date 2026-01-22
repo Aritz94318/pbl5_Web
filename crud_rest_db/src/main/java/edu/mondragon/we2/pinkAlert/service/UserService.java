@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
-import edu.mondragon.we2.pinkalert.model.Role;
+import edu.mondragon.we2.pinkAlert.model.Role;
 
 @Service
 public class UserService {

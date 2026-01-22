@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import com.google.gson.Gson;
 
 import edu.mondragon.we2.pinkAlert.model.Notification;
-import edu.mondragon.we2.pinkAlert.service.NotificationService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -13,7 +13,7 @@ import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.utils.ValidationUtils;
-import edu.mondragon.we2.pinkalert.model.AiPrediction;
+import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 
 import java.io.IOException;
 import java.io.InputStream;

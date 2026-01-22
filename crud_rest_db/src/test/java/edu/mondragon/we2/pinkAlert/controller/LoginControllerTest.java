@@ -13,7 +13,7 @@ import edu.mondragon.we2.pinkAlert.controller.LoginController;
 import edu.mondragon.we2.pinkAlert.model.User;
 import edu.mondragon.we2.pinkAlert.repository.UserRepository;
 import edu.mondragon.we2.pinkAlert.service.UserService;
-import edu.mondragon.we2.pinkalert.model.Role;itory;
+import edu.mondragon.we2.pinkAlert.model.Role;
 
 import java.util.Optional;
 

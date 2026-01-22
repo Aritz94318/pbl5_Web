@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.mondragon.we2.pinkAlert.controller.AdminController;
 import edu.mondragon.we2.pinkAlert.dto.AiPredictUrlRequest;
 import edu.mondragon.we2.pinkAlert.model.*;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
@@ -24,13 +23,7 @@ import edu.mondragon.we2.pinkAlert.service.AiClientService;
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.SimulationService;
-import edu.mondragon.we2.pinkAlert.service.UserService;Repository;
-import edu.mondragon.we2.pinkalert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkalert.repository.PatientRepository;
-import edu.mondragon.we2.pinkalert.repository.UserRepository;
-import edu.mondragon.we2.pinkalert.service.AiClientService;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
-import edu.mondragon.we2.pinkalert.service.DoctorService;
+import edu.mondragon.we2.pinkAlert.service.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

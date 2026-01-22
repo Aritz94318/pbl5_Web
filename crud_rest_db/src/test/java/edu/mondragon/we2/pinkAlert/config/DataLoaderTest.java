@@ -10,10 +10,7 @@ import edu.mondragon.we2.pinkAlert.model.*;
 import edu.mondragon.we2.pinkAlert.repository.*;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import edu.mondragon.we2.pinkAlert.model.User;
-import edu.mondragon.we2.pinkAlert.repository.*;
-import edu.mondragon.we2.pinkAlert.service.UserService;
-import edu.mondragon.we2.pinkalert.config.DataLoader;
-import edu.mondragon.we2.pinkalert.model.*;
+
 
 import java.time.LocalDate;
 

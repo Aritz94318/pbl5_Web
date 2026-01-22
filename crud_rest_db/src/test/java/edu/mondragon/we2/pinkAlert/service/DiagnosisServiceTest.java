@@ -12,8 +12,7 @@ import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
-import edu.mondragon.we2.pinkalert.model.FinalResult;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 import java.time.LocalDate;
 import java.util.Arrays;

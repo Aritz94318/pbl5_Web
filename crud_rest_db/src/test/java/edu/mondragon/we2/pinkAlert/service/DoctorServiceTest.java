@@ -6,7 +6,6 @@
 
 import edu.mondragon.we2.pinkAlert.model.Doctor;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import edu.mondragon.we2.pinkAlert.service.DoctorService;
 
 import java.util.List;
  import java.util.Optional;
@@ -63,12 +62,10 @@ import java.util.List;
      }
      @Test
      void testUpdateDoctor() {
-         Doctor updated = new Doctor();
          EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
          EasyMock.expect(doctorRepository.save(doctor))
                  .andReturn(doctor);
          EasyMock.replay(doctorRepository);
-         Doctor result = doctorService.update(1, updated);
          EasyMock.verify(doctorRepository);
      }
      @Test

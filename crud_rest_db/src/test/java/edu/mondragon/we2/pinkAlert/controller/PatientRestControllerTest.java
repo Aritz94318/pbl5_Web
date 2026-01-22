@@ -15,18 +15,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import edu.mondragon.we2.pinkAlert.controller.PatientController;
 import edu.mondragon.we2.pinkAlert.model.*;
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
 import edu.mondragon.we2.pinkAlert.model.Role;
 import edu.mondragon.we2.pinkAlert.model.User;
-import edu.mondragon.we2.pinkAlert.service.UserService;
-import edu.mondragon.we2.pinkalert.model.*;
-import edu.mondragon.we2.pinkalert.service.DiagnosisService;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -4,11 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
-import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.Patient;
-import edu.mondragon.we2.pinkalert.model.AiPrediction;
-import edu.mondragon.we2.pinkalert.model.FinalResult;ult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
