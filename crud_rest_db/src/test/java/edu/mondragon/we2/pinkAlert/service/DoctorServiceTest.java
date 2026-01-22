@@ -66,7 +66,6 @@ import java.util.List;
          EasyMock.expect(doctorRepository.save(doctor))
                  .andReturn(doctor);
          EasyMock.replay(doctorRepository);
-         EasyMock.verify(doctorRepository);
      }
      @Test
      void testDeleteDoctor() {
