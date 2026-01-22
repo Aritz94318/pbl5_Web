@@ -21,16 +21,26 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
+import edu.mondragon.we2.pinkAlert.service.NotificationService;
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
+import edu.mondragon.we2.pinkAlert.model.Notification;
 
 @Controller
 @RequestMapping("/doctor")
 public class DoctorController {
 
     private final DiagnosisService diagnosisService;
+    private final NotificationService notificationService;
 
     public DoctorController(DiagnosisService diagnosisService) {
         this.diagnosisService = diagnosisService;
+        try {
+            this.notificationService = new NotificationService();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to init NotificationService", e);
+        }
     }
 
     @GetMapping("/dashboard")
@@ -186,13 +196,89 @@ public class DoctorController {
         return "doctor/doctor-diagnosis"; 
     }
 
+    private String resultsReadyMessage(String fullName) {
+        return """
+                Hello %s,
+
+                Your mammography exam has been reviewed by your doctor.
+                Your results are now ready, and a member of the medical team will contact you soon
+                to explain them and answer any questions.
+
+                You can also log in to Pink Alert to follow the status of your screening.
+
+                — Pink Alert Medical Team
+                """.formatted(fullName);
+    }
+
+    private String resultsVisibleMessage(String fullName) {
+        return """
+                Hello %s,
+
+                Your mammography result is now available in your Pink Alert patient portal.
+
+                Please log in to view your report, images, and the doctor’s clinical notes.
+
+                — Pink Alert Medical Team
+                """.formatted(fullName);
+    }
+
     @PostMapping("/diagnosis/{id}/review")
     public String saveReview(
             @PathVariable Integer id,
             @RequestParam(value = "finalResult", required = false) String finalResultRaw,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "patientNotified", required = false, defaultValue = "false") boolean patientNotified) {
+
+        // 1) Load current state BEFORE saving (to detect transitions)
+        Diagnosis before = diagnosisService.findById(id);
+        boolean wasNotified = Boolean.TRUE.equals(before.getPatientNotified());
+        boolean hadFinalResultBefore = before.getFinalResult() != null; // or before.isReviewed()
+
+        // 2) Save review (this updates
+        // reviewed/finalResult/description/patientNotified)
         diagnosisService.saveDoctorReview(id, finalResultRaw, description, patientNotified);
+
+        // 3) Load AFTER saving (optional, but safer)
+        Diagnosis after = diagnosisService.findById(id);
+
+        // Data needed for email
+        String email = after.getPatient().getUser().getEmail();
+        String fullName = after.getPatient().getUser().getFullName();
+
+        // 4) Trigger emails ONLY on transitions
+
+        // A) "Results ready" -> when doctor sets finalResult the first time (or first
+        // time reviewed)
+        boolean hasFinalResultNow = after.getFinalResult() != null; // or after.isReviewed()
+        if (!hadFinalResultBefore && hasFinalResultNow) {
+            System.out.println("Patient email is: " + email);
+            Notification n = new Notification(
+                    email,
+                    "Pink Alert - Results ready",
+                    resultsReadyMessage(fullName),
+                    java.time.LocalDateTime.now().toString());
+            try {
+                notificationService.sendEmail(n);
+            } catch (Exception e) {
+                e.printStackTrace(); // or log
+            }
+        }
+
+        // B) "Results visible" -> when checkbox changes false -> true
+        boolean isNotifiedNow = Boolean.TRUE.equals(after.getPatientNotified());
+        if (!wasNotified && isNotifiedNow) {
+            Notification n = new Notification(
+                    email,
+                    "Pink Alert - Results available in your portal",
+                    resultsVisibleMessage(fullName),
+                    java.time.LocalDateTime.now().toString());
+            try {
+                notificationService.sendEmail(n);
+            } catch (Exception e) {
+                e.printStackTrace(); // or log
+            }
+        }
+
         return "redirect:/doctor/diagnosis/" + id;
     }
 
