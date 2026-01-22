@@ -84,7 +84,7 @@
             <form action="<c:url value='/admin/simulation/start'/>" method="post">
               <div class="admin-grid-2" style="margin-top: 0;">
                 <div>
-                  <label for="numPatients" class="detail-label">NUmber of patients</label>
+                  <label for="numPatients" class="detail-label">Number of patients</label>
                   <input id="numPatients" name="numPatients" type="number" min="0" step="1"
                     value="${empty numPatients ? 1 : numPatients}" placeholder="1" required />
                 </div>

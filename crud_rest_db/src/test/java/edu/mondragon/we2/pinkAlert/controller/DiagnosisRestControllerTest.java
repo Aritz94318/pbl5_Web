@@ -2,7 +2,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.mondragon.we2.pinkAlert.controller.DiagnosisRestController;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
 import edu.mondragon.we2.pinkAlert.model.Patient;

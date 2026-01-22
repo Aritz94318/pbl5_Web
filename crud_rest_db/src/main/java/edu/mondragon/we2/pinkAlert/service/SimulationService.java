@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +36,7 @@ public class SimulationService {
     private final JsonSchema simTimeSchema;
     private final RestTemplate rt;
 
+    @Autowired
     public SimulationService(RestTemplate rt) throws IOException, ProcessingException {
         this.rt = rt;
         JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
@@ -45,7 +47,9 @@ public class SimulationService {
 
         this.simTimeSchema = factory.getJsonSchema(mapper.readTree(getSchema("/sim-time-schema.json")));
 
-    } public SimulationService() throws IOException, ProcessingException {
+    }
+
+    public SimulationService() throws IOException, ProcessingException {
         this(new RestTemplate());
     }
 
@@ -109,7 +113,7 @@ public class SimulationService {
 
     public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
 
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify"; 
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify";
         GlobalUpdateRequest body;
         body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
         String json = gson.toJson(body);
@@ -137,7 +141,7 @@ public class SimulationService {
 
     public void start() {
 
-        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start"; 
+        String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);

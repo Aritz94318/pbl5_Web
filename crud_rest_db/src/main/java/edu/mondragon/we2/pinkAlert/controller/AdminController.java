@@ -146,7 +146,6 @@ public class AdminController {
                 return "admin/admin-dashboard";
         }
 
-
         @GetMapping("/users")
         public String users(Model model) {
                 model.addAttribute("users", userService.findAll());
@@ -162,13 +161,13 @@ public class AdminController {
 
         @PostMapping("/users")
         public String createUser(@ModelAttribute("user") User user,
-                        @RequestParam(name = "rawPassword", required = false) String rawPassword,
+                        @RequestParam(name = "rawPassword", required = false) String hash,
                         @RequestParam(name = "doctorPhone", required = false) String doctorPhone,
                         @RequestParam(name = "patientPhone", required = false) String patientPhone,
                         @RequestParam(name = "patientBirthDate", required = false) String patientBirthDate) {
 
-                if (rawPassword == null || rawPassword.isBlank())
-                        rawPassword = "123";
+                if (hash == null || hash.isBlank())
+                        hash = "123";
 
                 if (user.getRole() == Role.DOCTOR) {
                         Doctor doc = new Doctor();
@@ -196,7 +195,7 @@ public class AdminController {
                         user.unlinkPatient();
                 }
 
-                userService.createUser(user, rawPassword);
+                userService.createUser(user, hash);
                 return "redirect:/admin/users";
         }
 
@@ -334,9 +333,9 @@ public class AdminController {
 
         @GetMapping("/simulation")
         public String simulationPage(Model model) {
-                model.addAttribute("numPatients", 2);
+                model.addAttribute("numPatients", 1);
                 model.addAttribute("numDoctors", 1);
-                model.addAttribute("numMachines", 2);
+                model.addAttribute("numMachines", 1);
                 return "admin/simulation";
         }
 
@@ -357,8 +356,6 @@ public class AdminController {
         private static double round1(double v) {
                 return Math.round(v * 10.0) / 10.0;
         }
-
-
 
         @GetMapping("/diagnoses/new")
         public String newDiagnosisForm(Model model) {
@@ -514,13 +511,17 @@ public class AdminController {
 
                         return "redirect:/admin/dashboard";
 
+                } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        model.addAttribute("error", "Operation was interrupted. Please try again.");
+                        model.addAttribute("today", LocalDate.now().toString());
+                        return "admin/diagnosis-form";
                 } catch (Exception e) {
                         model.addAttribute("error", "Failed to create diagnosis: " + e.getMessage());
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
                 }
         }
-
 
         private static Path downloadToFile(String url, Path target) throws IOException, InterruptedException {
                 Files.createDirectories(target.getParent());

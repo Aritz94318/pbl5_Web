@@ -3,11 +3,13 @@
 // ===============================
 package edu.mondragon.we2.pinkAlert.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

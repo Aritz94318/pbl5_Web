@@ -3,7 +3,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
-import edu.mondragon.we2.pinkAlert.controller.AiWebhookController;
 import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
 import edu.mondragon.we2.pinkAlert.service.AiResultService;
 
