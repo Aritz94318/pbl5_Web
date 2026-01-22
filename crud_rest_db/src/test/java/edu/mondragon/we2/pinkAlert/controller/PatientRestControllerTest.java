@@ -140,7 +140,7 @@ class PatientControllerTest {
         String result = patientController.diagnosisDetails(diagnosisId, model);
         assertThat(result).isEqualTo("patient/patient-diagnosis");
         verify(model).addAttribute("diagnosis", diagnosis);
-        verify(model).addAttribute("patient", patient);
+        verify(model).addAttribute(PatientController.ONE_PATIENT, patient);
         verify(model).addAttribute(eq("historyDiagnoses"), anyList());
     }
 

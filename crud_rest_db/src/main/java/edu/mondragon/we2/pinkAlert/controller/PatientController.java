@@ -28,7 +28,7 @@ public class PatientController {
     private final DiagnosisService diagnosisService;
     static final String REDIRECT_LOGIN = "redirect:/login";
 
-    static final String PATIENT = "patient";
+    static final String ONE_PATIENT = "patient";
     public PatientController(UserService userService, DiagnosisService diagnosisService) {
         this.userService = userService;
         this.diagnosisService = diagnosisService;
@@ -110,7 +110,7 @@ public class PatientController {
         model.addAttribute("pendingCount", pending);
 
         model.addAttribute("user", user);
-        model.addAttribute("PATIENT", patient);
+        model.addAttribute(ONE_PATIENT, patient);
 
         return "patient/patient-dashboard";
     }
@@ -123,7 +123,7 @@ public class PatientController {
         historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate()));
 
         model.addAttribute("diagnosis", diagnosis);
-        model.addAttribute("PATIENT", diagnosis.getPatient());
+        model.addAttribute(ONE_PATIENT, diagnosis.getPatient());
         model.addAttribute("historyDiagnoses", historyDiagnoses);
 
         return "patient/patient-diagnosis";
@@ -149,7 +149,7 @@ public class PatientController {
         }
 
         model.addAttribute("user", user);
-        model.addAttribute("PATIENT", patient);
+        model.addAttribute(ONE_PATIENT, patient);
 
         return "patient/patient-profile";
     }
