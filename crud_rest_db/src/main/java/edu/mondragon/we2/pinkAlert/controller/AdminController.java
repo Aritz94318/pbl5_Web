@@ -41,6 +41,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 @RequestMapping("/admin")
@@ -53,6 +54,8 @@ public class AdminController {
         private final UserService userService;
         private final AiClientService aiClientService;
         private final SimulationService simulationService;
+        @Value("${pinkalert.storage.dir}")
+        private String storageDir;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
@@ -468,9 +471,14 @@ public class AdminController {
                         diag = diagnosisRepository.saveAndFlush(diag);
 
                         String previewsDir = "previews";
-                        Path baseTmpDir = Files.createTempDirectory("pinkalert-");
-                        Path previewsPath = Files.createDirectories(baseTmpDir.resolve("previews"));
-                        Path tmpDicomPath = Files.createDirectories(baseTmpDir.resolve("dicom"));
+                        Path baseDir = Paths.get(storageDir)
+                                        .toAbsolutePath()
+                                        .normalize();
+
+                        Files.createDirectories(baseDir);
+
+                        Path previewsPath = Files.createDirectories(baseDir.resolve("previews"));
+                        Path tmpDicomPath = Files.createDirectories(baseDir.resolve("dicom"));
 
                         Files.createDirectories(tmpDicomPath);
 
