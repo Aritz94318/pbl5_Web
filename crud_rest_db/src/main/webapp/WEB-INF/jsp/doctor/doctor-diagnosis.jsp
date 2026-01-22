@@ -80,17 +80,6 @@
                                     <div class="info-label">Phone number</div>
                                     <div class="info-value">${patient.phone}</div>
                                 </div>
-
-                                <div class="info-row" style="margin-bottom:0;">
-                                    <c:choose>
-                                        <c:when test="${not empty previousScreenings}">
-                                            ${previousScreenings[patient.id]} total screenings
-                                        </c:when>
-                                        <c:otherwise>
-                                            Total screenings unavailable
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
                             </div>
 
                             <div class="panel">
@@ -123,6 +112,10 @@
                                         <c:if test="${not diagnosis.reviewed}">
                                             <span class="status-chip"><i class="bi bi-clock"></i> Pending Review</span>
                                         </c:if>
+                                        <c:if test="${diagnosis.patientNotified}">
+                                            <span class="chip reviewed"><i class="bi bi-envelope-check"></i> Patient
+                                                notified</span>
+                                        </c:if>
                                     </div>
                                     <!-- <div class="info-value">
                                         <div class="info-row" style="margin-top:12px; margin-bottom:0;"> -->
@@ -136,10 +129,12 @@
                                                     <span class="chip chip-benign bi bi-check-circle">Benign</span>
                                                 </c:when>
                                                 <c:when test="${diagnosis.finalResult == 'MALIGNANT'}">
-                                                    <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                    <span
+                                                        class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
                                                 </c:when>
                                                 <c:when test="${diagnosis.finalResult == 'INCONCLUSIVE'}">
-                                                    <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                    <span
+                                                        class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span class="chip chip-pending bi bi-question-circle">Unknown</span>
@@ -173,8 +168,8 @@
                                                 </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="chip chip-inconclusive">
-                                                    <i class="bi bi-check-circle"></i> Pending
+                                                <span class="chip chip-pending">
+                                                    <i class="bi bi-clock"></i> Pending
                                                 </span>
                                             </c:otherwise>
                                         </c:choose>
@@ -184,9 +179,18 @@
                                 <div class="info-row" style="margin-bottom:0;">
                                     <div class="info-label">Probability for the prediction to be correct</div>
                                     <div class="info-value">
-                                        <c:out value="${diagnosis.probability}" default="—" />
+                                        <c:choose>
+                                            <c:when
+                                                test="${diagnosis.aiPrediction == 'PENDING' || empty diagnosis.aiPrediction}">
+                                                —
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:out value="${diagnosis.probability}" />
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </div>
+
 
                                 <!-- <c:if test="${diagnosis.reviewed and not empty diagnosis.finalResult}">
                                     <div class="info-row" style="margin-top:12px; margin-bottom:0;">
@@ -234,19 +238,23 @@
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${empty h.finalResult}">
-                                                                <span class="chip chip-pending bi bi-clock">Pending</span>
+                                                                <span
+                                                                    class="chip chip-pending bi bi-clock">Pending</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'BENIGN'}">
-                                                                <span class="chip chip-benign bi bi-check-circle">Benign</span>
+                                                                <span
+                                                                    class="chip chip-benign bi bi-check-circle">Benign</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'MALIGNANT'}">
-                                                                <span class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
+                                                                <span
+                                                                    class="chip chip-malignant bi bi-exclamation-triangle">Malignant</span>
                                                             </c:when>
 
                                                             <c:when test="${h.finalResult == 'INCONCLUSIVE'}">
-                                                                <span class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
+                                                                <span
+                                                                    class="chip chip-inconclusive bi bi-exclamation-triangle">Inconclusive</span>
                                                             </c:when>
 
                                                             <c:otherwise>
@@ -441,8 +449,9 @@
                                 <form method="post"
                                     action="${pageContext.request.contextPath}/doctor/diagnosis/${diagnosis.id}/review"
                                     id="reviewForm">
+                                    <!-- <input type="hidden" name="patientNotified" id="patientNotified"
+                                        value="${diagnosis.patientNotified ? 'true' : 'false'}" /> -->
 
-                                    <!-- This is what the server will read -->
                                     <input type="hidden" name="finalResult" id="finalResult"
                                         value="${empty diagnosis.finalResult ? '' : diagnosis.finalResult}" />
 
@@ -450,24 +459,36 @@
 
                                     <div class="chip-row">
                                         <button type="button"
-                                            class="chip chip-btn chip-benign bi bi-check-circle${diagnosis.finalResult == 'BENIGN' ? 'selected' : ''}"
+                                            class="chip chip-btn result-button chip-benign bi bi-check-circle${diagnosis.finalResult == 'BENIGN' ? ' selected' : ''}"
                                             data-value="BENIGN" aria-pressed="${diagnosis.finalResult == 'BENIGN'}">
                                             Benign
                                         </button>
 
                                         <button type="button"
-                                            class="chip chip-btn chip-malignant bi bi-exclamation-triangle ${diagnosis.finalResult == 'MALIGNANT' ? 'selected' : ''}"
+                                            class="chip chip-btn result-button chip-malignant bi bi-exclamation-triangle${diagnosis.finalResult == 'MALIGNANT' ? ' selected' : ''}"
                                             data-value="MALIGNANT"
                                             aria-pressed="${diagnosis.finalResult == 'MALIGNANT'}">
                                             Malignant
                                         </button>
 
                                         <button type="button"
-                                            class="chip chip-btn chip-inconclusive bi bi-exclamation-triangle ${diagnosis.finalResult == 'INCONCLUSIVE' ? 'selected' : ''}"
+                                            class="chip chip-btn result-button chip-inconclusive bi bi-exclamation-triangle${diagnosis.finalResult == 'INCONCLUSIVE' ? ' selected' : ''}"
                                             data-value="INCONCLUSIVE"
                                             aria-pressed="${diagnosis.finalResult == 'INCONCLUSIVE'}">
                                             Inconclusive
                                         </button>
+
+                                        <label class="notify-check">
+                                            <input type="checkbox" name="patientNotified" value="true"
+                                                ${diagnosis.patientNotified ? "checked" : "" } />
+                                            <span class="notify-box">
+                                                <i class="bi bi-envelope-check" aria-hidden="true"></i>
+                                                Patient has been notified
+                                            </span>
+                                        </label>
+
+
+
                                     </div>
 
                                     <div style="margin-top:14px;">
@@ -483,28 +504,43 @@
                                     </div>
 
                                 </form>
+                                <!-- <script>
+                                    (function () {
+                                        const notifyBtn = document.getElementById('notifyBtn');
+                                        const hiddenNotify = document.getElementById('patientNotified');
+                                        if (!notifyBtn || !hiddenNotify) return;
 
+                                        function setNotify(isOn) {
+                                            hiddenNotify.value = isOn ? 'true' : 'false';
+                                            notifyBtn.classList.toggle('selected', isOn);
+                                            notifyBtn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+                                        }
+
+                                        setNotify(hiddenNotify.value === 'true');
+
+                                        notifyBtn.addEventListener('click', () => {
+                                            setNotify(!(hiddenNotify.value === 'true'));
+                                        });
+                                    })();
+                                </script> -->
                                 <script>
                                     (function () {
                                         const hidden = document.getElementById('finalResult');
-                                        const buttons = document.querySelectorAll('.chip-btn');
+                                        const buttons = document.querySelectorAll('.result-button');
+
+                                        if (!hidden || buttons.length === 0) return;
 
                                         function setSelected(value) {
-                                            hidden.value = value;
+                                            hidden.value = value || '';
 
                                             buttons.forEach(btn => {
                                                 const isSelected = btn.dataset.value === value;
+                                                btn.classList.toggle('selected', isSelected);
                                                 btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-
-                                                // reset visual classes (keep base "chip chip-btn")
-                                                btn.classList.remove('selected');
-
-                                                if (isSelected) btn.classList.add('selected');
                                             });
                                         }
 
-                                        // initial highlight based on hidden input
-                                        setSelected(hidden.value || '');
+                                        setSelected(hidden.value);
 
                                         buttons.forEach(btn => {
                                             btn.addEventListener('click', () => setSelected(btn.dataset.value));

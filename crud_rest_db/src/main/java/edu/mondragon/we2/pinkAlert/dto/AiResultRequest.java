@@ -7,15 +7,17 @@ import java.math.BigDecimal;
 public class AiResultRequest {
 
     @JsonProperty("prediction")
-    private String prediction; // "MALIGNANT" or "BENIGN"
+    private String prediction; 
 
     @JsonProperty("prob_malignant")
     private BigDecimal probMalignant;
 
-    @JsonProperty("diagnosis_id")
-    private Integer diagnosisId;
 
     public AiResultRequest() {
+    }
+    public AiResultRequest(String prediction,BigDecimal probMalignant) {
+        this.prediction=prediction;
+        this.probMalignant=probMalignant;
     }
 
     public String getPrediction() {
@@ -34,11 +36,5 @@ public class AiResultRequest {
         this.probMalignant = probMalignant;
     }
 
-    public Integer getDiagnosisId() {
-        return diagnosisId;
-    }
-
-    public void setDiagnosisId(Integer diagnosisId) {
-        this.diagnosisId = diagnosisId;
-    }
+    
 }

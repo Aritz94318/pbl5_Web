@@ -2,6 +2,8 @@ package edu.mondragon.we2.pinkAlert.model;
 
 
 import org.junit.jupiter.api.Test;
+
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleTest {

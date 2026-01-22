@@ -1,13 +1,14 @@
 package edu.mondragon.we2.pinkAlert.service;
 
+import org.springframework.stereotype.Service;
+
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.model.Doctor;
-import edu.mondragon.we2.pinkAlert.model.FinalResult;
 import edu.mondragon.we2.pinkAlert.model.Patient;
 import edu.mondragon.we2.pinkAlert.repository.DiagnosisRepository;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
 import edu.mondragon.we2.pinkAlert.repository.PatientRepository;
-import org.springframework.stereotype.Service;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.List;
 @Service
 public class DiagnosisService {
 
+        static final String DOCTOR_NOT_FOUND = "Doctor not found with id ";
+        
+        static final String PATIENT_NOT_FOUND = "Patient not found with id ";
     private final DiagnosisRepository diagnosisRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
@@ -44,33 +48,38 @@ public class DiagnosisService {
                 .orElseThrow(() -> new RuntimeException("Diagnosis not found with id " + id));
     }
 
-    public void saveDoctorReview(Integer id, String finalResultRaw, String description) {
-        Diagnosis d = diagnosisRepository.findById(id).orElseThrow();
+    public void saveDoctorReview(Integer id, String finalResultRaw, String description, boolean patientNotified) {
+        Diagnosis d = diagnosisRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Diagnosis not found: " + id));
 
-        // notes
         d.setDescription(description == null ? "" : description.trim());
-
-        // finalResult (allow pending/clear)
+        d.setPatientNotified(patientNotified);
         if (finalResultRaw == null || finalResultRaw.isBlank()) {
             d.setFinalResult(null);
-            d.setReviewed(false); // optional
+            d.setReviewed(false); 
         } else {
-            FinalResult fr = FinalResult.valueOf(finalResultRaw);
+            FinalResult fr = FinalResult.valueOf(finalResultRaw.trim().toUpperCase());
             d.setFinalResult(fr);
             d.setReviewed(true);
 
-            // urgent policy example:
-            d.setUrgent(fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE);
+            if (fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE)
+                d.setUrgent(true);
+            else
+                d.setUrgent(false);
         }
 
         diagnosisRepository.save(d);
     }
 
+    public long countByPatientId(Integer patientId) {
+        return diagnosisRepository.countByPatientId(patientId);
+    }
+
     public Diagnosis create(Diagnosis diagnosis, Integer doctorId, Integer patientId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND+ doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         diagnosis.setId(null);
         diagnosis.setDoctor(doctor);
@@ -83,9 +92,9 @@ public class DiagnosisService {
         Diagnosis existing = findById(id);
 
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND+ doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         existing.setImagePath(updated.getImagePath());
         existing.setDate(updated.getDate());
@@ -112,9 +121,9 @@ public class DiagnosisService {
             Integer doctorId,
             Integer patientId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id " + doctorId));
+                .orElseThrow(() -> new RuntimeException(DOCTOR_NOT_FOUND + doctorId));
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id " + patientId));
+                .orElseThrow(() -> new RuntimeException(PATIENT_NOT_FOUND + patientId));
 
         diagnosis.setId(null);
         diagnosis.setDoctor(doctor);

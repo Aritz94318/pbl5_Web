@@ -1,13 +1,13 @@
-// ===============================
-// User.java (FULL FILE)
-// ===============================
+
 package edu.mondragon.we2.pinkAlert.model;
+
+import java.io.Serializable;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,6 @@ public class User {
     @JoinColumn(name = "PatientID")
     private Patient patient;
 
-    // --- convenience helpers for bidirectional patient link ---
     public void linkPatient(Patient p) {
         this.patient = p;
         if (p != null)
@@ -56,7 +55,6 @@ public class User {
         this.doctor = null;
     }
 
-    // getters & setters
     public Integer getId() {
         return id;
     }

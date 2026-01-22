@@ -1,8 +1,9 @@
 package edu.mondragon.we2.pinkAlert.service;
 
+import org.springframework.stereotype.Service;
+
 import edu.mondragon.we2.pinkAlert.model.Doctor;
 import edu.mondragon.we2.pinkAlert.repository.DoctorRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class DoctorService {
 
     public Doctor update(Integer id, Doctor updated) {
         Doctor existing = findById(id);
-        //existing.setName(updated.getName());
         return doctorRepository.save(existing);
     }
 

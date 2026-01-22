@@ -1,9 +1,10 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
-import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -79,7 +80,6 @@ public class DiagnosisRestController {
         return ResponseEntity.ok(created);
     }
 
-    // Simple DTO for requests
     public static class DiagnosisRequest {
         private String imagePath;
         private LocalDate date;

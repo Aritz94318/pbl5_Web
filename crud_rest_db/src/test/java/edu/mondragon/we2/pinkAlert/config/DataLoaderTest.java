@@ -1,89 +1,132 @@
-// package edu.mondragon.we2.pinkAlert.config;
+package edu.mondragon.we2.pinkAlert.config;
 
-// import edu.mondragon.we2.pinkAlert.model.*;
-// import edu.mondragon.we2.pinkAlert.repository.*;
-// import edu.mondragon.we2.pinkAlert.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-// import org.easymock.EasyMock;
-// import org.easymock.EasyMockSupport;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-
-// import java.time.LocalDate;
-// import java.util.Optional;
+import edu.mondragon.we2.pinkAlert.model.*;
+import edu.mondragon.we2.pinkAlert.repository.*;
+import edu.mondragon.we2.pinkAlert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.User;
 
 
-// class DataLoaderTest extends EasyMockSupport {
+import java.time.LocalDate;
 
-//     private UserRepository userRepository;
-//     private DoctorRepository doctorRepository;
-//     private PatientRepository patientRepository;
-//     private DiagnosisRepository diagnosisRepository;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-//     private UserService userService;
+@ExtendWith(MockitoExtension.class)
+class DataLoaderTest {
 
-//     private DataLoader dataLoader;
+    @Mock
+    private UserService userService;
+    
+    @Mock
+    private UserRepository userRepository;
+    
+    @Mock
+    private DoctorRepository doctorRepository;
+    
+    @Mock
+    private PatientRepository patientRepository;
+    
+    @Mock
+    private DiagnosisRepository diagnosisRepository;
+    
+    private DataLoader dataLoader;
 
-//     @BeforeEach
-//     void setUp() {
+    @BeforeEach
+    void setUp() {
+        dataLoader = new DataLoader(userService, userRepository, doctorRepository, 
+                                  patientRepository, diagnosisRepository);
+    }
 
-//         userRepository = mock(UserRepository.class);
-//         doctorRepository = mock(DoctorRepository.class);
-//         patientRepository = mock(PatientRepository.class);
-//         diagnosisRepository = mock(DiagnosisRepository.class);
-//         userService = new UserService(userRepository);
+    @Test
+    void testRun_WhenNoUsersExist_CreatesAllUsers(){
+    
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L); 
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
 
-//         dataLoader = new DataLoader(userService,userRepository,doctorRepository,patientRepository,diagnosisRepository);
-//     }
+        dataLoader.run();
 
-//     @Test
-//     void testRun_whenDatabaseEmpty_loadsInitialData() {
+        verify(doctorRepository).save(any(Doctor.class));
+        verify(patientRepository, atLeastOnce()).save(any(Patient.class));
+        verify(userService, times(3)).createUser(any(User.class), anyString());
+    }
 
-//         EasyMock.expect(userRepository.count()).andReturn(0L);
+ 
+    @Test
+    void testRun_WhenDiagnosesExist_SkipsDiagnosisCreation()  {
+       
+        when(userRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.count()).thenReturn(1L);
 
-//         Doctor doctor = new Doctor("Javier");
-//         doctor.setId(1);
+        dataLoader.run();
 
-//         Patient patient = new Patient("Mikel", LocalDate.of(1999, 2, 1));
-//         patient.setId(1);
+        verify(doctorRepository, never()).findAll();
+        verify(patientRepository, never()).save(any(Patient.class));
+        verify(userService, never()).createUser(any(User.class), eq("123"));
+    }
 
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.empty());
-//         EasyMock.expect(doctorRepository.save(EasyMock.anyObject(Doctor.class))).andReturn(doctor);
+    @Test
+    void testRun_CreatesDoctorUserWithCorrectRole() {
+      
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        Doctor mockDoctor = new Doctor("688152046");
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
 
-//         EasyMock.expect(patientRepository.findById(1)).andReturn(Optional.empty());
-//         EasyMock.expect(patientRepository.save(EasyMock.anyObject(Patient.class))).andReturn(patient);
+        dataLoader.run();
 
-//         EasyMock.expect(userRepository.save(EasyMock.anyObject(User.class))).andReturn(new User()).times(3);
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.DOCTOR && 
+            user.getEmail().equals("javier.fuentes@pinkalert.com")
+        ), eq("123"));
+    }
 
-//         EasyMock.expect(diagnosisRepository.count()).andReturn(0L);
+    @Test
+    void testRun_CreatesPatientUserWithCorrectRole()  {
+      
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        Patient mockPatient = new Patient(LocalDate.of(1999, 2, 14), "625153475");
+        when(patientRepository.save(any(Patient.class))).thenReturn(mockPatient);
 
-//         Patient patient3 = new Patient("Ekaitz", LocalDate.of(2004, 10, 28));
-//         patient3.setId(3);
+        dataLoader.run();
 
-//         EasyMock.expect(doctorRepository.findById(1)).andReturn(Optional.of(doctor));
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.PATIENT && 
+            user.getEmail().equals("maria.agirre@gmail.com")
+        ), eq("123"));
+    }
 
-//         EasyMock.expect(patientRepository.findById(3)).andReturn(Optional.empty());
-//         EasyMock.expect(patientRepository.save(EasyMock.anyObject(Patient.class))).andReturn(patient3);
+    @Test
+    void testRun_CreatesAdminUserWithCorrectRole() {
+       
+        when(userRepository.count()).thenReturn(0L);
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(new Doctor("688152046"));
+        when(patientRepository.save(any(Patient.class))).thenReturn(
+            new Patient(LocalDate.of(1999, 2, 14), "625153475")
+        );
 
-//         EasyMock.expect(diagnosisRepository.save(EasyMock.anyObject(Diagnosis.class))).andReturn(new Diagnosis());
+        dataLoader.run();
 
-//         replayAll();
+        verify(userService).createUser(argThat(user -> 
+            user.getRole() == Role.ADMIN && 
+            user.getEmail().equals("admin@pinkalert.com")
+        ), eq("admin123"));
+    }
 
-//         dataLoader.run();
-
-//         verifyAll();
-//     }
-
-//     @Test
-//     void testRun_whenDatabaseNotEmpty_doesNothing() {
-
-//         EasyMock.expect(userRepository.count()).andReturn(5L);
-//         EasyMock.expect(diagnosisRepository.count()).andReturn(3L);
-
-//         replayAll();
-
-//         dataLoader.run();
-
-//         verifyAll();
-//     }
-// }
+  
+}

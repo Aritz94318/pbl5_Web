@@ -2,11 +2,12 @@ package edu.mondragon.we2.pinkAlert.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Diagnosis")
-public class Diagnosis {
+public class Diagnosis implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +56,9 @@ public class Diagnosis {
     @Column(name = "AiPrediction", length = 20)
     @Enumerated(EnumType.STRING)
     private AiPrediction aiPrediction;
+    
+    @Column(name = "PatientNotified", nullable = false)
+    private Boolean patientNotified = false;
 
     public Diagnosis() {
     }
@@ -241,6 +245,14 @@ public class Diagnosis {
 
     public void setAiPrediction(AiPrediction aiPrediction) {
         this.aiPrediction = aiPrediction;
+    }
+
+    public Boolean getPatientNotified() {
+        return patientNotified;
+    }
+
+    public void setPatientNotified(Boolean patientNotified) {
+        this.patientNotified = patientNotified;
     }
 
 }

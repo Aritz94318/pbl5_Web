@@ -8,23 +8,124 @@
             <meta charset="UTF-8">
             <title>Pink Alert - Admin Dashboard</title>
 
-            <!-- Base global styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
-
-            <!-- Admin dashboard styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
-
-            <!-- Bootstrap Icons (icons only) -->
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-            <!-- Optional: make icons align nicely inside your buttons/cards -->
         </head>
 
         <body>
 
             <%--=========================SAFE DEFAULTS (EL/JSTL)=========================--%>
+
+                <c:choose>
+                    <c:when test="${not empty backlogUrgent}">
+                        <c:set var="backlogUrgentSafe" value="${backlogUrgent}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="backlogUrgentSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty backlogRoutine}">
+                        <c:set var="backlogRoutineSafe" value="${backlogRoutine}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="backlogRoutineSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageLabelsJs}">
+                        <c:set var="ageLabelsSafeJs" value="${ageLabelsJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageLabelsSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageTotalsJs}">
+                        <c:set var="ageTotalsSafeJs" value="${ageTotalsJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageTotalsSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageMalignantJs}">
+                        <c:set var="ageMalignantSafeJs" value="${ageMalignantJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageMalignantSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageBenignJs}">
+                        <c:set var="ageBenignSafeJs" value="${ageBenignJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageBenignSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageInconclusiveJs}">
+                        <c:set var="ageInconclusiveSafeJs" value="${ageInconclusiveJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageInconclusiveSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty ageMalignantRateJs}">
+                        <c:set var="ageMalignantRateSafeJs" value="${ageMalignantRateJs}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="ageMalignantRateSafeJs" value="" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty aiAgreeCount}">
+                        <c:set var="aiAgreeSafe" value="${aiAgreeCount}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="aiAgreeSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty aiMismatchCount}">
+                        <c:set var="aiMismatchSafe" value="${aiMismatchCount}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="aiMismatchSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty aiMissingCount}">
+                        <c:set var="aiMissingSafe" value="${aiMissingCount}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="aiMissingSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${not empty aiNotComparableCount}">
+                        <c:set var="aiNotComparableSafe" value="${aiNotComparableCount}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="aiNotComparableSafe" value="0" />
+                    </c:otherwise>
+                </c:choose>
 
                 <c:choose>
                     <c:when test="${not empty totalPatients}">
@@ -225,13 +326,13 @@
                                 <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
                                 Add User
                             </a>
-                            <a class="btn-admin" href="${pageContext.request.contextPath}/">
-                                <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                            <a class="btn-admin" href="${pageContext.request.contextPath}/admin/simulation">
+                                <i class="bi bi-alarm" aria-hidden="true"></i>
                                 Simulation
                             </a>
                             <a class="btn-admin" href="${pageContext.request.contextPath}/admin/diagnoses/new">
-                                <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
-                                Machine Simulation
+                                <i class="bi bi-upc-scan" aria-hidden="true"></i>
+                                Mammography machine
                             </a>
                         </div>
                     </div>
@@ -252,10 +353,150 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="admin-grid-2" style="margin-top:18px;">
+                        <div class="admin-card">
+                            <h2>Malignant Rate by Age Group</h2>
+                            <div class="chart-wrap">
+                                <canvas id="ageRateChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="admin-card">
+                            <h2>Results by Age Group</h2>
+                            <div class="chart-wrap">
+                                <canvas id="ageStackChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-grid-2" style="margin-top:18px;">
+                        <div class="admin-card">
+                            <h2>AI vs Doctor Agreement</h2>
+                            <div class="chart-wrap">
+                                <canvas id="aiAgreementChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="admin-card">
+                            <h2>Review Backlog</h2>
+                            <div class="chart-wrap">
+                                <canvas id="backlogChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Chart.js -->
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"
+                    integrity="sha512-Y51n9mtKTVBh3Jbx5pZSJNDDMyY+yGe77DGtBPzRlgsf/YLCh13kSZ3JmfHGzYFCmOndraf0sQgfM654b7dJ3w=="
+                    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                <script>
+                 
+                    const backlogUrgent = Number("<c:out value='${backlogUrgentSafe}'/>");
+                    const backlogRoutine = Number("<c:out value='${backlogRoutineSafe}'/>");
+
+                    const backlogEl = document.getElementById('backlogChart');
+                    if (backlogEl) {
+                        new Chart(backlogEl, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Backlog'],
+                                datasets: [
+                                    { label: 'Urgent pending', data: [backlogUrgent] },
+                                    { label: 'Routine pending', data: [backlogRoutine] }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+                </script>
+
+                <script>
+                    const ageLabels = [<c:out value="${ageLabelsSafeJs}" escapeXml="false" />];
+
+                    const ageTotals = [<c:out value="${ageTotalsSafeJs}" escapeXml="false" />];
+                    const ageMalignant = [<c:out value="${ageMalignantSafeJs}" escapeXml="false" />];
+                    const ageBenign = [<c:out value="${ageBenignSafeJs}" escapeXml="false" />];
+                    const ageInconclusive = [<c:out value="${ageInconclusiveSafeJs}" escapeXml="false" />];
+                    const ageMalignantRate = [<c:out value="${ageMalignantRateSafeJs}" escapeXml="false" />];
+
+                    const ageRateEl = document.getElementById('ageRateChart');
+                    if (ageRateEl) {
+                        new Chart(ageRateEl, {
+                            type: 'bar',
+                            data: {
+                                labels: ageLabels,
+                                datasets: [
+                                    { label: 'Malignant rate (%)', data: ageMalignantRate }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } },
+                                scales: {
+                                    y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } }
+                                }
+                            }
+                        });
+                    }
+
+                    const ageStackEl = document.getElementById('ageStackChart');
+                    if (ageStackEl) {
+                        new Chart(ageStackEl, {
+                            type: 'bar',
+                            data: {
+                                labels: ageLabels,
+                                datasets: [
+                                    { label: 'Benign', data: ageBenign, stack: 'results' },
+                                    { label: 'Malignant', data: ageMalignant, stack: 'results' },
+                                    { label: 'Inconclusive', data: ageInconclusive, stack: 'results' }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } },
+                                scales: {
+                                    x: { stacked: true },
+                                    y: { stacked: true, beginAtZero: true }
+                                }
+                            }
+                        });
+                    }
+                </script>
+
+                <script>
+                    const aiAgree = Number("<c:out value='${aiAgreeSafe}'/>");
+                    const aiMismatch = Number("<c:out value='${aiMismatchSafe}'/>");
+                    const aiMissing = Number("<c:out value='${aiMissingSafe}'/>");
+                    const aiNotComparable = Number("<c:out value='${aiNotComparableSafe}'/>");
+
+                    const aiAgreeEl = document.getElementById('aiAgreementChart');
+                    if (aiAgreeEl) {
+                        new Chart(aiAgreeEl, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Match', 'Mismatch', 'No AI prediction', 'Not comparable'],
+                                datasets: [{
+                                    data: [aiAgree, aiMismatch, aiMissing, aiNotComparable],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } }
+                            }
+                        });
+                    }
+                </script>
 
                 <script>
                     const resultsData = {
@@ -265,44 +506,48 @@
                         inconclusive: Number("<c:out value='${inconclusiveSafe}'/>")
                     };
 
-                    const resultsCtx = document.getElementById('resultsChart');
-                    new Chart(resultsCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: ['Negative', 'Positive', 'Pending', 'Inconclusive'],
-                            datasets: [{
-                                data: [resultsData.negative, resultsData.positive, resultsData.pending, resultsData.inconclusive],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { position: 'bottom' } }
-                        }
-                    });
+                    const resultsEl = document.getElementById('resultsChart');
+                    if (resultsEl) {
+                        new Chart(resultsEl, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Negative', 'Positive', 'Pending', 'Inconclusive'],
+                                datasets: [{
+                                    data: [resultsData.negative, resultsData.positive, resultsData.pending, resultsData.inconclusive],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } }
+                            }
+                        });
+                    }
 
                     const labels = [<c:out value="${labelsJs}" escapeXml="false" />];
                     const total = [<c:out value="${totalJs}" escapeXml="false" />];
                     const completed = [<c:out value="${completedJs}" escapeXml="false" />];
 
-                    const timelineCtx = document.getElementById('timelineChart');
-                    new Chart(timelineCtx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [
-                                { label: 'Completed', data: completed, tension: 0.35 },
-                                { label: 'Total Screenings', data: total, tension: 0.35 }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { position: 'bottom' } },
-                            scales: { y: { beginAtZero: true } }
-                        }
-                    });
+                    const timelineEl = document.getElementById('timelineChart');
+                    if (timelineEl) {
+                        new Chart(timelineEl, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    { label: 'Completed', data: completed, tension: 0.35 },
+                                    { label: 'Total Screenings', data: total, tension: 0.35 }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom' } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
                 </script>
 
         </body>

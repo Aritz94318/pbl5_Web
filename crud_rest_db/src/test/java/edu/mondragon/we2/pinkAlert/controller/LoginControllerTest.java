@@ -1,9 +1,5 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
-import edu.mondragon.we2.pinkAlert.model.Role;
-import edu.mondragon.we2.pinkAlert.model.User;
-import edu.mondragon.we2.pinkAlert.repository.UserRepository;
-import edu.mondragon.we2.pinkAlert.service.UserService;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +8,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import edu.mondragon.we2.pinkAlert.model.User;
+import edu.mondragon.we2.pinkAlert.repository.UserRepository;
+import edu.mondragon.we2.pinkAlert.service.UserService;
+import edu.mondragon.we2.pinkAlert.model.Role;
 
 import java.util.Optional;
 
@@ -63,22 +63,47 @@ class LoginControllerTest extends EasyMockSupport {
         doctor.setPasswordHash(encoder.encode("123"));
         doctor.setRole(Role.DOCTOR);
 
-        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("doctor", "doctor")).andReturn(Optional.of(doctor));
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("doctor", "doctor"))
+                .andReturn(Optional.of(doctor));
 
         EasyMock.replay(userRepository);
 
-        mockMvc.perform(post("/login").param("username", "doctor").param("password", "123")).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/doctor/dashboard"));
+        mockMvc.perform(post("/login").param("username", "doctor").param("password", "123"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/doctor/dashboard"));
+
+        EasyMock.verify(userRepository);
+    }
+
+    @Test
+    void testPatientLoginSuccess() throws Exception {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        User patient = new User();
+        patient.setUsername("patient");
+        patient.setEmail("patient@test.com");
+        patient.setPasswordHash(encoder.encode("123"));
+        patient.setRole(Role.PATIENT);
+
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("patient", "patient"))
+                .andReturn(Optional.of(patient));
+
+        EasyMock.replay(userRepository);
+
+        mockMvc.perform(post("/login").param("username", "patient").param("password", "123"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/patient/dashboard"));
 
         EasyMock.verify(userRepository);
     }
 
     @Test
     void testInvalidLogin() throws Exception {
-        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("bad", "bad")).andReturn(Optional.empty());
+        EasyMock.expect(userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("bad", "bad"))
+                .andReturn(Optional.empty());
 
         EasyMock.replay(userRepository);
 
-        mockMvc.perform(post("/login").param("username", "bad").param("password", "bad")).andExpect(status().isOk()).andExpect(view().name("login")).andExpect(model().attributeExists("error"));
+        mockMvc.perform(post("/login").param("username", "bad").param("password", "bad")).andExpect(status().isOk())
+                .andExpect(view().name("login")).andExpect(model().attributeExists("error"));
 
         EasyMock.verify(userRepository);
     }

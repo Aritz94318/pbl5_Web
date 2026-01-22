@@ -1,5 +1,123 @@
-.body {
-    background: linear-gradient(180deg, #eaf2ff 0%, #eaf2ff 20%, #e6f0ff 100%);
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(rgb(255 255 255 / 73%),
+            rgb(255 255 255 / 60%)), url(../img/background.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.chip-notify {
+    white-space: nowrap;
+}
+
+.chip-notify.selected {
+    border-color: rgba(59, 130, 246, .45);
+    background: rgba(59, 130, 246, .12);
+}
+
+/* --- ROUND "Patient has been notified" checkbox --- */
+.notify-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* hide native checkbox, keep it accessible */
+.notify-check input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+/* the pill container (same as you have, but a bit cleaner) */
+.notify-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    /* border: 1px solid rgba(0, 0, 0, .12); */
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .6);
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+
+/* circular "checkbox" */
+.notify-box::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid #d58aaa;
+    background: rgba(255, 255, 255, .9);
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+/* checked state: fill circle + subtle ring */
+.notify-check:has(input[type="checkbox"]:checked) .notify-box::before {
+    background: #d58aaac7;
+    border-color: #d58aaa;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* optional: make the whole pill look "active" when checked */
+.notify-check:has(input[type="checkbox"]:checked) .notify-box {
+    border-color: #d58aaaa8;
+    background: rgba(196, 105, 196, 0.08);
+}
+
+/* keyboard focus (tabbing) */
+.notify-check:has(input[type="checkbox"]:focus-visible) .notify-box {
+    outline: 2px solid #d58aaaa8;
+    outline-offset: 2px;
+}
+
+
+.notify-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    /* border: 1px solid rgba(0, 0, 0, .12);
+    border-radius: 10px; */
+    background: rgba(255, 255, 255, .6);
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-wrap {
+    animation: fadeUp 0.55s ease-out;
+}
+
+.card,
+.card-dates {
+    animation: fadeUp 0.55s ease-out;
 }
 
 .chip-btn {
@@ -35,13 +153,10 @@
     color: #78350f;
 }
 
-/* optional "selected" style (subtle outline) */
 .chip-btn.selected {
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-
-/* Make chip buttons behave like chips, not default buttons */
 .chip-btn {
     border: none;
     cursor: pointer;
@@ -58,12 +173,10 @@
     outline: none;
 }
 
-/* Optional: small press feedback */
 .chip-btn:active {
     transform: translateY(1px);
 }
 
-/* Notes textarea styling (simple, matches your UI) */
 .notes-input {
     width: 100%;
     min-height: 110px;
@@ -73,6 +186,7 @@
     background: #fff;
     font: inherit;
     resize: vertical;
+    color: gray;
 }
 
 .notes-input:focus {
@@ -81,25 +195,21 @@
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-/* Make the label behave like a chip button */
 .chip-select {
     cursor: pointer;
     user-select: none;
 }
 
-/* Hide the radio but keep it accessible */
 .chip-select input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-/* Optional: visually mark selected chip even if you don't add extra classes */
 .chip-select:has(input[type="radio"]:checked) {
     box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
 }
 
-/* Notes textarea styling */
 .notes-input {
     width: 100%;
     min-height: 110px;
@@ -253,7 +363,6 @@
 
 .image-tile {
     height: 320px;
-    /* must match preview-img height */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,7 +390,6 @@
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    /* margin-top: 10px; */
 }
 
 .btn-soft {
@@ -358,13 +466,10 @@ table.hist th {
     background: #d58aaa;
 }
 
-/* Fixed preview size */
 .preview-img {
     width: 100%;
     height: 410px;
-    /* <- bigger image area (adjust) */
     object-fit: cover;
-    /* use contain if you don't want cropping */
     display: block;
     background: #f7f9ff;
 }
@@ -374,9 +479,105 @@ table.hist th {
     border-radius: 14px;
     background: #f7f9ff;
     overflow: hidden;
-
     display: flex;
     flex-direction: column;
     height: 470px;
-    /* <- fixed card height (adjust) */
+}
+
+/* Make the row truly one line (unless screen is too small) */
+.date-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: flex-start;
+    /* don't push weirdly */
+    flex-wrap: nowrap;
+    /* keep in same row */
+}
+
+/* Let the pills area take remaining space */
+.date-selector {
+    display: flex;
+    /* IMPORTANT: make pills align horizontally */
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 auto;
+    /* can grow/shrink */
+    min-width: 0;
+    /* allows shrinking instead of wrapping */
+    flex-wrap: wrap;
+    /* pills can wrap inside their own area */
+}
+
+/* Keep the calendar block fixed on the right */
+.date-picker {
+    flex: 0 0 auto;
+    /* don't shrink into next line */
+    min-width: 190px;
+}
+
+
+.date-picker-label {
+    font-size: 15px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-input {
+    text-align: center;
+}
+
+.filters-row {
+    margin-top: 35px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    color: #434e5f;
+    text-decoration: none;
+    font-weight: 650;
+    font-size: 13px
+}
+
+.filter-chip:hover {
+    transform: translateY(-1px);
+    transition: transform .12s ease;
+}
+
+.filter-chip.active {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.filter-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
 }
