@@ -291,11 +291,11 @@
           const e = JSON.parse(evt.data);
 
           if (e.actor === "PATIENT") {
-            appendCard(patientList, "Paciente " + e.actorId, "🧑", null, null, e.text);
+            appendCard(patientList, "Patient " + e.actorId, "🧑", null, null, e.text);
           } else if (e.actor === "DOCTOR") {
             appendCard(doctorList, "Doctor " + e.actorId, "🩺", "#2ac769", "#2ac769", e.text);
           } else if (e.actor === "MACHINE") {
-            appendCard(machineList, "Máquina " + e.actorId, "🖥", "#7f8bad", "#7f8bad", e.text);
+            appendCard(machineList, "Machine " + e.actorId, "🖥", "#7f8bad", "#7f8bad", e.text);
           }
         });
 

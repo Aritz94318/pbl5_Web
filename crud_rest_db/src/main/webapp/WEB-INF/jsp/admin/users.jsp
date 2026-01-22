@@ -43,6 +43,28 @@
                         <i class="bi bi-people-fill"></i>
                         Users
                     </h2>
+                    <form method="get" action="${pageContext.request.contextPath}/admin/users" class="users-filter-bar">
+                        <label for="role" class="users-filter-label">
+                            <i class="bi bi-funnel"></i> Filter by role
+                        </label>
+
+                        <select id="role" name="role" class="users-filter-select" onchange="this.form.submit()">
+                            <option value="" ${empty roleFilter ? 'selected' : '' }>All</option>
+
+                            <c:forEach var="r" items="${roles}">
+                                <option value="${r}" ${roleFilter==r ? 'selected' : '' }>
+                                    ${r}
+                                </option>
+                            </c:forEach>
+                        </select>
+
+                        <noscript>
+                            <button type="submit" class="btn-admin-users">
+                                Apply
+                            </button>
+                        </noscript>
+                    </form>
+
                     <table class="users-table" style="width:100%;">
                         <thead>
                             <tr style="text-align:left;">
@@ -74,11 +96,11 @@
                                     </td>
                                     <td>
                                         <a class="btn-admin-users"
-                                            href="${pageContext.request.contextPath}/admin/users/${u.id}/edit">
+                                            href="${pageContext.request.contextPath}/admin/users/${u.id}/edit?role=${roleFilter}">
                                             <i class="bi bi-pencil-square"></i> Edit
                                         </a>
                                         <form method="post"
-                                            action="${pageContext.request.contextPath}/admin/users/${u.id}/delete"
+                                            action="${pageContext.request.contextPath}/admin/users/${u.id}/delete?role=${roleFilter}"
                                             style="display:inline;">
                                             <button class="btn-admin-users" type="submit"
                                                 onclick="return confirm('Delete this user?');">

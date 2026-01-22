@@ -19,4 +19,6 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, Integer> {
     long countByUrgentTrue();
 
     long countByReviewedTrue();
+
+    long countByPatientId(Integer patientId);
 }

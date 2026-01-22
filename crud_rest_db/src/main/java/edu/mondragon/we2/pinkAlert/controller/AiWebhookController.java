@@ -1,12 +1,9 @@
 package edu.mondragon.we2.pinkAlert.controller;
 
 import edu.mondragon.we2.pinkAlert.dto.AiResultRequest;
-import edu.mondragon.we2.pinkAlert.model.Diagnosis;
 import edu.mondragon.we2.pinkAlert.service.AiResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/diagnoses")

@@ -7,14 +7,10 @@
         <head>
             <meta charset="UTF-8">
             <title>Mammography Review Portal</title>
-            <!-- Base global styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css">
-
-            <!-- Admin dashboard styles -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/admin-dashboard.css">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/header.css">
-
-            <!-- Bootstrap Icons (icons only) -->
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/doctor-diagnosis.css">
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -47,19 +43,46 @@
                 <section class="card card-dates">
                     <div class="card-title">Select Date</div>
 
-                    <div class="date-selector">
+                    <div class="date-selector-row">
 
-                        <c:forEach var="p" items="${datePills}">
-                            <a href="${pageContext.request.contextPath}/doctor/dashboard?date=${p.param}">
-                                <button class="date-pill ${p.active ? 'active' : ''}" type="button">
-                                    <span class="label">${p.label}</span>
-                                    <span class="date">${p.display}</span>
-                                </button>
-                            </a>
-                        </c:forEach>
+                        <!-- Pills (last 6 days) -->
+                        <div class="date-selector">
+                            <c:forEach var="p" items="${datePills}">
+                                <a
+                                    href="${pageContext.request.contextPath}/doctor/dashboard?date=${p.param}&status=${statusFilter}&result=${resultFilter}">
+                                    <button class="date-pill ${p.active ? 'active' : ''}" type="button">
+                                        <span class="label">${p.label}</span>
+                                        <span class="date">${p.display}</span>
+                                    </button>
+                                </a>
+                            </c:forEach>
+                        </div>
+
+                        <!-- Calendar (jump to any date) -->
+                        <div class="date-picker">
+                            <label class="date-picker-label" for="jumpDate">
+                                <i class="bi bi-calendar3"></i>
+                                Jump to date
+                            </label>
+
+                            <input id="jumpDate" class="date-input" type="date" value="${selectedDateIso}" />
+                        </div>
 
                     </div>
                 </section>
+
+                <script>
+                    (function () {
+                        const input = document.getElementById('jumpDate');
+                        if (!input) return;
+
+                        input.addEventListener('change', function () {
+                            if (!this.value) return;
+                            const base = '${pageContext.request.contextPath}/doctor/dashboard?status=${statusFilter}&result=${resultFilter}&date=';
+                            window.location.href = base + encodeURIComponent(this.value);
+                        });
+                    })();
+                </script>
 
                 <!-- SCREENINGS SUMMARY + LIST -->
                 <section class="card">
@@ -142,10 +165,58 @@
                                 <span>Inconclusive</span>
                             </div>
                         </div>
-
-
                     </div>
+                    
+                    <div class="filters-row">
+                        <!-- Status filter -->
+                        <div class="filter-group">
+                            <span class="filter-label">Status:</span>
 
+                            <a class="filter-chip ${statusFilter == 'ALL' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=ALL&result=${resultFilter}">
+                                All
+                            </a>
+
+                            <a class="filter-chip ${statusFilter == 'PENDING' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=PENDING&result=${resultFilter}">
+                                Pending
+                            </a>
+
+                            <a class="filter-chip ${statusFilter == 'REVIEWED' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=REVIEWED&result=${resultFilter}">
+                                Reviewed
+                            </a>
+                        </div>
+
+                        <!-- Result filter -->
+                        <div class="filter-group">
+                            <span class="filter-label">Result:</span>
+
+                            <a class="filter-chip ${resultFilter == 'ALL' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=${statusFilter}&result=ALL">
+                                All
+                            </a>
+
+                            <a class="filter-chip ${resultFilter == 'MALIGNANT' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=${statusFilter}&result=MALIGNANT">
+                                Malignant
+                            </a>
+
+                            <a class="filter-chip ${resultFilter == 'BENIGN' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=${statusFilter}&result=BENIGN">
+                                Benign
+                            </a>
+
+                            <a class="filter-chip ${resultFilter == 'INCONCLUSIVE' ? 'active' : ''}"
+                                href="${pageContext.request.contextPath}/doctor/dashboard?date=${selectedDateIso}&status=${statusFilter}&result=INCONCLUSIVE">
+                                Inconclusive
+                            </a>
+                        </div>
+
+                        <div class="filter-meta">
+                            Showing ${filteredCount} of ${totalCount}
+                        </div>
+                    </div>
                     <!-- LIST OF SCREENINGS -->
                     <div class="patient-list">
 
@@ -155,6 +226,9 @@
                             <c:choose>
                                 <c:when test="${d.urgent}">
                                     <c:set var="cardClasses" value="${cardClasses} urgent-border" />
+                                </c:when>
+                                <c:when test="${d.aiPrediction == 'PENDING' && d.reviewed == false}">
+                                    <c:set var="cardClasses" value="${cardClasses} pending-border" />
                                 </c:when>
                                 <c:otherwise>
                                     <c:set var="cardClasses" value="${cardClasses} ok-border" />
@@ -221,7 +295,8 @@
                                         </c:when>
 
                                         <c:when test="${d.finalResult == 'MALIGNANT'}">
-                                            <span class="status-chip status-danger bi bi-exclamation-triangle">Malignant</span>
+                                            <span
+                                                class="status-chip status-danger bi bi-exclamation-triangle">Malignant</span>
                                         </c:when>
 
                                         <c:when test="${d.finalResult == 'BENIGN'}">
@@ -229,7 +304,8 @@
                                         </c:when>
 
                                         <c:when test="${d.finalResult == 'INCONCLUSIVE'}">
-                                            <span class="status-chip status-warning bi bi-exclamation-triangle">Inconclusive</span>
+                                            <span
+                                                class="status-chip status-warning bi bi-exclamation-triangle">Inconclusive</span>
                                         </c:when>
 
                                         <c:otherwise>

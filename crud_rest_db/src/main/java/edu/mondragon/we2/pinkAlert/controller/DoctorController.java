@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.model.Diagnosis;
+import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
 @Controller
 @RequestMapping("/doctor")
@@ -35,61 +34,100 @@ public class DoctorController {
     @GetMapping("/dashboard")
     public String dashboard(
             @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate,
+
+            @RequestParam(value = "status", required = false, defaultValue = "ALL") String status,
+            @RequestParam(value = "result", required = false, defaultValue = "ALL") String result,
+
             Model model) {
 
         LocalDate today = LocalDate.now();
-
-        if (selectedDate == null) {
+        if (selectedDate == null)
             selectedDate = today;
-        }
 
-        // FIX for lambda: final copy
         final LocalDate finalSelectedDate = selectedDate;
 
-        // 1) Fetch ONLY diagnoses for the selected date
-        List<Diagnosis> diagnoses = diagnosisService.findByDateSortedByUrgency(finalSelectedDate);
+        // 1) Fetch diagnoses for selected date
+        List<Diagnosis> diagnosesAll = diagnosisService.findByDateSortedByUrgency(finalSelectedDate);
 
-        int total = diagnoses.size();
-        long urgent = diagnoses.stream().filter(Diagnosis::isUrgent).count();
+        // --- counts based on ALL diagnoses of that date (keep your header accurate)
+        // ---
+        int total = diagnosesAll.size();
+        long urgent = diagnosesAll.stream().filter(Diagnosis::isUrgent).count();
         long routine = total - urgent;
 
-        // Count previous screenings per patient
-        Map<Integer, Long> previousScreenings = diagnoses.stream()
-                .collect(Collectors.groupingBy(
-                        d -> d.getPatient().getId(),
-                        Collectors.counting()));
+        long malignantCount = diagnosesAll.stream()
+                .filter(Diagnosis::isReviewed)
+                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
+                .count();
 
-        model.addAttribute("diagnoses", diagnoses);
+        long benignCount = diagnosesAll.stream()
+                .filter(Diagnosis::isReviewed)
+                .filter(d -> d.getFinalResult() == FinalResult.BENIGN)
+                .count();
+
+        long inconclusiveCount = diagnosesAll.stream()
+                .filter(Diagnosis::isReviewed)
+                .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
+                .count();
+
+        // 2) Apply filters to list
+        List<Diagnosis> diagnosesFiltered = diagnosesAll.stream()
+                .filter(d -> matchesStatus(d, status))
+                .filter(d -> matchesResult(d, result))
+                .collect(Collectors.toList());
+
+        // 3) Previous screenings per patient (for the *filtered list* or all list?)
+        // Usually you want it to reflect ALL history, but at minimum keep it
+        // consistent:
+        Map<Integer, Long> previousScreenings = diagnosesAll.stream()
+                .collect(Collectors.groupingBy(d -> d.getPatient().getId(), Collectors.counting()));
+
+        // model (header counts = all; list = filtered)
+        model.addAttribute("diagnoses", diagnosesFiltered);
+
         model.addAttribute("totalCount", total);
         model.addAttribute("urgentCount", urgent);
         model.addAttribute("routineCount", routine);
+
+        model.addAttribute("malignantCount", malignantCount);
+        model.addAttribute("benignCount", benignCount);
+        model.addAttribute("inconclusiveCount", inconclusiveCount);
+
+        // extra info to show "X shown"
+        model.addAttribute("filteredCount", diagnosesFiltered.size());
+
         model.addAttribute("previousScreenings", previousScreenings);
         model.addAttribute("selectedDate", finalSelectedDate);
+        model.addAttribute("selectedDateIso", finalSelectedDate.toString());
+
+        // keep current filters so JSP can highlight the active chip
+        model.addAttribute("statusFilter", status);
+        model.addAttribute("resultFilter", result);
 
         // -----------------------------------------
-        // DYNAMIC DATE PILLS (last 5 days + today)
+        // DATE PILLS (5 days before selectedDate + selectedDate)
+        // (IMPORTANT: preserve filters in the pill links via query string in JSP)
         // -----------------------------------------
-
         DateTimeFormatter monthDayFmt = DateTimeFormatter.ofPattern("MMM dd");
         DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-        List<DatePill> datePills = IntStream.rangeClosed(0, 5)
-                .mapToObj(offset -> {
-                    LocalDate date = today.minusDays(5 - offset);
+        LocalDate start = finalSelectedDate.minusDays(5);
 
-                    long daysDiff = ChronoUnit.DAYS.between(date, today);
+        List<DatePill> datePills = IntStream.rangeClosed(0, 5)
+                .mapToObj(i -> {
+                    LocalDate date = start.plusDays(i);
 
                     String label;
-                    if (daysDiff == 0)
+                    long diffToToday = ChronoUnit.DAYS.between(date, today);
+                    if (diffToToday == 0)
                         label = "Today";
-                    else if (daysDiff == 1)
+                    else if (diffToToday == 1)
                         label = "Yesterday";
                     else
                         label = date.format(monthDayFmt);
 
                     String display = date.format(displayFmt);
-                    String param = date.toString(); // yyyy-MM-dd for URL
-
+                    String param = date.toString();
                     boolean active = date.equals(finalSelectedDate);
 
                     return new DatePill(label, display, param, active);
@@ -101,6 +139,35 @@ public class DoctorController {
         return "doctor/doctor-dashboard";
     }
 
+    // --- helpers ---
+    private static boolean matchesStatus(Diagnosis d, String statusRaw) {
+        String status = (statusRaw == null) ? "ALL" : statusRaw.toUpperCase();
+
+        boolean reviewed = d.isReviewed();
+        boolean hasFinal = d.getFinalResult() != null;
+
+        return switch (status) {
+            case "ALL" -> true;
+            case "PENDING" -> !reviewed || !hasFinal; // not reviewed OR no final result
+            case "REVIEWED" -> reviewed; // reviewed flag true
+            case "PENDING_REVIEW" -> !reviewed; // specifically pending review
+            case "PENDING_RESULT" -> reviewed && !hasFinal; // reviewed but no final result
+            default -> true;
+        };
+    }
+
+    private static boolean matchesResult(Diagnosis d, String resultRaw) {
+        String result = (resultRaw == null) ? "ALL" : resultRaw.toUpperCase();
+        if ("ALL".equals(result))
+            return true;
+
+        // Only match if finalResult exists
+        if (d.getFinalResult() == null)
+            return false;
+
+        return d.getFinalResult().name().equals(result);
+    }
+
     @GetMapping("/diagnosis/{id}")
     public String diagnosisDetails(@PathVariable("id") Integer id, Model model) {
         Diagnosis diagnosis = diagnosisService.findById(id);
@@ -108,6 +175,8 @@ public class DoctorController {
         // Load patient's diagnosis history (optional but useful)
         List<Diagnosis> historyDiagnoses = diagnosisService.findByPatient(diagnosis.getPatient().getId());
         historyDiagnoses.sort((a, b) -> b.getDate().compareTo(a.getDate())); // newest first
+        long totalScreenings = diagnosisService.countByPatientId(diagnosis.getPatient().getId());
+        model.addAttribute("totalScreenings", totalScreenings);
 
         model.addAttribute("diagnosis", diagnosis);
         model.addAttribute("patient", diagnosis.getPatient());
@@ -120,8 +189,9 @@ public class DoctorController {
     public String saveReview(
             @PathVariable Integer id,
             @RequestParam(value = "finalResult", required = false) String finalResultRaw,
-            @RequestParam(value = "description", required = false) String description) {
-        diagnosisService.saveDoctorReview(id, finalResultRaw, description);
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "patientNotified", required = false, defaultValue = "false") boolean patientNotified) {
+        diagnosisService.saveDoctorReview(id, finalResultRaw, description, patientNotified);
         return "redirect:/doctor/diagnosis/" + id;
     }
 

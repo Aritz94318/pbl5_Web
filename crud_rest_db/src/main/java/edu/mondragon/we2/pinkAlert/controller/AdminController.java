@@ -15,7 +15,6 @@ import edu.mondragon.we2.pinkAlert.service.DiagnosisService;
 import edu.mondragon.we2.pinkAlert.service.DoctorService;
 import edu.mondragon.we2.pinkAlert.service.SimulationService;
 import edu.mondragon.we2.pinkAlert.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
@@ -25,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
@@ -34,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -79,10 +76,6 @@ public class AdminController {
                 this.simulationService = simulationService;
         }
 
-        /**
-         * Finalized = doctor reviewed + finalResult is one of
-         * BENIGN/MALIGNANT/INCONCLUSIVE (not null, not PENDING).
-         */
         private static boolean isFinalized(Diagnosis d) {
                 if (d == null)
                         return false;
@@ -94,16 +87,12 @@ public class AdminController {
                 return fr != FinalResult.PENDING;
         }
 
-        /** Map AI prediction enum to FinalResult (only for comparable values). */
         private static FinalResult mapAiToFinal(AiPrediction ai) {
                 if (ai == null)
                         return null;
-                // Adjust this switch if your AiPrediction enum differs
                 return switch (ai) {
                         case MALIGNANT -> FinalResult.MALIGNANT;
                         case BENIGN -> FinalResult.BENIGN;
-                        // case INCONCLUSIVE -> FinalResult.INCONCLUSIVE;
-                        // If you have other AI values, map them or return null
                         default -> null;
                 };
         }
@@ -350,8 +339,18 @@ public class AdminController {
         }
 
         @GetMapping("/users")
-        public String users(Model model) {
-                model.addAttribute("users", userService.findAll());
+        public String users(
+                        @RequestParam(name = "role", required = false) Role role,
+                        Model model) {
+
+                List<User> users = (role == null)
+                                ? userService.findAll()
+                                : userService.findByRole(role);
+
+                model.addAttribute("users", users);
+                model.addAttribute("roleFilter", role); // currently selected role
+                model.addAttribute("roles", Role.values()); // for dropdown options
+
                 return "admin/users";
         }
 
@@ -403,9 +402,17 @@ public class AdminController {
         }
 
         @GetMapping("/users/{id}/edit")
-        public String editUser(@PathVariable Integer id, Model model) {
+        public String editUser(
+                        @PathVariable Integer id,
+                        @RequestParam(name = "roleFilter", required = false) Role role,
+                        Model model) {
+
                 model.addAttribute("user", userService.get(id));
                 model.addAttribute("roles", Role.values());
+
+                // keep the filter so the form can send it back on save/cancel
+                model.addAttribute("roleFilter", role);
+
                 return "admin/user-form";
         }
 
@@ -413,6 +420,7 @@ public class AdminController {
         @PostMapping("/users/{id}")
         public String updateUser(@PathVariable Integer id,
                         @ModelAttribute("user") User posted,
+                        @RequestParam(name = "roleFilter", required = false) Role role,
                         @RequestParam(name = "rawPassword", required = false) String rawPassword,
                         @RequestParam(name = "doctorPhone", required = false) String doctorPhone,
                         @RequestParam(name = "patientPhone", required = false) String patientPhone,
@@ -500,12 +508,13 @@ public class AdminController {
                 }
 
                 userRepository.saveAndFlush(existing);
-                return "redirect:/admin/users";
+                return "redirect:/admin/users" + (role != null ? "?role=" + role.name() : "");
         }
 
         @Transactional
         @PostMapping("/users/{id}/delete")
-        public String deleteUser(@PathVariable Integer id) {
+        public String deleteUser(@PathVariable Integer id,
+                        @RequestParam(name = "roleFilter", required = false) Role role) {
                 User u = userService.get(id);
 
                 Doctor doctorToDelete = u.getDoctor();
@@ -527,7 +536,7 @@ public class AdminController {
                         patientRepository.delete(patientToDelete);
                 }
 
-                return "redirect:/admin/users";
+                return "redirect:/admin/users" + (role != null ? "?role=" + role.name() : "");
         }
 
         @GetMapping("/doctors")
@@ -669,10 +678,11 @@ public class AdminController {
                                                         "No doctors exist. Create one doctor first."));
 
                         Diagnosis diag = new Diagnosis();
+                        diag.setAiPrediction(AiPrediction.PENDING);
                         diag.setPatient(patient);
                         diag.setDoctor(doctor);
                         diag.setReviewed(false);
-                        diag.setUrgent(false);
+                        // diag.setUrgent(false);
                         diag.setDescription(description);
                         diag.setDate(date);
 
