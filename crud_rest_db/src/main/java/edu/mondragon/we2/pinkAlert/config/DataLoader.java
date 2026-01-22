@@ -52,7 +52,7 @@ public class DataLoader implements CommandLineRunner {
             userService.createUser(doctorUser, "123");
 
             Patient patient = patientRepository.save(
-                    new Patient(LocalDate.of(1999, 2, 14), "625153475"));
+            new Patient(LocalDate.of(1999, 2, 14), "625153475"));
 
             User patientUser = new User();
             patientUser.setEmail("maria.agirre@gmail.com");
