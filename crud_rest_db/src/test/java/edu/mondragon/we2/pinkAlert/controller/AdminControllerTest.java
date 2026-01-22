@@ -111,53 +111,48 @@ class AdminControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    @Test
-    void testDashboard_ReturnsCorrectViewAndModelAttributes() {
-        List<Diagnosis> mockDiagnoses = Arrays.asList(
-                createDiagnosis(1, true, true, FinalResult.MALIGNANT),
-                createDiagnosis(2, false, true, FinalResult.BENIGN),
-                createDiagnosis(3, true, true, FinalResult.MALIGNANT),
-                createDiagnosis(4, false, false, FinalResult.PENDING));
-
-        when(patientRepository.count()).thenReturn(10L);
-        when(userRepository.count()).thenReturn(5L);
-        when(diagnosisRepository.count()).thenReturn(4L);
-        when(diagnosisRepository.countByUrgentTrue()).thenReturn(2L);
-        when(diagnosisRepository.findAll()).thenReturn(mockDiagnoses);
-
-        Model model = mock(Model.class);
-        String viewName = adminController.dashboard(model);
-        assertThat(viewName).isEqualTo("admin/admin-dashboard");
-        verify(model).addAttribute("totalPatients", 10L);
-        verify(model).addAttribute("totalUsers", 5L);
-        verify(model).addAttribute("totalScreenings", 4L);
-        verify(model).addAttribute("urgentCases", 2L);
-        verify(model).addAttribute(eq("completionRate"), anyDouble());
-        verify(model).addAttribute(eq("positiveRate"), anyDouble());
-        verify(model).addAttribute(eq("positiveCount"), anyLong());
-        verify(model).addAttribute(eq("negativeCount"), anyLong());
-        verify(model).addAttribute(eq("pendingCount"), anyLong());
-        verify(model).addAttribute(eq("inconclusiveCount"), anyLong());
-    }
 
     @Test
     void testDashboard_WithEmptyData_HandlesGracefully() {
-        when(patientRepository.count()).thenReturn(0L);
-        when(userRepository.count()).thenReturn(0L);
         when(diagnosisRepository.count()).thenReturn(0L);
-        when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
         when(diagnosisRepository.findAll()).thenReturn(Collections.emptyList());
+        
         Model model = mock(Model.class);
         String viewName = adminController.dashboard(model);
 
-        assertThat(viewName).isEqualTo("admin/admin-dashboard");
+        assertThat(viewName).isEqualTo("dashboard");
+        
+        // Verificar que se añaden todos los atributos con valores por defecto
+        verify(model).addAttribute("completedCount", 0L);
+        verify(model).addAttribute("pendingCount", 0L);
         verify(model).addAttribute("completionRate", 0.0);
         verify(model).addAttribute("positiveRate", 0.0);
-        verify(model).addAttribute("totalPatients", 0L);
-        verify(model).addAttribute("totalUsers", 0L);
-        verify(model).addAttribute("totalScreenings", 0L);
-        verify(model).addAttribute("urgentCases", 0L);
+        verify(model).addAttribute("aiAgreeCount", 0L);
+        verify(model).addAttribute("aiMismatchCount", 0L);
+        verify(model).addAttribute("aiMissingCount", 0L);
+        verify(model).addAttribute("aiNotComparableCount", 0L);
     }
+
+    @Test
+    void testDashboard_OnlyFinalizedDiagnoses() {
+        List<Diagnosis> mockDiagnoses = Arrays.asList(
+                createDiagnosis(1, false, true, FinalResult.MALIGNANT, AiPrediction.MALIGNANT),
+                createDiagnosis(2, false, true, FinalResult.BENIGN, AiPrediction.BENIGN),
+                createDiagnosis(3, false, true, FinalResult.MALIGNANT, AiPrediction.MALIGNANT));
+
+        when(diagnosisRepository.count()).thenReturn(3L);
+        when(diagnosisRepository.findAll()).thenReturn(mockDiagnoses);
+
+        Model model = mock(Model.class);
+        adminController.dashboard(model);
+        
+        verify(model).addAttribute("completedCount", 3L);
+        verify(model).addAttribute("pendingCount", 0L);
+        verify(model).addAttribute("completionRate", 100.0);
+        verify(model).addAttribute("positiveRate", 66.7); // 2/3 = 66.7%
+        verify(model).addAttribute("aiAgreeCount", 3L);
+    }
+
 
     @Test
     void testUsers_ReturnsUsersView() {
@@ -449,169 +444,57 @@ class AdminControllerTest {
     }
 
     @Test
-void testAgeBuckets_Coverage() {
-    LocalDate now = LocalDate.now();
-    
-    Patient patient1 = new Patient(); 
-    Patient patient2 = new Patient();
-    patient2.setBirthDate(now.minusYears(25)); 
-    
-    Patient patient3 = new Patient();
-    patient3.setBirthDate(now.minusYears(45)); 
-    
-    Patient patient4 = new Patient();
-    patient4.setBirthDate(now.minusYears(55));
-    
-    Patient patient5 = new Patient();
-    patient5.setBirthDate(now.minusYears(65)); 
-    
-    Patient patient6 = new Patient();
-    patient6.setBirthDate(now.minusYears(75));
-    
-    Patient patient7 = new Patient();
-    patient7.setBirthDate(now.minusYears(30));
-    
-    Diagnosis diagnosis1 = new Diagnosis(); 
-    diagnosis1.setReviewed(true);
-    diagnosis1.setFinalResult(FinalResult.MALIGNANT);
-    
-    Diagnosis diagnosis2 = new Diagnosis();
-    diagnosis2.setPatient(patient1);
-    diagnosis2.setReviewed(true);
-    diagnosis2.setFinalResult(FinalResult.BENIGN);
-    
-    Diagnosis diagnosis3 = new Diagnosis();
-    diagnosis3.setPatient(patient2);
-    diagnosis3.setReviewed(true);
-    diagnosis3.setFinalResult(FinalResult.MALIGNANT);
-    
-    Diagnosis diagnosis4 = new Diagnosis(); 
-    diagnosis4.setPatient(patient3);
-    diagnosis4.setReviewed(true);
-    diagnosis4.setFinalResult(FinalResult.BENIGN);
-    
-    Diagnosis diagnosis5 = new Diagnosis(); 
-    diagnosis5.setPatient(patient4);
-    diagnosis5.setReviewed(true);
-    diagnosis5.setFinalResult(FinalResult.MALIGNANT);
-    
-    Diagnosis diagnosis6 = new Diagnosis(); 
-    diagnosis6.setPatient(patient5);
-    diagnosis6.setReviewed(true);
-    diagnosis6.setFinalResult(FinalResult.BENIGN);
-    
-    Diagnosis diagnosis7 = new Diagnosis(); 
-    diagnosis7.setPatient(patient6);
-    diagnosis7.setReviewed(true);
-    diagnosis7.setFinalResult(FinalResult.MALIGNANT);
-    
-    List<Diagnosis> diagnoses = Arrays.asList(
-        diagnosis1, diagnosis2, diagnosis3, diagnosis4, 
-        diagnosis5, diagnosis6, diagnosis7
-    );
-    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
-    when(patientRepository.count()).thenReturn(7L);
-    when(userRepository.count()).thenReturn(7L);
-    when(diagnosisRepository.count()).thenReturn(7L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(3L);
-    
-    Model model = mock(Model.class);
-    
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute(eq("ageLabelsJs"), anyString());
-    verify(model).addAttribute(eq("ageTotalsJs"), anyString());
-    verify(model).addAttribute(eq("ageMalignantJs"), anyString());
-    verify(model).addAttribute(eq("ageBenignJs"), anyString());
-    verify(model).addAttribute(eq("ageInconclusiveJs"), anyString());
-    verify(model).addAttribute(eq("ageMalignantRateJs"), anyString());
-}
+    void testAiAgreement_AiMissing() {
+        Diagnosis d = new Diagnosis();
+        d.setAiPrediction(null);
+        d.setReviewed(true);
+        d.setFinalResult(FinalResult.MALIGNANT);
+        
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+        
+        Model model = mock(Model.class);
+        adminController.dashboard(model);
+        
+        verify(model).addAttribute("aiMissingCount", 1L);
+        verify(model).addAttribute("aiAgreeCount", 0L);
+        verify(model).addAttribute("aiMismatchCount", 0L);
+        verify(model).addAttribute("aiNotComparableCount", 0L);
+    }
 
-@Test
-void testAgeCalculation_ExceptionCoverage() {
-    Patient problematicPatient = mock(Patient.class);
-    when(problematicPatient.getBirthDate()).thenThrow(new RuntimeException("Simulated error"));
-    
-    Diagnosis diagnosis = new Diagnosis();
-    diagnosis.setPatient(problematicPatient);
-    diagnosis.setReviewed(true);
-    diagnosis.setFinalResult(FinalResult.BENIGN);
-    
-    List<Diagnosis> diagnoses = Collections.singletonList(diagnosis);
-    
-    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
-    
-    Model model = mock(Model.class);
-    
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute(eq("ageLabelsJs"), anyString());
-}
+    @Test
+    void testAiAgreement_NotFinalized() {
+        Diagnosis d = new Diagnosis();
+        d.setAiPrediction(AiPrediction.MALIGNANT);
+        d.setReviewed(false);
+        d.setFinalResult(null);
+        
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+        
+        Model model = mock(Model.class);
+        adminController.dashboard(model);
+        
+        verify(model).addAttribute("aiNotComparableCount", 1L);
+    }
 
-@Test
-void testAiAgreement_AiMissing() {
-    Diagnosis d = new Diagnosis();
-    d.setAiPrediction(null);
-    d.setReviewed(true);
-    d.setFinalResult(FinalResult.MALIGNANT);
+    @Test
+    void testAiAgreement_DoctorInconclusive() {
+        Diagnosis d = new Diagnosis();
+        d.setAiPrediction(AiPrediction.MALIGNANT);
+        d.setReviewed(true);
+        d.setFinalResult(FinalResult.INCONCLUSIVE);
+        
+        when(diagnosisRepository.count()).thenReturn(1L);
+        when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
+        
+        Model model = mock(Model.class);
+        adminController.dashboard(model);
+        
+        verify(model).addAttribute("aiNotComparableCount", 1L);
+    }
     
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
-    
-    Model model = mock(Model.class);
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute("aiMissingCount", 1L);
-    verify(model).addAttribute("aiAgreeCount", 0L);
-    verify(model).addAttribute("aiMismatchCount", 0L);
-    verify(model).addAttribute("aiNotComparableCount", 0L);
-}
-
-@Test
-void testAiAgreement_NotFinalized() {
-    Diagnosis d = new Diagnosis();
-    d.setAiPrediction(AiPrediction.MALIGNANT);
-    d.setReviewed(false);
-    d.setFinalResult(null);
-    
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
-    
-    Model model = mock(Model.class);
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute("aiNotComparableCount", 1L);
-}
-
-@Test
-void testAiAgreement_DoctorInconclusive() {
-    Diagnosis d = new Diagnosis();
-    d.setAiPrediction(AiPrediction.MALIGNANT);
-    d.setReviewed(true);
-    d.setFinalResult(FinalResult.INCONCLUSIVE);
-    
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
-    
-    Model model = mock(Model.class);
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute("aiNotComparableCount", 1L);
-}
-@Test
+    @Test
 void testUpdateUser_PatientRole_ExistingPatient_UpdatesPatientInfo() {
     Integer userId = 1;
     Role roleFilter = null;
@@ -654,6 +537,7 @@ void testUpdateUser_PatientRole_ExistingPatient_UpdatesPatientInfo() {
     
     verify(userRepository, never()).saveAndFlush(any(User.class));
 }
+
 @Test
 void testUpdateUser_PatientRole_ExistingPatient_NullBirthDate() {
     Integer userId = 1;
@@ -687,6 +571,7 @@ void testUpdateUser_PatientRole_ExistingPatient_NullBirthDate() {
         LocalDate.of(1980, 1, 1).equals(patient.getBirthDate())
     ));
 }
+
 @Test
 void testUpdateUser_ChangeToAdminRole_FromDoctor() {
     Integer userId = 1;
@@ -819,6 +704,7 @@ void testUpdateUser_PatientRole_ExistingPatient_BlankBirthDate() {
         LocalDate.of(1980, 1, 1).equals(patient.getBirthDate()) 
     ));
 }
+
 @Test
 void testAiAgreement_AiPending() {
     Diagnosis d = new Diagnosis();
@@ -826,11 +712,8 @@ void testAiAgreement_AiPending() {
     d.setReviewed(true);
     d.setFinalResult(FinalResult.MALIGNANT);
     
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
     when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
     
     Model model = mock(Model.class);
     adminController.dashboard(model);
@@ -845,11 +728,8 @@ void testAiAgreement_Agree() {
     d.setReviewed(true);
     d.setFinalResult(FinalResult.MALIGNANT);
     
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
     when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
     
     Model model = mock(Model.class);
     adminController.dashboard(model);
@@ -865,11 +745,8 @@ void testAiAgreement_Mismatch() {
     d.setReviewed(true);
     d.setFinalResult(FinalResult.MALIGNANT);
     
-    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
     when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
+    when(diagnosisRepository.findAll()).thenReturn(Collections.singletonList(d));
     
     Model model = mock(Model.class);
     adminController.dashboard(model);
@@ -877,27 +754,7 @@ void testAiAgreement_Mismatch() {
     verify(model).addAttribute("aiAgreeCount", 0L);
     verify(model).addAttribute("aiMismatchCount", 1L);
 }
-@Test
-void testAgeBuckets_NullPatientCoverage() {
-    Diagnosis diagnosis = new Diagnosis();
-    diagnosis.setPatient(null); 
-    diagnosis.setReviewed(true);
-    diagnosis.setFinalResult(FinalResult.MALIGNANT);
-    
-    List<Diagnosis> diagnoses = Collections.singletonList(diagnosis);
-    
-    when(diagnosisRepository.findAll()).thenReturn(diagnoses);
-    when(patientRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.count()).thenReturn(1L);
-    when(diagnosisRepository.countByUrgentTrue()).thenReturn(0L);
-    
-    Model model = mock(Model.class);
-    
-    adminController.dashboard(model);
-    
-    verify(model).addAttribute(eq("ageLabelsJs"), argThat(s -> ((String)s).contains("'Unknown'")));
-}
+
 @Test
 void testMapAiToFinal_CoverageTest() throws Exception {
     Method mapAiToFinalMethod = AdminController.class.getDeclaredMethod("mapAiToFinal", AiPrediction.class);
@@ -910,6 +767,7 @@ void testMapAiToFinal_CoverageTest() throws Exception {
         .isEqualTo(FinalResult.BENIGN);
     assertThat(mapAiToFinalMethod.invoke(null, AiPrediction.PENDING)).isNull();
 }
+
     @Test
     void testCreateDiagnosis_NoPatientSelected_ReturnsError() throws Exception {
 
@@ -1232,20 +1090,21 @@ void testMapAiToFinal_CoverageTest() throws Exception {
     @Test
     void testDashboard_WithSingleDiagnosis() {
         List<Diagnosis> mockDiagnoses = Collections.singletonList(
-                createDiagnosis(1, true, true, FinalResult.MALIGNANT));
+                createDiagnosis(1, true, true, FinalResult.MALIGNANT, AiPrediction.MALIGNANT));
 
-        when(patientRepository.count()).thenReturn(1L);
-        when(userRepository.count()).thenReturn(1L);
         when(diagnosisRepository.count()).thenReturn(1L);
-        when(diagnosisRepository.countByUrgentTrue()).thenReturn(1L);
         when(diagnosisRepository.findAll()).thenReturn(mockDiagnoses);
 
         Model model = mock(Model.class);
 
         String viewName = adminController.dashboard(model);
 
-        assertThat(viewName).isEqualTo("admin/admin-dashboard");
-        verify(model).addAttribute(eq("completionRate"), anyDouble());
+        assertThat(viewName).isEqualTo("dashboard");
+        verify(model).addAttribute("completedCount", 1L);
+        verify(model).addAttribute("pendingCount", 0L);
+        verify(model).addAttribute("completionRate", 100.0);
+        verify(model).addAttribute("positiveRate", 100.0);
+        verify(model).addAttribute("aiAgreeCount", 1L);
     }
 
     @Test
@@ -1280,13 +1139,40 @@ void testMapAiToFinal_CoverageTest() throws Exception {
         assertThat(roundHelper(9999.999)).isEqualTo(10000.0);
     }
 
-    private Diagnosis createDiagnosis(Integer id, boolean urgent, boolean reviewed, FinalResult finalResult) {
+    @Test
+    void testIsFinalized_Method() throws Exception {
+        Method isFinalizedMethod = AdminController.class.getDeclaredMethod("isFinalized", Diagnosis.class);
+        isFinalizedMethod.setAccessible(true);
+        
+        Diagnosis d1 = new Diagnosis();
+        d1.setReviewed(true);
+        d1.setFinalResult(FinalResult.MALIGNANT);
+        assertThat(isFinalizedMethod.invoke(null, d1)).isEqualTo(true);
+        
+        Diagnosis d2 = new Diagnosis();
+        d2.setReviewed(false);
+        d2.setFinalResult(FinalResult.MALIGNANT);
+        assertThat(isFinalizedMethod.invoke(null, d2)).isEqualTo(false);
+        
+        Diagnosis d3 = new Diagnosis();
+        d3.setReviewed(true);
+        d3.setFinalResult(null);
+        assertThat(isFinalizedMethod.invoke(null, d3)).isEqualTo(false);
+        
+        Diagnosis d4 = new Diagnosis();
+        d4.setReviewed(false);
+        d4.setFinalResult(null);
+        assertThat(isFinalizedMethod.invoke(null, d4)).isEqualTo(false);
+    }
+
+    private Diagnosis createDiagnosis(Integer id, boolean urgent, boolean reviewed, FinalResult finalResult, AiPrediction aiPrediction) {
         Diagnosis diagnosis = new Diagnosis();
         diagnosis.setId(id);
         diagnosis.setUrgent(urgent);
         diagnosis.setReviewed(reviewed);
         diagnosis.setDate(LocalDate.now().minusDays(id));
         diagnosis.setFinalResult(finalResult);
+        diagnosis.setAiPrediction(aiPrediction);
         return diagnosis;
     }
 

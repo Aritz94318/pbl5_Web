@@ -28,7 +28,6 @@ import edu.mondragon.we2.pinkAlert.service.UserService;
 import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -98,223 +97,6 @@ public class AdminController {
                 };
         }
 
-        @GetMapping("/dashboard")
-        public String dashboard(Model model) {
-
-                long totalPatients = patientRepository.count();
-                long totalUsers = userRepository.count();
-                long totalScreenings = diagnosisRepository.count();
-                long urgentCases = diagnosisRepository.countByUrgentTrue();
-
-                List<Diagnosis> all = diagnosisRepository.findAll();
-
-                long completed = all.stream().filter(AdminController::isFinalized).count();
-
-                double completionRate = (totalScreenings == 0)
-                                ? 0.0
-                                : round1((completed * 100.0) / totalScreenings);
-
-                long positiveCount = all.stream()
-                                .filter(AdminController::isFinalized)
-                                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
-                                .count();
-
-                long negativeCount = all.stream()
-                                .filter(AdminController::isFinalized)
-                                .filter(d -> d.getFinalResult() == FinalResult.BENIGN)
-                                .count();
-
-                long inconclusiveCount = all.stream()
-                                .filter(AdminController::isFinalized)
-                                .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
-                                .count();
-
-                long pendingCount = all.stream()
-                                .filter(d -> !isFinalized(d))
-                                .count();
-
-                double positiveRate = (completed == 0)
-                                ? 0.0
-                                : round1((positiveCount * 100.0) / completed);
-
-                long backlogUrgent = all.stream()
-                                .filter(d -> !isFinalized(d))
-                                .filter(Diagnosis::isUrgent)
-                                .count();
-
-                long backlogRoutine = all.stream()
-                                .filter(d -> !isFinalized(d))
-                                .filter(d -> !d.isUrgent())
-                                .count();
-
-                model.addAttribute("backlogUrgent", backlogUrgent);
-                model.addAttribute("backlogRoutine", backlogRoutine);
-
-                LocalDate now = LocalDate.now();
-
-                java.util.function.Function<Diagnosis, Integer> ageOf = diag -> {
-                        try {
-                                if (diag.getPatient() == null)
-                                        return null;
-                                if (diag.getPatient().getBirthDate() == null)
-                                        return null;
-                                return java.time.Period.between(diag.getPatient().getBirthDate(), now).getYears();
-                        } catch (Exception e) {
-                                return null;
-                        }
-                };
-
-                java.util.function.Function<Integer, String> bucketOf = age -> {
-                        if (age == null)
-                                return "Unknown";
-                        if (age < 40)
-                                return "<40";
-                        if (age <= 49)
-                                return "40-49";
-                        if (age <= 59)
-                                return "50-59";
-                        if (age <= 69)
-                                return "60-69";
-                        return "70+";
-                };
-
-                List<String> ageBuckets = List.of("<40", "40-49", "50-59", "60-69", "70+", "Unknown");
-
-                List<Diagnosis> finalized = all.stream()
-                                .filter(AdminController::isFinalized)
-                                .collect(Collectors.toList());
-
-                Map<String, Long> totalByAgeBucket = finalized.stream()
-                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
-                                                Collectors.counting()));
-
-                Map<String, Long> malignantByAgeBucket = finalized.stream()
-                                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
-                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
-                                                Collectors.counting()));
-
-                Map<String, Long> benignByAgeBucket = finalized.stream()
-                                .filter(d -> d.getFinalResult() == FinalResult.BENIGN)
-                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
-                                                Collectors.counting()));
-
-                Map<String, Long> inconclusiveByAgeBucket = finalized.stream()
-                                .filter(d -> d.getFinalResult() == FinalResult.INCONCLUSIVE)
-                                .collect(Collectors.groupingBy(d -> bucketOf.apply(ageOf.apply(d)),
-                                                Collectors.counting()));
-
-                List<String> ageLabelsJs = ageBuckets.stream().map(s -> "'" + s + "'").toList();
-
-                List<Long> ageTotals = ageBuckets.stream().map(b -> totalByAgeBucket.getOrDefault(b, 0L)).toList();
-                List<Long> ageMalignant = ageBuckets.stream().map(b -> malignantByAgeBucket.getOrDefault(b, 0L))
-                                .toList();
-                List<Long> ageBenign = ageBuckets.stream().map(b -> benignByAgeBucket.getOrDefault(b, 0L)).toList();
-                List<Long> ageInconclusive = ageBuckets.stream().map(b -> inconclusiveByAgeBucket.getOrDefault(b, 0L))
-                                .toList();
-
-                List<Double> ageMalignantRate = new ArrayList<>();
-                for (int i = 0; i < ageBuckets.size(); i++) {
-                        long tot = ageTotals.get(i);
-                        long mal = ageMalignant.get(i);
-                        double pct = (tot == 0) ? 0.0 : round1((mal * 100.0) / tot);
-                        ageMalignantRate.add(pct);
-                }
-
-                model.addAttribute("ageLabelsJs", String.join(",", ageLabelsJs));
-                model.addAttribute("ageTotalsJs",
-                                ageTotals.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                model.addAttribute("ageMalignantJs",
-                                ageMalignant.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                model.addAttribute("ageBenignJs",
-                                ageBenign.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                model.addAttribute("ageInconclusiveJs",
-                                ageInconclusive.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                model.addAttribute("ageMalignantRateJs",
-                                ageMalignantRate.stream().map(String::valueOf).collect(Collectors.joining(",")));
-
-                long aiAgreeCount = 0;
-                long aiMismatchCount = 0;
-                long aiMissingCount = 0;
-                long aiNotComparableCount = 0;
-
-                for (Diagnosis d : all) {
-                        AiPrediction ai = d.getAiPrediction();
-                        FinalResult doctor = d.getFinalResult();
-
-                        if (ai == null) {
-                                aiMissingCount++;
-                                continue;
-                        }
-
-                        if (!isFinalized(d) || doctor == FinalResult.INCONCLUSIVE) {
-                                aiNotComparableCount++;
-                                continue;
-                        }
-
-                        FinalResult aiAsFinal = mapAiToFinal(ai);
-                        if (aiAsFinal == null) {
-                                aiNotComparableCount++;
-                                continue;
-                        }
-
-                        if (aiAsFinal == doctor)
-                                aiAgreeCount++;
-                        else
-                                aiMismatchCount++;
-                }
-
-                model.addAttribute("aiAgreeCount", aiAgreeCount);
-                model.addAttribute("aiMismatchCount", aiMismatchCount);
-                model.addAttribute("aiMissingCount", aiMissingCount);
-                model.addAttribute("aiNotComparableCount", aiNotComparableCount);
-
-                model.addAttribute("totalPatients", totalPatients);
-                model.addAttribute("totalUsers", totalUsers);
-                model.addAttribute("totalScreenings", totalScreenings);
-                model.addAttribute("urgentCases", urgentCases);
-                model.addAttribute("completionRate", completionRate);
-                model.addAttribute("positiveRate", positiveRate);
-
-                model.addAttribute("negativeCount", negativeCount);
-                model.addAttribute("positiveCount", positiveCount);
-                model.addAttribute("pendingCount", pendingCount);
-                model.addAttribute("inconclusiveCount", inconclusiveCount);
-
-                LocalDate today = LocalDate.now();
-                LocalDate start = today.minusDays(6);
-
-                Map<LocalDate, Long> totalByDate = all.stream()
-                                .filter(d -> d.getDate() != null && !d.getDate().isBefore(start)
-                                                && !d.getDate().isAfter(today))
-                                .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
-
-                Map<LocalDate, Long> completedByDate = all.stream()
-                                .filter(d -> d.getDate() != null)
-                                .filter(AdminController::isFinalized)
-                                .filter(d -> !d.getDate().isBefore(start) && !d.getDate().isAfter(today))
-                                .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
-
-                DateTimeFormatter labelFmt = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH);
-
-                List<String> labels = new ArrayList<>();
-                List<Long> totals = new ArrayList<>();
-                List<Long> completes = new ArrayList<>();
-
-                for (LocalDate d = start; !d.isAfter(today); d = d.plusDays(1)) {
-                        labels.add("'" + d.format(labelFmt) + "'");
-                        totals.add(totalByDate.getOrDefault(d, 0L));
-                        completes.add(completedByDate.getOrDefault(d, 0L));
-                }
-
-                model.addAttribute("timelineLabelsJs", String.join(",", labels));
-                model.addAttribute("timelineTotalJs",
-                                totals.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                model.addAttribute("timelineCompletedJs",
-                                completes.stream().map(String::valueOf).collect(Collectors.joining(",")));
-
-                return "admin/admin-dashboard";
-        }
-
         @GetMapping("/users")
         public String users(
                         @RequestParam(name = "role", required = false) Role role,
@@ -325,8 +107,8 @@ public class AdminController {
                                 : userService.findByRole(role);
 
                 model.addAttribute("users", users);
-                model.addAttribute("roleFilter", role); 
-                model.addAttribute("roles", Role.values()); 
+                model.addAttribute("roleFilter", role);
+                model.addAttribute("roles", Role.values());
 
                 return "admin/users";
         }
@@ -731,6 +513,121 @@ public class AdminController {
 
                 Files.write(target, resp.body());
                 return target;
+
         }
 
+        @GetMapping("/dashboard")
+        public String dashboard(Model model) {
+
+                long totalScreenings = diagnosisRepository.count();
+                List<Diagnosis> all = diagnosisRepository.findAll();
+
+                addBasicStats(model, all, totalScreenings);
+                addAiStats(model, all);
+                addDailyStats(model, all);
+
+                return "dashboard";
+        }
+
+        private void addBasicStats(Model model, List<Diagnosis> all, long totalScreenings) {
+
+                long completed = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .count();
+
+                long positiveCount = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> d.getFinalResult() == FinalResult.MALIGNANT)
+                                .count();
+
+                long pendingCount = all.stream()
+                                .filter(d -> !isFinalized(d))
+                                .count();
+
+                double completionRate = totalScreenings == 0
+                                ? 0.0
+                                : round1((completed * 100.0) / totalScreenings);
+
+                double positiveRate = completed == 0
+                                ? 0.0
+                                : round1((positiveCount * 100.0) / completed);
+
+                model.addAttribute("completedCount", completed);
+                model.addAttribute("pendingCount", pendingCount);
+                model.addAttribute("completionRate", completionRate);
+                model.addAttribute("positiveRate", positiveRate);
+        }
+
+        private void addAiStats(Model model, List<Diagnosis> all) {
+
+                long aiAgreeCount = 0;
+                long aiMismatchCount = 0;
+                long aiMissingCount = 0;
+                long aiNotComparableCount = 0;
+
+                for (Diagnosis d : all) {
+                        AiPrediction ai = d.getAiPrediction();
+                        FinalResult doctor = d.getFinalResult();
+
+                        if (ai == null) {
+                                aiMissingCount++;
+                                continue;
+                        }
+
+                        if (!isFinalized(d) || doctor == FinalResult.INCONCLUSIVE) {
+                                aiNotComparableCount++;
+                                continue;
+                        }
+
+                        FinalResult aiAsFinal = mapAiToFinal(ai);
+                        if (aiAsFinal == null) {
+                                aiNotComparableCount++;
+                                continue;
+                        }
+
+                        if (aiAsFinal == doctor)
+                                aiAgreeCount++;
+                        else
+                                aiMismatchCount++;
+                }
+
+                model.addAttribute("aiAgreeCount", aiAgreeCount);
+                model.addAttribute("aiMismatchCount", aiMismatchCount);
+                model.addAttribute("aiMissingCount", aiMissingCount);
+                model.addAttribute("aiNotComparableCount", aiNotComparableCount);
+        }
+
+        private void addDailyStats(Model model, List<Diagnosis> all) {
+
+                LocalDate today = LocalDate.now();
+                LocalDate start = today.minusDays(6);
+
+                Map<LocalDate, Long> totalByDate = all.stream()
+                                .filter(d -> d.getDate() != null)
+                                .filter(d -> !d.getDate().isBefore(start) && !d.getDate().isAfter(today))
+                                .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
+
+                Map<LocalDate, Long> completedByDate = all.stream()
+                                .filter(AdminController::isFinalized)
+                                .filter(d -> d.getDate() != null)
+                                .filter(d -> !d.getDate().isBefore(start) && !d.getDate().isAfter(today))
+                                .collect(Collectors.groupingBy(Diagnosis::getDate, Collectors.counting()));
+
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH);
+
+                List<String> labels = new ArrayList<>();
+                List<Long> totals = new ArrayList<>();
+                List<Long> completes = new ArrayList<>();
+
+                for (LocalDate d = start; !d.isAfter(today); d = d.plusDays(1)) {
+                        labels.add("'" + d.format(fmt) + "'");
+                        totals.add(totalByDate.getOrDefault(d, 0L));
+                        completes.add(completedByDate.getOrDefault(d, 0L));
+                }
+
+                model.addAttribute("labelsJs", String.join(",", labels));
+                model.addAttribute("totalsJs", totals.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                model.addAttribute("completesJs",
+                                completes.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        }
 }
