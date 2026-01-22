@@ -34,11 +34,10 @@ public class SimulationService {
     private final JsonSchema modifyschema;
     private final JsonSchema simEventSchema;
     private final JsonSchema simTimeSchema;
-    private final RestTemplate rt;
-
+  
     @Autowired
-    public SimulationService(RestTemplate rt) throws IOException, ProcessingException {
-        this.rt = rt;
+    public SimulationService() throws IOException, ProcessingException {
+   
         JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 
         this.modifyschema = factory.getJsonSchema(mapper.readTree(getSchema("/modify-sim-schema.json")));
@@ -49,9 +48,7 @@ public class SimulationService {
 
     }
 
-    public SimulationService() throws IOException, ProcessingException {
-        this(new RestTemplate());
-    }
+
 
     public InputStream getSchema(String path) {
         InputStream schemaStream = getClass().getResourceAsStream(path);
@@ -112,7 +109,7 @@ public class SimulationService {
     }
 
     public void modify(int numPatients, int numDoctors, int numMachines) throws IOException, ProcessingException {
-
+  RestTemplate rt=new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/modify";
         GlobalUpdateRequest body;
         body = new GlobalUpdateRequest(numPatients, numDoctors, numMachines);
@@ -140,7 +137,7 @@ public class SimulationService {
     }
 
     public void start() {
-
+    RestTemplate rt=new RestTemplate();
         String url = "https://node-red-591094411846.europe-west1.run.app/Simulation/start";
 
         HttpHeaders headers = new HttpHeaders();
