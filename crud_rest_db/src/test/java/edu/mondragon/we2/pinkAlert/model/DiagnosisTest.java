@@ -393,10 +393,10 @@ class DiagnosisTest {
         boolean hasTable = false;
         
         for (var annotation : classAnnotations) {
-            if (annotation.annotationType().getSimpleName().equals("Entity")) {
+            if (annotation instanceof jakarta.persistence.Entity) {
                 hasEntity = true;
             }
-            if (annotation.annotationType().getSimpleName().equals("Table")) {
+            if (annotation instanceof jakarta.persistence.Table) {
                 hasTable = true;
                 var tableAnnotation = (jakarta.persistence.Table) annotation;
                 assertEquals("Diagnosis", tableAnnotation.name());
