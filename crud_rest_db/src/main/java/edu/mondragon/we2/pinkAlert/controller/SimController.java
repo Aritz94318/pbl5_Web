@@ -3,8 +3,6 @@ package edu.mondragon.we2.pinkAlert.controller;
 import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -23,7 +21,6 @@ public class SimController {
         this.hub = hub;
     }
 
-    // API: la simulación manda una acción
     @PostMapping("/api/sim/events")
     @ResponseBody
     public ResponseEntity<Void> push(@RequestBody SimEvent event) throws IOException, ProcessingException {
@@ -41,7 +38,6 @@ public class SimController {
         return ResponseEntity.ok().build();
     }
 
-    // Stream: el admin escucha en tiempo real
     @GetMapping("/admin/sim/stream")
     @ResponseBody
 

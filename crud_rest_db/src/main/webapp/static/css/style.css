@@ -17,6 +17,10 @@
     border-left: 4px solid #218e53b0
 }
 
+.patient-card.pending-border {
+    border-left: 4px solid gray
+}
+
 .admin-shield {
     width: 3rem;
     height: 3rem;
@@ -358,13 +362,14 @@ body {
 .screening-header-top {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     font-size: 13px;
 }
 
 .text-main {
     color: #1f2942;
     font-weight: 500;
+    margin-bottom: 7px;
 }
 
 .text-meta {
@@ -425,7 +430,7 @@ body {
     align-items: center;
     justify-content: space-between;
     box-shadow: 0 4px 12px rgba(15, 35, 71, 0.04);
-    text-decoration: none;
+    text-decoration: none !important;
     color: inherit;
     transition: 0.15s ease;
 }

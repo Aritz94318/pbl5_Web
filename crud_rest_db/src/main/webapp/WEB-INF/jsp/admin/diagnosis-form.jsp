@@ -32,6 +32,12 @@
                         <p>Create a Diagnosis by uploading a DICOM mammography</p>
                     </div>
                 </div>
+                <div class="header-right">
+                    <a class="btn-ghost" href="${pageContext.request.contextPath}/login">
+                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                        Logout
+                    </a>
+                </div>
             </div>
 
             <div class="admin-wrap">

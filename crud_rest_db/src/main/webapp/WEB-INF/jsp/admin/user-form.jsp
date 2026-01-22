@@ -47,7 +47,7 @@
 
                     <form method="post"
                         action="${pageContext.request.contextPath}<c:choose><c:when test='${isEdit}'>/admin/users/${user.id}</c:when><c:otherwise>/admin/users</c:otherwise></c:choose>">
-
+                        <input type="hidden" name="roleFilter" value="${roleFilter}" />
                         <div style="display:grid; gap:10px; max-width:520px;">
                             <label>
                                 Username
@@ -112,7 +112,8 @@
                                 <button class="btn-admin btn-primary" type="submit">
                                     <i class="bi bi-check2-circle"></i> Save
                                 </button>
-                                <a class="btn-admin btn-secondary" href="${pageContext.request.contextPath}/admin/dashboard">
+                                <a class="btn-admin btn-secondary"
+                                    href="${pageContext.request.contextPath}/admin/dashboard">
                                     <i class="bi bi-x-circle"></i> Cancel
                                 </a>
                             </div>

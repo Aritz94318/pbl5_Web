@@ -55,6 +55,9 @@ public class Diagnosis {
     @Column(name = "AiPrediction", length = 20)
     @Enumerated(EnumType.STRING)
     private AiPrediction aiPrediction;
+    
+    @Column(name = "PatientNotified", nullable = false)
+    private Boolean patientNotified = false;
 
     public Diagnosis() {
     }
@@ -241,6 +244,14 @@ public class Diagnosis {
 
     public void setAiPrediction(AiPrediction aiPrediction) {
         this.aiPrediction = aiPrediction;
+    }
+
+    public Boolean getPatientNotified() {
+        return patientNotified;
+    }
+
+    public void setPatientNotified(Boolean patientNotified) {
+        this.patientNotified = patientNotified;
     }
 
 }

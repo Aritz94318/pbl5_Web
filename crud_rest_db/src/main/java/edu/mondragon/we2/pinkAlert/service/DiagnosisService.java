@@ -44,26 +44,33 @@ public class DiagnosisService {
                 .orElseThrow(() -> new RuntimeException("Diagnosis not found with id " + id));
     }
 
-    public void saveDoctorReview(Integer id, String finalResultRaw, String description) {
-        Diagnosis d = diagnosisRepository.findById(id).orElseThrow();
+    public void saveDoctorReview(Integer id, String finalResultRaw, String description, boolean patientNotified) {
+        Diagnosis d = diagnosisRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Diagnosis not found: " + id));
 
-        // notes
         d.setDescription(description == null ? "" : description.trim());
-
+        d.setPatientNotified(patientNotified);
         // finalResult (allow pending/clear)
         if (finalResultRaw == null || finalResultRaw.isBlank()) {
             d.setFinalResult(null);
             d.setReviewed(false); // optional
         } else {
-            FinalResult fr = FinalResult.valueOf(finalResultRaw);
+            FinalResult fr = FinalResult.valueOf(finalResultRaw.trim().toUpperCase());
             d.setFinalResult(fr);
             d.setReviewed(true);
 
             // urgent policy example:
-            d.setUrgent(fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE);
+            if (fr == FinalResult.MALIGNANT || fr == FinalResult.INCONCLUSIVE)
+                d.setUrgent(true);
+            else
+                d.setUrgent(false);
         }
 
         diagnosisRepository.save(d);
+    }
+
+    public long countByPatientId(Integer patientId) {
+        return diagnosisRepository.countByPatientId(patientId);
     }
 
     public Diagnosis create(Diagnosis diagnosis, Integer doctorId, Integer patientId) {

@@ -1,26 +1,17 @@
-/* ===============================
-   ADMIN DASHBOARD STYLES
-   =============================== */
-
-/* .btn-back-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 14px;
-    color: #fff;
-    text-decoration: none;
+html,
+body {
+    height: 100%;
 }
 
-.btn-back-icon i {
-    font-size: 1.6rem;
-    transition: transform .15s ease, opacity .15s ease;
-    opacity: .9;
+body {
+    min-height: 100vh;
+    background: linear-gradient(rgb(255 255 255 / 73%),
+            rgb(255 255 255 / 60%)), url(../img/background.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
-
-.btn-back-icon:hover i {
-    transform: translateX(-2px);
-    opacity: 1;
-} */
 
 .bi {
     line-height: 1;
@@ -316,4 +307,47 @@ select {
     margin-top: 0.3rem;
     outline: none;
     box-shadow: none;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-wrap {
+    animation: fadeUp 0.55s ease-out;
+}
+
+.users-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 16px;
+    flex-wrap: wrap;
+}
+
+.users-filter-label {
+    font-size: 0.9rem;
+    color: #1f3b77;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.users-filter-select {
+    height: 38px;
+    padding: 6px 10px;
+    border: 1px solid #d9e1f2;
+    border-radius: 10px;
+    background: #fff;
+    color: #10224d;
+    font-weight: 600;
 }
