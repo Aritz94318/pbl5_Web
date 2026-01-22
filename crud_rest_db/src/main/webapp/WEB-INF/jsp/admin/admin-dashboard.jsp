@@ -388,12 +388,11 @@
 
                 </div>
 
-                <!-- Chart.js -->
-               <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-
-
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"
+                    integrity="sha512-Y51n9mtKTVBh3Jbx5pZSJNDDMyY+yGe77DGtBPzRlgsf/YLCh13kSZ3JmfHGzYFCmOndraf0sQgfM654b7dJ3w=="
+                    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                 <script>
-                    // ---------- Backlog ----------
+                 
                     const backlogUrgent = Number("<c:out value='${backlogUrgentSafe}'/>");
                     const backlogRoutine = Number("<c:out value='${backlogRoutineSafe}'/>");
 
