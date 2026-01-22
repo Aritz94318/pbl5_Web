@@ -1,0 +1,126 @@
+/* ===============================
+   HEADER (SHARED)
+   =============================== */
+
+.header-admin {
+    background: linear-gradient(90deg, #d58aaa, #d58aaa);
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+    max-width: 1200px;
+    margin: 0 auto 18px;
+}
+
+/* Left side */
+.header-left-admin {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-left-admin h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-left-admin p {
+    font-size: 13px;
+    opacity: 0.9;
+    margin: 4px 0 0;
+}
+
+/* Back button */
+.btn-back-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-back-icon i {
+    font-size: 1.6rem;
+    opacity: 0.9;
+    transition: transform .15s ease, opacity .15s ease;
+}
+
+.btn-back-icon:hover i {
+    transform: translateX(-2px);
+    opacity: 1;
+}
+
+/* Shield icon */
+.admin-shield {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-shield .bi {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+/* Right side */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Logout / ghost button */
+.btn-ghost {
+    border: 1px solid rgba(255, 255, 255, .35);
+    background: rgba(255, 255, 255, .10);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, .16);
+}
+
+.btn-ghost .bi {
+    font-size: 1.5em;
+}
+
+.btn-back-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-back-icon i {
+    font-size: 1.6rem;
+    transition: transform .15s ease, opacity .15s ease;
+    opacity: .9;
+}
+
+.btn-back-icon:hover i {
+    transform: translateX(-2px);
+    opacity: 1;
+}
+
+.admin-shield .bi {
+    font-size: 1.5rem;
+}

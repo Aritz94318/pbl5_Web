@@ -1,0 +1,613 @@
+.btn-primary {
+    background: #d58aaa !important;
+    color: #fff !important;
+    border: 0 !important;
+}
+
+.btn-secondary {
+    border: 1px solid #d58aaa63 !important;
+    color: #d58aaa !important;
+}
+
+.btn-primary:hover {
+    background: #d58aaaa8 !important;
+}
+
+.patient-card.ok-border {
+    border-left: 4px solid #218e53b0
+}
+
+.patient-card.pending-border {
+    border-left: 4px solid gray
+}
+
+.admin-shield {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.5rem;
+}
+
+.status-chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-chip.positive {
+    background: #ffe9f0;
+    border-color: #ffb6d4;
+    color: #ff4b4b;
+}
+
+.status-chip.negative {
+    background: #e6f9ef;
+    border-color: #b8f0cf;
+    color: #218e53;
+}
+
+/* .chip-row {
+    display: flex;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+} */
+
+.status-chip.status-warning {
+    border-color: rgb(163 104 26 / 25%);
+    background: #fffbeb;
+    color: #78350f;
+}
+
+.status-chip.status-danger {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.status-chip.status-success {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46
+}
+
+.urgent-icon {
+    color: #d32f2f;
+    margin-left: 6px;
+}
+
+.completed-icon {
+    color: #2e7d32;
+    margin-left: 6px;
+}
+
+.btn-ghost:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateX(2px);
+    opacity: 1;
+}
+
+/* Header brand */
+.top-brand {
+    text-align: center;
+    margin-top: 40px;
+    color: white;
+}
+
+.brand-title {
+    font-size: 28px;
+    margin-top: 10px;
+}
+
+.brand-subtitle {
+    font-size: 16px;
+    opacity: 0.85;
+}
+
+.logo {
+    width: 65px;
+    height: 65px;
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background: #d58aaa;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    color: white;
+    font-size: 36px;
+}
+
+.form {
+    margin-top: 25px;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: darkslategrey;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: #4a4a4a;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.error-box {
+    background: #ffdddd;
+    color: #b30000;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+
+/* ====== RESETEO BÁSICO ====== */
+
+* {
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+    background: #f2f6ff;
+    padding: 20px;
+}
+
+.app-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ====== HEADER GENERAL ====== */
+
+.header {
+    background: linear-gradient(90deg, #d58aaa, #d58aaa);
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+    margin-bottom: 18px;
+}
+
+.header-left h1 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-left p {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+.header-badge {
+    background: #ff4b4b;
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(255, 75, 75, 0.5);
+}
+
+/* ====== HEADER DETALLE ====== */
+
+.header-detail {
+    margin-bottom: 22px;
+}
+
+.header-detail .detail-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.back-link {
+    color: #e3ecff;
+    font-size: 13px;
+    text-decoration: none;
+    margin-bottom: 2px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.detail-patient-name {
+    /* font-size: 18px; */
+    font-weight: 600;
+}
+
+.detail-patient-id {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.header-badge-urgent {
+    background: #ff4b4b;
+}
+
+/* ====== CARD GENÉRICA ====== */
+
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-top: 12px;
+    box-shadow: 0 8px 18px rgba(15, 35, 71, 0.08);
+}
+
+.card-dates {
+    margin-top: 6px;
+}
+
+.card-title {
+    /* font-size: 14px; */
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #444f6b;
+}
+
+/* ====== SELECTOR DE FECHAS ====== */
+
+.date-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.date-pill {
+    border-radius: 12px;
+    border: 1px solid #e1e7ff;
+    padding: 8px 14px;
+    min-width: 110px;
+    text-align: center;
+    background: #f7f9ff;
+    cursor: pointer;
+    transition: 0.15s ease;
+    outline: none;
+}
+
+.date-pill span {
+    display: block;
+}
+
+.date-pill .label {
+    /* font-size: 11px; */
+    color: #7a88a6;
+    margin-bottom: 4px;
+}
+
+.date-pill .date {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e2b4d;
+}
+
+.date-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.date-pill.active {
+    background: #d58aaa;
+    border-color: #d58aaa;
+}
+
+.date-pill.active .label,
+.date-pill.active .date {
+    color: #ffffff;
+}
+
+/* ====== RESUMEN SCREENINGS ====== */
+
+.screening-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    font-size: 13px;
+}
+
+.text-main {
+    color: #1f2942;
+    font-weight: 500;
+    margin-bottom: 7px;
+}
+
+.text-meta {
+    color: #7f8bad;
+}
+
+.text-meta span {
+    font-weight: 600;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: #5a6685;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+}
+
+.legend-dot.warning {
+    background: #d39f11;
+}
+
+.legend-dot.danger {
+    background: #ff4b4b;
+}
+
+.legend-dot.success {
+    background: #2ac769;
+}
+
+/* ====== LISTA DE PACIENTES ====== */
+
+.patient-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.patient-card {
+    background: #f7f9ff;
+    border-radius: 16px;
+    border-left: 4px solid #d58aaa;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(15, 35, 71, 0.04);
+    text-decoration: none !important;
+    color: inherit;
+    transition: 0.15s ease;
+}
+
+.patient-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(15, 35, 71, 0.12);
+}
+
+.patient-card.urgent-border {
+    border-left-color: #ff4b4b;
+}
+
+.patient-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Reuse patient icon, just smaller */
+.patient-icon--small {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
+}
+
+/* Completed icon styling */
+.legend-check {
+    font-size: 18px;
+    color: #22c55e;
+    /* same green as success */
+}
+
+.patient-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: #ff6b6b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.patient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.patient-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.patient-name {
+    /* font-size: 14px; */
+    font-weight: 600;
+    color: #1f2942;
+}
+
+.badge-pill {
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-urgent {
+    background: #ffe5e5;
+    color: #d6002f;
+}
+
+.badge-check {
+    background: #e6f9ef;
+    color: #2ac769;
+}
+
+.patient-subinfo {
+    font-size: 11px;
+    color: #7f8bad;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.dot-separator::before {
+    content: "• ";
+    margin-right: 4px;
+}
+
+.patient-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+/* ====== LAYOUT DETALLE ====== */
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 16px;
+}
+
+.detail-card {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.detail-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #384567;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-section-icon {
+    font-size: 18px;
+}
+
+.detail-info-group {
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #7a88a6;
+}
+
+.detail-value {
+    font-size: 13px;
+    color: #1f2942;
+    margin-top: 2px;
+}
+
+.status-link {
+    color: #2352d9;
+    font-weight: 500;
+}
+
+/* ====== IMÁGENES ====== */
+
+.images-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.image-box {
+    background: #f7f9ff;
+    border-radius: 12px;
+    padding: 8px;
+    border: 2px solid #fce6a6;
+}
+
+.image-box img {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+/* ====== RESPONSIVE SIMPLE ====== */
+
+@media (max-width: 900px) {
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+}

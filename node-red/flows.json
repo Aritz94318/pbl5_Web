@@ -1,0 +1,1415 @@
+[
+    {
+        "id": "4df3273b04370a1b",
+        "type": "tab",
+        "label": "Flow 8",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "021575aab027395a",
+        "type": "e-mail",
+        "z": "4df3273b04370a1b",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "fdg",
+        "x": 1310,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "5def096fc2aaf896",
+        "type": "change",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "to",
+                "pt": "msg",
+                "to": "payload.email",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload.topic",
+                "tot": "msg",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.message",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 340,
+        "wires": [
+            [
+                "021575aab027395a",
+                "c15d04f76c28d4c7"
+            ]
+        ]
+    },
+    {
+        "id": "2e4e1cd6749c0985",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 340,
+        "wires": [
+            [
+                "5def096fc2aaf896",
+                "a3c9289d13195282",
+                "0a1c2cc6f1a7566d"
+            ]
+        ]
+    },
+    {
+        "id": "92920775a9a923fd",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/email",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 310,
+        "y": 340,
+        "wires": [
+            [
+                "2e4e1cd6749c0985",
+                "6edf4fbe0da70689"
+            ]
+        ]
+    },
+    {
+        "id": "6edf4fbe0da70689",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 27",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a3c9289d13195282",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 29",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "324b300942b1d3f4",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
+        "payloadType": "json",
+        "x": 1810,
+        "y": 300,
+        "wires": [
+            [
+                "510af55024bf0382"
+            ]
+        ]
+    },
+    {
+        "id": "8583f688915e556d",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/email",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2260,
+        "y": 300,
+        "wires": [
+            [
+                "7cbd01fb859148c7"
+            ]
+        ]
+    },
+    {
+        "id": "7cbd01fb859148c7",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2590,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "510af55024bf0382",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 17",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2040,
+        "y": 300,
+        "wires": [
+            [
+                "8583f688915e556d"
+            ]
+        ]
+    },
+    {
+        "id": "c15d04f76c28d4c7",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 30",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "0a1c2cc6f1a7566d",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 900,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e839c68834a0af7e",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"message\":\"Kaixo\",\"topic\":\"Your diagnosis is done\"}",
+        "payloadType": "json",
+        "x": 1970,
+        "y": 440,
+        "wires": [
+            [
+                "45ef66080536485b"
+            ]
+        ]
+    },
+    {
+        "id": "82dddb0e15382e8f",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://node-red-591094411846.europe-west1.run.app//email",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2380,
+        "y": 440,
+        "wires": [
+            [
+                "751d9113fa7bac78"
+            ]
+        ]
+    },
+    {
+        "id": "751d9113fa7bac78",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2710,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "45ef66080536485b",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 20",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2160,
+        "y": 440,
+        "wires": [
+            [
+                "82dddb0e15382e8f"
+            ]
+        ]
+    },
+    {
+        "id": "0ba50fec89763559",
+        "type": "e-mail",
+        "z": "4df3273b04370a1b",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "fdg",
+        "x": 630,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "22755dbb7917d832",
+        "type": "e-mail",
+        "z": "4df3273b04370a1b",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "fdg",
+        "x": 1470,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "2b4b21125f1def2b",
+        "type": "e-mail",
+        "z": "4df3273b04370a1b",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "fdg",
+        "x": 1310,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "1068dd7d1f207a41",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 350,
+        "y": 580,
+        "wires": [
+            [
+                "0bd9637b6f5b9ae8",
+                "7de60871414f010e",
+                "4ad79bbad1644f4f"
+            ]
+        ]
+    },
+    {
+        "id": "a6d4f21794f27188",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/result",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 580,
+        "wires": [
+            [
+                "1068dd7d1f207a41",
+                "bae911627f6dfdf0",
+                "aea0c1cd647099aa"
+            ]
+        ]
+    },
+    {
+        "id": "3157dc03e85f49a8",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"diagnosis_id\":\"1\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1V27rtt1TmP6sFTRjdX4lijQr2b5_B3_Y\",\"topic\":\"Your diagnosis is done\"}",
+        "payloadType": "json",
+        "x": 2140,
+        "y": 180,
+        "wires": [
+            [
+                "b4e36fb621eba55a"
+            ]
+        ]
+    },
+    {
+        "id": "1379da5a80a0f148",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict-url",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2560,
+        "y": 180,
+        "wires": [
+            [
+                "fa19b47c0c5225ad"
+            ]
+        ]
+    },
+    {
+        "id": "fa19b47c0c5225ad",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2890,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b4e36fb621eba55a",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 1",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2340,
+        "y": 180,
+        "wires": [
+            [
+                "1379da5a80a0f148"
+            ]
+        ]
+    },
+    {
+        "id": "ff7570e685d3aa5f",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"diagnosis_id\":\"2\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1dJ8PjR06e9PiVKSbURbDXv-tWEYvRoSr\"}",
+        "payloadType": "json",
+        "x": 2110,
+        "y": 840,
+        "wires": [
+            [
+                "4e92fac7482758cf"
+            ]
+        ]
+    },
+    {
+        "id": "e0ddbb03bd6f7925",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict-url",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2490,
+        "y": 700,
+        "wires": [
+            [
+                "c6beb89fe4cd1749"
+            ]
+        ]
+    },
+    {
+        "id": "c6beb89fe4cd1749",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2760,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "4e92fac7482758cf",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 2",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2440,
+        "y": 820,
+        "wires": [
+            [
+                "e0ddbb03bd6f7925"
+            ]
+        ]
+    },
+    {
+        "id": "0bd9637b6f5b9ae8",
+        "type": "change",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "to",
+                "pt": "msg",
+                "to": "payload.email",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "The first step of your diagnosis is already completed",
+                "tot": "str",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Be wary of your email, we will contact you with the developments.",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 220,
+        "y": 440,
+        "wires": [
+            [
+                "0ba50fec89763559",
+                "5a73ee184d1c2f82"
+            ]
+        ]
+    },
+    {
+        "id": "5a73ee184d1c2f82",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "f12fc64f88afbb6f",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 3",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 600,
+        "wires": [
+            [
+                "493c658fe1794010"
+            ]
+        ]
+    },
+    {
+        "id": "96030dc56f393d65",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"numPatients\": 2, \"numDoctors\": 1, \"numMachines\": 2 }",
+        "payloadType": "json",
+        "x": 2360,
+        "y": 1060,
+        "wires": [
+            [
+                "931a03adf6dd3a0c"
+            ]
+        ]
+    },
+    {
+        "id": "d76c318192d05d84",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/modify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2780,
+        "y": 1060,
+        "wires": [
+            [
+                "5de25010ca5d254c"
+            ]
+        ]
+    },
+    {
+        "id": "5de25010ca5d254c",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2840,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "931a03adf6dd3a0c",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 4",
+        "func": "msg.headers = {}\nmsg.headers['Accept']='*/*'\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2560,
+        "y": 1060,
+        "wires": [
+            [
+                "d76c318192d05d84"
+            ]
+        ]
+    },
+    {
+        "id": "7de60871414f010e",
+        "type": "function",
+        "z": "4df3273b04370a1b",
+        "name": "function 5",
+        "func": "msg.path=  msg.payload.diagnosis_id;\nmsg.payload = {\n    prediction: msg.payload.prediction,\n    prob_malignant: msg.payload.prob_malignant,\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 580,
+        "wires": [
+            [
+                "f12fc64f88afbb6f"
+            ]
+        ]
+    },
+    {
+        "id": "493c658fe1794010",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "PUT",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/diagnoses/{{path}}/ai-result",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1010,
+        "y": 500,
+        "wires": [
+            [
+                "f3efb5d97534e697"
+            ]
+        ]
+    },
+    {
+        "id": "f3efb5d97534e697",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "Result (201: Full List)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1220,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "59b9d6066cb5cc86",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/api/sim/events",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 860,
+        "wires": [
+            [
+                "7f30656c5873ed88",
+                "7097951ebce3d2e6"
+            ]
+        ]
+    },
+    {
+        "id": "b24d569b7080da44",
+        "type": "inject",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"diagnosis_id\":\"2\",\"email\":\"aritz.ugarte@alumni.mondragon.edu\",\"dicom_url\":\"https://drive.google.com/uc?export=download&id=1dJ8PjR06e9PiVKSbURbDXv-tWEYvRoSr\"}",
+        "payloadType": "json",
+        "x": 1250,
+        "y": 980,
+        "wires": [
+            [
+                "5e218a7edf4b278b"
+            ]
+        ]
+    },
+    {
+        "id": "5e218a7edf4b278b",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/start",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1430,
+        "y": 980,
+        "wires": [
+            [
+                "f8ea4161653eb03b"
+            ]
+        ]
+    },
+    {
+        "id": "f8ea4161653eb03b",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1650,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "2299f3f0620d0819",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/api/sim/final",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 1060,
+        "wires": [
+            [
+                "9b887627278fbebc",
+                "276ed8ed12326117"
+            ]
+        ]
+    },
+    {
+        "id": "bc23bb11d2ec7448",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "72184e758e6c120b",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://dicom-api-591094411846.europe-west1.run.app//predict4-url",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1350,
+        "y": 740,
+        "wires": [
+            [
+                "dcd6cff24b4b7e41"
+            ]
+        ]
+    },
+    {
+        "id": "959066283e6c43df",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/predict-url",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 940,
+        "y": 720,
+        "wires": [
+            [
+                "e59efb1076400de4",
+                "cd4108bc8f781a1e",
+                "e414bbd041a3b9d6"
+            ]
+        ]
+    },
+    {
+        "id": "e59efb1076400de4",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "dcd6cff24b4b7e41",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1440,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "4ad79bbad1644f4f",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "bae911627f6dfdf0",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 260,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "cd4108bc8f781a1e",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1100,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "aea0c1cd647099aa",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 314.8125305175781,
+        "y": 646.8125,
+        "wires": []
+    },
+    {
+        "id": "89b6ce0dcee1133d",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/start",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1410,
+        "y": 1220,
+        "wires": [
+            [
+                "153cb39df39987c1"
+            ]
+        ]
+    },
+    {
+        "id": "abc8046a7c60671b",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/Simulation/start",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 980,
+        "y": 1220,
+        "wires": [
+            [
+                "89b6ce0dcee1133d",
+                "8f909981c04ce1c5",
+                "a9fdd07bf67ca2f1"
+            ]
+        ]
+    },
+    {
+        "id": "8f909981c04ce1c5",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "a9fdd07bf67ca2f1",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1280,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "87d5f4aef0793c2f",
+        "type": "http in",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "url": "/Simulation/modify",
+        "method": "put",
+        "upload": false,
+        "skipBodyParsing": true,
+        "swaggerDoc": "",
+        "x": 1100,
+        "y": 1500,
+        "wires": [
+            [
+                "9c64b274789a3ea6",
+                "e7f01f0cf3f64f2c"
+            ]
+        ]
+    },
+    {
+        "id": "9c64b274789a3ea6",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 1240,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "153cb39df39987c1",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1570,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "e7f01f0cf3f64f2c",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1330,
+        "y": 1460,
+        "wires": [
+            [
+                "71aae500be577442"
+            ]
+        ]
+    },
+    {
+        "id": "2ed9ae5608c92a55",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/api/sim/final",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 590,
+        "y": 1080,
+        "wires": [
+            [
+                "bc23bb11d2ec7448"
+            ]
+        ]
+    },
+    {
+        "id": "7f30656c5873ed88",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 540,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "9b887627278fbebc",
+        "type": "http response",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "statusCode": "201",
+        "headers": {},
+        "x": 320,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "7097951ebce3d2e6",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 490,
+        "y": 1000,
+        "wires": [
+            [
+                "79ab115616159f9e"
+            ]
+        ]
+    },
+    {
+        "id": "79ab115616159f9e",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://crud-rest-db-591094411846.europe-west1.run.app/api/sim/events",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 650,
+        "y": 900,
+        "wires": [
+            [
+                "871b14c834f9fc02"
+            ]
+        ]
+    },
+    {
+        "id": "871b14c834f9fc02",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 16",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "71aae500be577442",
+        "type": "http request",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "method": "PUT",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://simulator-591094411846.europe-west1.run.app/Simulation/modify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1530,
+        "y": 1460,
+        "wires": [
+            [
+                "5b2c1b186cb5345c"
+            ]
+        ]
+    },
+    {
+        "id": "5b2c1b186cb5345c",
+        "type": "debug",
+        "z": "4df3273b04370a1b",
+        "name": "debug 17",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1700,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "276ed8ed12326117",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 390,
+        "y": 1100,
+        "wires": [
+            [
+                "2ed9ae5608c92a55"
+            ]
+        ]
+    },
+    {
+        "id": "e414bbd041a3b9d6",
+        "type": "json",
+        "z": "4df3273b04370a1b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1150,
+        "y": 740,
+        "wires": [
+            [
+                "72184e758e6c120b"
+            ]
+        ]
+    },
+    {
+        "id": "ab9b0d7410aa79d0",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-email": "5.1.0"
+        }
+    }
+]

@@ -1,0 +1,583 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(rgb(255 255 255 / 73%),
+            rgb(255 255 255 / 60%)), url(../img/background.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.chip-notify {
+    white-space: nowrap;
+}
+
+.chip-notify.selected {
+    border-color: rgba(59, 130, 246, .45);
+    background: rgba(59, 130, 246, .12);
+}
+
+/* --- ROUND "Patient has been notified" checkbox --- */
+.notify-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* hide native checkbox, keep it accessible */
+.notify-check input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+/* the pill container (same as you have, but a bit cleaner) */
+.notify-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    /* border: 1px solid rgba(0, 0, 0, .12); */
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .6);
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+
+/* circular "checkbox" */
+.notify-box::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid #d58aaa;
+    background: rgba(255, 255, 255, .9);
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+/* checked state: fill circle + subtle ring */
+.notify-check:has(input[type="checkbox"]:checked) .notify-box::before {
+    background: #d58aaac7;
+    border-color: #d58aaa;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+/* optional: make the whole pill look "active" when checked */
+.notify-check:has(input[type="checkbox"]:checked) .notify-box {
+    border-color: #d58aaaa8;
+    background: rgba(196, 105, 196, 0.08);
+}
+
+/* keyboard focus (tabbing) */
+.notify-check:has(input[type="checkbox"]:focus-visible) .notify-box {
+    outline: 2px solid #d58aaaa8;
+    outline-offset: 2px;
+}
+
+
+.notify-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    /* border: 1px solid rgba(0, 0, 0, .12);
+    border-radius: 10px; */
+    background: rgba(255, 255, 255, .6);
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-wrap {
+    animation: fadeUp 0.55s ease-out;
+}
+
+.card,
+.card-dates {
+    animation: fadeUp 0.55s ease-out;
+}
+
+.chip-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    font: inherit;
+}
+
+.chip.chip-benign {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46
+}
+
+.chip.chip-malignant {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.chip.chip-pending {
+    border-color: #80808052;
+    background: #d3d3d36e;
+    color: #494949;
+}
+
+.chip.chip-inconclusive {
+    border-color: rgb(163 104 26 / 25%);
+    background: #fffbeb;
+    color: #78350f;
+}
+
+.chip-btn.selected {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.chip-btn {
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chip-btn:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.chip-btn:focus {
+    outline: none;
+}
+
+.chip-btn:active {
+    transform: translateY(1px);
+}
+
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+    color: gray;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.chip-select {
+    cursor: pointer;
+    user-select: none;
+}
+
+.chip-select input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chip-select:has(input[type="radio"]:checked) {
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.notes-input {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font: inherit;
+    resize: vertical;
+}
+
+.notes-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.btn-soft:hover {
+    transition: transform .15s ease, opacity .15s ease;
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.bi-box-arrow-up-right {
+    color: #d58aaa;
+}
+
+.page-wrap {
+    max-width: 1280px;
+    margin: 20px auto;
+    padding: 0 16px 28px;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+@media (max-width: 980px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid rgba(35, 55, 90, 0.10);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(26, 45, 80, 0.08);
+    padding: 18px;
+}
+
+.panel+.panel {
+    margin-top: 14px;
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #0f172a;
+    margin-bottom: 17px;
+}
+
+.panel-title i {
+    color: #0f172a;
+    font-size: 1.35rem;
+}
+
+.info-row {
+    margin-bottom: 14px;
+}
+
+.info-label {
+    font-size: 0.82rem;
+    color: #6a7aa6;
+    margin-bottom: 9px;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #2a2b2cd1;
+    font-weight: 650;
+}
+
+.ok {
+    color: #065f46;
+    font-weight: 650;
+}
+
+.warn {
+    color: #c88300;
+    font-weight: 800;
+}
+
+.danger {
+    color: #7f1d1d;
+    font-weight: 800;
+}
+
+.chip-row {
+    display: flex;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #1c2f5f;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chip.urgent {
+    border-color: rgba(214, 42, 42, 0.25);
+    background: rgba(214, 42, 42, 0.06);
+    color: #b11212;
+}
+
+.chip.reviewed {
+    border-color: rgba(10, 160, 79, 0.25);
+    background: rgba(10, 160, 79, 0.06);
+    color: #065f46;
+}
+
+.chip.pending {
+    border-color: #8080809e;
+    background: #d3d3d36e;
+    color: gray;
+}
+
+.images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 980px) {
+    .images-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.image-tile {
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7b8bb8;
+    font-weight: 650;
+    padding: 14px;
+    text-align: center;
+}
+
+.image-meta {
+    background: #fff;
+    border-top: 1px solid #e2e8f6;
+    padding: 8px;
+    margin-top: auto;
+}
+
+.image-title {
+    font-weight: 900;
+    color: #1f3b77;
+    margin-bottom: 10px;
+}
+
+.image-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    color: #1f3b77;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 550;
+    text-decoration: none;
+}
+
+.thead {
+    background-color: #d58aaa;
+}
+
+.btn-soft.primary {
+    background: #1f5bd6;
+    border-color: transparent;
+    color: #fff;
+}
+
+.notes-label {
+    font-weight: 500;
+    color: #0f172a;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.notes {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid #d9e1f2;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fbfcff;
+    color: #10224d;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.history-wrap {
+    margin-top: 18px;
+}
+
+.table-wrap {
+    overflow: auto;
+    margin-top: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(35, 55, 90, 0.10);
+    background: #fff;
+}
+
+table.hist {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+}
+
+table.hist th,
+table.hist td {
+    padding: 12px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    color: #10224d;
+}
+
+table.hist th {
+    color: #fff;
+    font-weight: 700;
+    background: #d58aaa;
+}
+
+.preview-img {
+    width: 100%;
+    height: 410px;
+    object-fit: cover;
+    display: block;
+    background: #f7f9ff;
+}
+
+.image-card {
+    border: 1px solid #e2e8f6;
+    border-radius: 14px;
+    background: #f7f9ff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 470px;
+}
+
+/* Make the row truly one line (unless screen is too small) */
+.date-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: flex-start;
+    /* don't push weirdly */
+    flex-wrap: nowrap;
+    /* keep in same row */
+}
+
+/* Let the pills area take remaining space */
+.date-selector {
+    display: flex;
+    /* IMPORTANT: make pills align horizontally */
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 auto;
+    /* can grow/shrink */
+    min-width: 0;
+    /* allows shrinking instead of wrapping */
+    flex-wrap: wrap;
+    /* pills can wrap inside their own area */
+}
+
+/* Keep the calendar block fixed on the right */
+.date-picker {
+    flex: 0 0 auto;
+    /* don't shrink into next line */
+    min-width: 190px;
+}
+
+
+.date-picker-label {
+    font-size: 15px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-input {
+    text-align: center;
+}
+
+.filters-row {
+    margin-top: 35px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #d9e1f2;
+    background: #fff;
+    color: #434e5f;
+    text-decoration: none;
+    font-weight: 650;
+    font-size: 13px
+}
+
+.filter-chip:hover {
+    transform: translateY(-1px);
+    transition: transform .12s ease;
+}
+
+.filter-chip.active {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.filter-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+}

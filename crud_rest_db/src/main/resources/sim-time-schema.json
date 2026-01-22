@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "SimTime",
+    "description": "Schema for the last duration of the simulation ",
+    "type": "object",
+    "properties": {
+        "time": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "hours": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 59
+        },
+        "seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 59
+        }
+    },  "required": [
+        "time",
+        "hours",
+        "minutes",
+        "seconds"
+    ]
+}
