@@ -159,12 +159,12 @@
                                         <c:choose>
                                             <c:when test="${diagnosis.aiPrediction == 'BENIGN'}">
                                                 <span class="chip chip-malignant">
-                                                    <i class="bi bi-exclamation-triangle"></i> Malignant
+                                                    <i class="bi bi-exclamation-triangle"></i> Benign
                                                 </span>
                                             </c:when>
                                             <c:when test="${diagnosis.aiPrediction == 'MALIGNANT'}">
                                                 <span class="chip chip-benign">
-                                                    <i class="bi bi-exclamation-triangle"></i> Benign
+                                                    <i class="bi bi-exclamation-triangle"></i> Malignant
                                                 </span>
                                             </c:when>
                                             <c:otherwise>
