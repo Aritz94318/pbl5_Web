@@ -39,6 +39,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         if (userRepository.count() == 0) {
             // --- Admin ---
+            
             User adminUser = new User();
             adminUser.setEmail("admin@pinkalert.com");
             adminUser.setUsername("admin");
