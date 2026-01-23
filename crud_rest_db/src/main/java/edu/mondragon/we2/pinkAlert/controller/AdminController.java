@@ -693,7 +693,7 @@ public class AdminController {
 
                         diag = diagnosisRepository.saveAndFlush(diag);
 
-                        String previewsDir = "tmp/previews";
+                        String previewsDir = "/tmp/previews";
                         Path previewsPath = Paths.get("/tmp/previews");
                         Files.createDirectories(previewsPath);
 
@@ -710,7 +710,6 @@ public class AdminController {
 
                                 File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
                                 File f = dicomFile.toFile();
-                                System.out.println("PNG exists: " + Files.exists(dicomFile));
                                 System.out.println("DICOM exists: " + Files.exists(dicomFile));
                                 System.out.println("DICOM size: " + Files.size(dicomFile));
                                 System.out.println("Ruta absoluta: " + f.getAbsolutePath());
