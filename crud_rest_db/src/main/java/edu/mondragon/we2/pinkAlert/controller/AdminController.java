@@ -556,9 +556,9 @@ public class AdminController {
         // Provisional
         @GetMapping("/simulation")
         public String simulationPage(Model model) {
-                model.addAttribute("numPatients", 2);
+                model.addAttribute("numPatients", 1);
                 model.addAttribute("numDoctors", 1);
-                model.addAttribute("numMachines", 2);
+                model.addAttribute("numMachines", 1);
                 return "admin/simulation";
         }
 
