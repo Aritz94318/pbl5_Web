@@ -735,6 +735,8 @@ public class AdminController {
                                         .convert(dicomFile.toFile(), outPng);
 
                         String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
+                        System.out.println("storageDir=" + storageDir);
+                        System.out.println("Preview file=" + outPng.getAbsolutePath() + " exists=" + outPng.exists());
 
                         if (i == 1)
                                 diag.setPreviewPath(publicPreviewPath);
