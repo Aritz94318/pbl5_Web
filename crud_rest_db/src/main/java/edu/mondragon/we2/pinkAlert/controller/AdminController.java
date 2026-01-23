@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import edu.mondragon.we2.pinkAlert.model.AiPrediction;
 import edu.mondragon.we2.pinkAlert.model.FinalResult;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,8 @@ public class AdminController {
         private final DiagnosisService diagnosisService;
         private final DoctorService doctorService;
         private final SimulationService simulationService;
+        @Value("${pinkalert.storage.dir}")
+        private String storageDir;
 
         public AdminController(PatientRepository patientRepository,
                         DiagnosisRepository diagnosisRepository,
@@ -693,41 +696,7 @@ public class AdminController {
 
                         diag = diagnosisRepository.saveAndFlush(diag);
 
-                        String previewsDir = "/tmp/previews";
-                        Path previewsPath = Paths.get("/tmp/previews");
-                        Files.createDirectories(previewsPath);
-
-                        Path tmpDicomPath = Paths.get("/tmp/dicom");
-
-                        Files.createDirectories(tmpDicomPath);
-
-                        List<String> urls = dicomUrls;
-                        for (int i = 1; i <= 4; i++) {
-                                String u = urls.get(i - 1);
-
-                                Path dicomFile = tmpDicomPath.resolve("diag_" + diag.getId() + "_" + i + ".dcm");
-                                downloadToFile(u, dicomFile);
-
-                                File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
-                                File f = dicomFile.toFile();
-                                System.out.println("DICOM exists: " + Files.exists(dicomFile));
-                                System.out.println("DICOM size: " + Files.size(dicomFile));
-                                System.out.println("Ruta absoluta: " + f.getAbsolutePath());
-                                System.out.println("Ruta canonical (real): " + f.getCanonicalPath());
-                                edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter.convert(dicomFile.toFile(),
-                                                outPng);
-
-                                String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
-
-                                if (i == 1)
-                                        diag.setPreviewPath(publicPreviewPath);
-                                if (i == 2)
-                                        diag.setPreview2Path(publicPreviewPath);
-                                if (i == 3)
-                                        diag.setPreview3Path(publicPreviewPath);
-                                if (i == 4)
-                                        diag.setPreview4Path(publicPreviewPath);
-                        }
+                        processDicomFiles(diag, dicomUrls);
 
                         diagnosisRepository.save(diag);
 
@@ -741,6 +710,40 @@ public class AdminController {
                         model.addAttribute("error", "Failed to create diagnosis: " + e.getMessage());
                         model.addAttribute("today", LocalDate.now().toString());
                         return "admin/diagnosis-form";
+                }
+        }
+
+        private void processDicomFiles(Diagnosis diag,
+                        List<String> dicomUrls) throws Exception {
+
+                String previewsDir = "previews";
+                Path baseDir = Paths.get(storageDir).toAbsolutePath().normalize();
+
+                Files.createDirectories(baseDir);
+
+                Path previewsPath = Files.createDirectories(baseDir.resolve("previews"));
+                Path tmpDicomPath = Files.createDirectories(baseDir.resolve("dicom"));
+
+                for (int i = 1; i <= 4; i++) {
+                        String url = dicomUrls.get(i - 1);
+
+                        Path dicomFile = tmpDicomPath.resolve("diag_" + diag.getId() + "_" + i + ".dcm");
+                        downloadToFile(url, dicomFile);
+
+                        File outPng = previewsPath.resolve("diag_" + diag.getId() + "_" + i + ".png").toFile();
+                        edu.mondragon.we2.pinkAlert.utils.DicomToPngConverter
+                                        .convert(dicomFile.toFile(), outPng);
+
+                        String publicPreviewPath = previewsDir + "/diag_" + diag.getId() + "_" + i + ".png";
+
+                        if (i == 1)
+                                diag.setPreviewPath(publicPreviewPath);
+                        if (i == 2)
+                                diag.setPreview2Path(publicPreviewPath);
+                        if (i == 3)
+                                diag.setPreview3Path(publicPreviewPath);
+                        if (i == 4)
+                                diag.setPreview4Path(publicPreviewPath);
                 }
         }
 
